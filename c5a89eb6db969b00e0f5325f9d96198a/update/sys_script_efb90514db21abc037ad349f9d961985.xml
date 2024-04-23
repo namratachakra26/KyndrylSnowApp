@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>sc_task</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="sc_task">stateCHANGESFROM1^stateCHANGESTO-5^request_item.cat_item=d863b2b7dbd0730037ad349f9d961914^ORrequest_item.cat_item=4de9b051db64370037ad349f9d96195b^ORrequest_item.cat_item=c92d681cdb64b300e0f5325f9d9619cf^ORrequest_item.cat_item=b64fe0ecdbe21b0037ad349f9d9619e3^EQ<item display_value="Open" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESFROM" or="false" value="1"/>
+            <item display_value="Pending" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="-5"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Provisioning Request" endquery="false" field="request_item.cat_item" goto="false" newquery="false" operator="=" or="false" value="d863b2b7dbd0730037ad349f9d961914"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Start/Stop/Restart Request" endquery="false" field="request_item.cat_item" goto="false" newquery="false" operator="=" or="true" value="4de9b051db64370037ad349f9d96195b"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Decommission CI Request" endquery="false" field="request_item.cat_item" goto="false" newquery="false" operator="=" or="true" value="c92d681cdb64b300e0f5325f9d9619cf"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Provision" endquery="false" field="request_item.cat_item" goto="false" newquery="false" operator="=" or="true" value="b64fe0ecdbe21b0037ad349f9d9619e3"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp Incident Creation-Failure Scenario</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp.  
+ * @author Asha Bagade 
+ * @Business Rule triggers during failure use case when catalog task moves to Pending from open state
+ **/
+
+(function executeRule(current, previous /*null when async*/ ) {
+    //script is used to set the state to Pending and create an incident for failure case
+    var sysIdAssignmentGroup, worknoteContent, lastWorknote, reqFor, relatedChange, orderNum;
+
+    //Set related RITM to Pending
+    var ritm = new GlideRecord('sc_req_item');
+    ritm.addQuery('sys_id', current.request_item);
+    ritm.query();
+    if (ritm.next()) {
+        ritm.state = -5; // set RITM state to Pending
+        relatedChange = ritm.x_ibmg3_hcms_related_change_request;
+        orderNum = ritm.variables.order_number;
+        reqFor = ritm.requested_for;
+        ritm.update();
+    }
+	
+    //Fetch the latest worknotes 
+    var worknote = current.work_notes.getJournalEntry(1);
+    worknoteContent = worknote.split("(Work notes)\n");
+    lastWorknote = worknoteContent[1];
+
+    //call Incident Creation script
+    var inc_create = new HCMS_Generic_Incident_Creation().incident_create(lastWorknote, reqFor, current.cmdb_ci, current.sys_id, relatedChange);
+    current.work_notes = inc_create + " is created successfully.";
+    new HCMSLogLevel().LogMsg('info', 'Incident ' + inc_create + ' has been created for the failure reason :' + lastWorknote + ' for order: ' + orderNum);
+	
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+        <sys_created_on>2018-10-30 08:34:37</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>efb90514db21abc037ad349f9d961985</sys_id>
+        <sys_mod_count>47</sys_mod_count>
+        <sys_name>Emp Incident Creation-Failure Scenario</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_efb90514db21abc037ad349f9d961985</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 05:20:31</sys_updated_on>
+        <template/>
+        <when>before</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=efb90514db21abc037ad349f9d961985"/>
+</record_update>

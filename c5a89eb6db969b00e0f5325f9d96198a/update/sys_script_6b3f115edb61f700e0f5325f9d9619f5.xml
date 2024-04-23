@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_task</collection>
+        <condition>new CheckIfEmpCatalogItems().checkCatalogItem(current.change_request)</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="change_task">work_notesVALCHANGES^EQ<item endquery="false" field="work_notes" goto="false" newquery="false" operator="VALCHANGES" or="false" value=""/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp Incident Update-RetryCase_ChgTsk</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
+ * @author Asha Bagade 
+ * @Business Rule updates work notes of incident on each retry from emp
+ **/
+
+(function executeRule(current, previous /*null when async*/ ) {
+    try {
+        var worknoteContent, lastWorknote;
+        var worknote = current.work_notes.getJournalEntry(1); //work notes latest entry updated in Activity of change task.
+        worknoteContent = worknote.split("(Work notes)\n");
+        lastWorknote = worknoteContent[1];
+
+        var inc = new GlideRecord('incident');
+        inc.addQuery('rfc', current.change_request);
+        inc.query();
+        if (inc.next()) {
+            // Update Short desc using work notes last entry
+            inc.short_description = lastWorknote; // get it from work notes latest entry updated in Activity of change task.
+            inc.work_notes = lastWorknote; // Update work notes
+            inc.update();
+        }
+    } catch (e) {
+        new HCMSLogLevel().LogMsg("error", " Error updating the last worknotes from Change task" + e);
+    }
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-05-23 11:03:56</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>6b3f115edb61f700e0f5325f9d9619f5</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Emp Incident Update-RetryCase_ChgTsk</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_6b3f115edb61f700e0f5325f9d9619f5</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 05:16:53</sys_updated_on>
+        <template/>
+        <when>before</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=6b3f115edb61f700e0f5325f9d9619f5"/>
+</record_update>

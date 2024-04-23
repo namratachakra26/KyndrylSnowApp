@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.Emp_CI_Creation_Validation_Script</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>// Validation scripts for common discovery</description>
+        <name>Emp_CI_Creation_Validation_Script</name>
+        <script><![CDATA[var Emp_CI_Creation_Validation_Script = Class.create();
+Emp_CI_Creation_Validation_Script.prototype = {
+    initialize: function() {},
+
+
+    getResourceGrpDetails: function(obj_id) {
+
+        try {
+            var count = 0;
+            var arr = [];
+            var ka = obj_id.split("/");
+            for (k = 0; k < ka.length; k++) {
+
+                if (ka[k] == 'resourceGroups') {
+                    count = k + 1;
+                } else if (ka[k] == 'resourcegroups') {
+                    count = k + 1;
+                }
+            }
+
+            var resgrpname = ka[count];
+            for (i = 0; i <= count; i++) {
+                arr.push(ka[i]);
+            }
+            var resgrp_id = arr.join('/');
+            var res_id = new GlideRecord('cmdb_ci_resource_group');
+            res_id.addQuery('object_id', resgrp_id);
+            res_id.query();
+            if (res_id.next()) {
+                resgrpname = res_id.name;
+                resgrp_id = res_id.object_id;
+                new HCMSLogLevel().LogMsg("info", "Resource group with same object_id already exists and mapped to the existing CI. Resource Group object_id : " + resgrp_id);
+            }
+            return {
+                resGrpName: resgrpname,
+                resGrpID: resgrp_id
+
+            };
+
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg("error", "Resource group error " + ex);
+        }
+    },
+
+
+    getServerDetails: function(object_id) {
+
+        var server_count = 0;
+        var ser_arr = [];
+
+        var kb = object_id.split("/");
+
+        for (j = 0; j < kb.length; j++) {
+
+            if (kb[j] == 'servers') {
+                server_count = j + 1;
+            }
+
+        }
+        var serVername = kb[server_count];
+        return serVername;
+
+    },
+
+    validateSeverExists: function(server_name) {
+
+        var ga = new GlideRecord('cmdb_ci_cloud_database');
+        ga.get('name', server_name);
+        ga.query();
+        if (ga.next()) {
+            return 'true';
+        }
+        return 'false';
+
+    },
+
+
+    validateResourceExists: function(entity_id, entity_type, co_id, provider) {
+
+        var resource_id, resource_flag = 'false';
+
+        if (entity_type == 'virtualMachines') {
+            var grv = new GlideRecord('cmdb_ci_server');
+            grv.addEncodedQuery('object_id=' + entity_id);
+            grv.query();
+            if (grv.next()) {
+                resource_id = grv.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'vms' && provider != 'VRA') {    
+
+            var grvms = new GlideRecord('cmdb_ci_server');
+            grvms.addEncodedQuery('object_id=' + entity_id);     //INT-14425
+            grvms.query();
+            if (grvms.next()) {
+                resource_id = grvms.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'vms'  && provider == 'VRA') {    
+
+            var vravms = new GlideRecord('cmdb_ci_vmware_instance');
+            vravms.addEncodedQuery('object_id=' + entity_id); 
+            vravms.query();
+            if (vravms.next()) {
+                resource_id = vravms.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        }else if (entity_type == 'servers') {
+            var grvmserver = new GlideRecord('cmdb_ci_cloud_database');
+            grvmserver.addEncodedQuery('object_id=' + entity_id);
+            grvmserver.query();
+
+            if (grvmserver.next()) {
+                resource_id = grvmserver.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'servers/databases') {
+            var grvmserver_data = new GlideRecord('cmdb_ci_database');
+            grvmserver_data.addEncodedQuery('correlation_id=' + co_id);
+            grvmserver_data.query();
+            if (grvmserver_data.next()) {
+                resource_id = grvmserver_data.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag,
+					coid: co_id
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+            //validate the cloud resources sites
+        } else if (entity_type == 'sites') {
+            var grvmsites = new GlideRecord('cmdb_ci_appl');
+            grvmsites.addEncodedQuery('short_description=' + entity_id);
+            grvmsites.query();
+            if (grvmsites.next()) {
+                resource_id = grvmsites.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+            //validate the cloud traffic manager  profiles
+        } else if (entity_type == 'trafficmanagerprofiles') {
+            var grvtraffic_manager = new GlideRecord('cmdb_ci_cloud_load_balancer');
+            grvtraffic_manager.addEncodedQuery('object_id=' + entity_id);
+            grvtraffic_manager.query();
+            if (grvtraffic_manager.next()) {
+                resource_id = grvtraffic_manager.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+            //validate the cloud network interfaces  profiles
+        } else if (entity_type == 'networkInterfaces') {
+            var grvnetwrk_interface = new GlideRecord('cmdb_ci_nic');
+            grvnetwrk_interface.addEncodedQuery('object_id=' + entity_id);
+            grvnetwrk_interface.query();
+            if (grvnetwrk_interface.next()) {
+                resource_id = grvnetwrk_interface.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'rds') {
+            var grvrds = new GlideRecord('cmdb_ci_cloud_database');
+            grvrds.addEncodedQuery('object_id=' + entity_id);
+            grvrds.query();
+            if (grvrds.next()) {
+                resource_id = grvrds.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'vpcs') { //INT-14537
+            var grvpc = new GlideRecord('cmdb_ci_network');
+            grvpc.addEncodedQuery('object_id=' + entity_id);
+            grvpc.query();
+            if (grvpc.next()) {
+                resource_id = grvpc.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 's3') {
+            var grvs3 = new GlideRecord('cmdb_ci_cloud_object_storage');
+            grvs3.addEncodedQuery('object_id=' + entity_id);
+            grvs3.query();
+            if (grvs3.next()) {
+                resource_id = grvs3.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'dynamodb') {
+            var grvdynamodb = new GlideRecord('cmdb_ci_dynamodb_table');
+            grvdynamodb.addEncodedQuery('object_id=' + entity_id);
+            grvdynamodb.query();
+            if (grvdynamodb.next()) {
+                resource_id = grvdynamodb.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+
+        } else if (entity_type == 'storageAccounts') {
+            var grvstorage_acc = new GlideRecord('cmdb_ci_cloud_storage_account');
+            grvstorage_acc.addEncodedQuery('object_id=' + entity_id);
+            grvstorage_acc.query();
+            if (grvstorage_acc.next()) {
+                resource_id = grvstorage_acc.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'virtualMachineScaleSets') {
+            var grvitual_machine = new GlideRecord('cmdb_ci_sa_server_array');
+            grvitual_machine.addEncodedQuery('object_id=' + entity_id);
+            grvitual_machine.query();
+            if (grvitual_machine.next()) {
+                resource_id = grvitual_machine.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'databaseAccounts') {
+            var grv_cosmos_db = new GlideRecord('cmdb_ci_cloud_database');
+            grv_cosmos_db.addEncodedQuery('object_id=' + entity_id);
+            grv_cosmos_db.query();
+            if (grv_cosmos_db.next()) {
+                resource_id = grv_cosmos_db.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'Redis') {
+            var grv_redis_db = new GlideRecord('cmdb_ci_cloud_database');
+            grv_redis_db.addEncodedQuery('object_id=' + entity_id);
+            grv_redis_db.query();
+            if (grv_redis_db.next()) {
+                resource_id = grv_redis_db.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+
+        } else if (entity_type == 'vaults') {
+            var grv_vault = new GlideRecord('cmdb_ci_email_server_ent_vault');
+            grv_vault.addEncodedQuery('short_description=' + entity_id);
+            grv_vault.query();
+            if (grv_vault.next()) {
+                resource_id = grv_vault.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'loadBalancers') {
+            var grvload_balancer = new GlideRecord('cmdb_ci_cloud_load_balancer');
+            grvload_balancer.addEncodedQuery('object_id=' + entity_id);
+            grvload_balancer.query();
+            if (grvload_balancer.next()) {
+                resource_id = grvload_balancer.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'dnszones' || entity_type == 'privateDnsZones') {
+            var grv_zones = new GlideRecord('cmdb_ci_dns_name');
+            grv_zones.addEncodedQuery('short_description=' + entity_id);
+            grv_zones.query();
+            if (grv_zones.next()) {
+                resource_id = grv_zones.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'managedClusters') {
+            var grv_kubernetes_cluster = new GlideRecord('cmdb_ci_kubernetes_service');
+            grv_kubernetes_cluster.addEncodedQuery('k8s_uid=' + entity_id);
+            grv_kubernetes_cluster.query();
+            if (grv_kubernetes_cluster.next()) {
+                resource_id = grv_kubernetes_cluster.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'batchAccounts') {
+            var grv_batch_account = new GlideRecord('cmdb_ci_batch_job');
+            grv_batch_account.addEncodedQuery('short_description=' + entity_id);
+            grv_batch_account.query();
+            if (grv_batch_account.next()) {
+                resource_id = grv_batch_account.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'backupProtectedItems') {
+            var grv_backup_items = new GlideRecord('cmdb_ci_remote_backup_template');
+            grv_backup_items.addEncodedQuery('object_id=' + entity_id);
+            grv_backup_items.query();
+            if (grv_backup_items.next()) {
+                resource_id = grv_backup_items.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'managedInstances') {
+            var grv_managed_instance = new GlideRecord('cmdb_ci_cloud_database');
+            grv_managed_instance.addEncodedQuery('object_id=' + entity_id);
+            grv_managed_instance.query();
+            if (grv_managed_instance.next()) {
+                resource_id = grv_managed_instance.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'applicationGateways') {
+            var grv_app_gateways = new GlideRecord('cmdb_ci_cloud_gateway');
+            grv_app_gateways.addEncodedQuery('object_id=' + entity_id);
+            grv_app_gateways.query();
+            if (grv_app_gateways.next()) {
+                resource_id = grv_app_gateways.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'expressRouteCircuits') {
+            var grv_express_route_circuits = new GlideRecord('cmdb_ci_endpoint_vpg');
+            grv_express_route_circuits.addEncodedQuery('object_id=' + entity_id);
+            grv_express_route_circuits.query();
+
+            if (grv_express_route_circuits.next()) {
+                resource_id = grv_express_route_circuits.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+        } else if (entity_type == 'container_storage') {
+            var grv_container_storage = new GlideRecord('cmdb_ci_storage_container');
+            grv_container_storage.addEncodedQuery('object_id=' + entity_id);
+            grv_container_storage.query();
+            if (grv_container_storage.next()) {
+                resource_id = grv_container_storage.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+
+
+        } else if (entity_type == 'virtualNetworks') {
+            var grvirtulNetwork = new GlideRecord('cmdb_ci_network');
+            grvirtulNetwork.addEncodedQuery('object_id=' + entity_id);
+            grvirtulNetwork.query();
+            if (grvirtulNetwork.next()) {
+                resource_id = grvirtulNetwork.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+        } else if (entity_type == 'networkSecurityGroups') {
+            var grvNetSecurity = new GlideRecord('cmdb_ci_compute_security_group');
+            grvNetSecurity.addEncodedQuery('object_id=' + entity_id);
+            grvNetSecurity.query();
+            if (grvNetSecurity.next()) {
+                resource_id = grvNetSecurity.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+
+        } else if (entity_type == 'publicIPAddresses') {
+            var grvIpAddress = new GlideRecord('cmdb_ci_cloud_public_ipaddress');
+            grvIpAddress.addEncodedQuery('object_id=' + entity_id);
+            grvIpAddress.query();
+            if (grvIpAddress.next()) {
+                resource_id = grvIpAddress.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+        } else if (entity_type == 'virtualNetworkGateways') {
+            var grvNetworkGateway = new GlideRecord('cmdb_ci_endpoint_vpg');
+            grvNetworkGateway.addEncodedQuery('object_id=' + entity_id);
+            grvNetworkGateway.query();
+            if (grvNetworkGateway.next()) {
+                resource_id = grvNetworkGateway.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+			
+        } else if (entity_type == 'ebs') {
+            var ebsId = new GlideRecord('cmdb_ci_storage_volume');
+            ebsId.addEncodedQuery('object_id=' + entity_id);
+            ebsId.query();
+            if (ebsId.next()) {
+                resource_id = ebsId.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+        }else if (entity_type == 'elasticloadbalancing') {
+            var elbId = new GlideRecord('cmdb_ci_cloud_load_balancer');
+            elbId.addEncodedQuery('object_id=' + entity_id);
+            elbId.query();
+            if (elbId.next()) {
+                resource_id = elbId.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+		}
+		else if (entity_type == 'elasticfilesystem') {
+            var efsId = new GlideRecord('cmdb_ci_cloud_storage_account');
+            efsId.addEncodedQuery('object_id=' + entity_id);
+            efsId.query();
+            if (efsId.next()) {
+                resource_id = efsId.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+		}
+		else if (entity_type == 'stack') {
+            var stack = new GlideRecord('cmdb_ci_cmp_resource');
+            stack.addEncodedQuery('object_id=' + entity_id);
+            stack.query();
+            if (stack.next()) {
+                resource_id = stack.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+		}
+		// validating vra disk
+		else if (entity_type == 'disk') {
+            var grDisk_data = new GlideRecord('cmdb_ci_storage_volume');
+            grDisk_data.addEncodedQuery('object_id=' + entity_id);
+            grDisk_data.query();
+            if (grDisk_data.next()) {
+                resource_id = grDisk_data.sys_id;
+                resource_flag = 'true';
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+		}
+		
+		else if (entity_type == 'network') {
+            var nw = new GlideRecord('cmdb_ci_network');
+            nw.addEncodedQuery('object_id=' + entity_id);
+            nw.query();
+            if (nw.next()) {
+                resource_id = nw.sys_id;
+                resource_flag = 'true';
+
+                return {
+                    res_id: resource_id,
+                    res_flag: resource_flag
+                };
+            }
+
+            return {
+                res_flag: resource_flag
+            };
+		}
+		
+		else {
+            return "Unsupported Resource type";
+
+        }
+    },
+
+
+    validateSOICIExists: function(serviceInstanceName) {
+		var soc_id = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+		var qry = 'instance_id='+serviceInstanceName+'^ORcorrelation_id='+serviceInstanceName;
+        soc_id.addEncodedQuery(qry);
+        soc_id.query();
+        if (soc_id.next()) {
+            return soc_id.sys_id; // shell ci or service instance ci sysid
+        }
+    },
+
+    getCDCILocation: function(location) {
+
+        var cd_loc = new GlideRecord('cmn_location');
+        cd_loc.addQuery('name', location);
+        cd_loc.query();
+        if (cd_loc.next()) {
+            return cd_loc.sys_id;
+        }
+
+    },
+
+
+    validateEntityTypeExists: function(entity_type) {
+
+
+        var enti_type_rec = new GlideRecord('sys_choice');
+        enti_type_rec.addQuery('value', entity_type);
+        enti_type_rec.query();
+
+        if (enti_type_rec.getRowCount() > 0) {
+            return 'true';
+        }
+        return 'false';
+
+    },
+
+
+    createTagResources: function(tagSet, vm_azure_parent_rec) {
+		
+        for (var m = 0; m < tagSet.length; m++) {
+
+            if (tagSet[m].Key == 'serviceInstanceName' || tagSet[m].Key == 'serviceinstancename' || tagSet[m].Key == 'ibm_mcmp_soiid')
+               var InstanceId = tagSet[m].Value;
+
+            var tag_set_rel = new GlideRecord('cmdb_key_value');
+            tag_set_rel.initialize();
+            tag_set_rel.configuration_item = vm_azure_parent_rec;
+            tag_set_rel.key = tagSet[m].Key;
+            tag_set_rel.value = tagSet[m].Value;
+            tag_set_rel.insert();
+        }
+        return InstanceId;
+
+    },
+
+    updateTagResources: function(tagSet, vm_azure_parent_rec) {
+      
+        for (var m = 0; m < tagSet.length; m++) {
+			
+		if (tagSet[m].Key == 'serviceInstanceName' || tagSet[m].Key == 'serviceinstancename' || tagSet[m].Key == 'ibm_mcmp_soiid')
+			
+               var InstanceId = tagSet[m].Value;
+
+            var tag_set_rel = new GlideRecord('cmdb_key_value');
+            tag_set_rel.addEncodedQuery('configuration_item=' + vm_azure_parent_rec + '^key=' + tagSet[m].Key);
+            tag_set_rel.query();
+
+            if (tag_set_rel.next()) {
+                tag_set_rel.value = tagSet[m].Value;
+                tag_set_rel.update();
+            } else {
+                tag_set_rel.configuration_item = vm_azure_parent_rec;
+                tag_set_rel.key = tagSet[m].Key;
+                tag_set_rel.value = tagSet[m].Value;
+                tag_set_rel.insert();
+            }
+        }
+		return InstanceId;
+    },
+
+    getRelationTypeName: function(rel_parent, rel_child) {
+
+        var rel_type = new GlideRecord('cmdb_rel_type');
+        rel_type.addEncodedQuery('parent_descriptorSTARTSWITH' + rel_parent + '^child_descriptorSTARTSWITH' + rel_child);
+        rel_type.query();
+        if (rel_type.next()) {
+            return rel_type.sys_id;
+        }
+
+    },
+
+
+    type: 'Emp_CI_Creation_Validation_Script'
+
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-08-30 09:10:19</sys_created_on>
+        <sys_id>435c1b951bdab450acde777dcc4bcb2a</sys_id>
+        <sys_mod_count>122</sys_mod_count>
+        <sys_name>Emp_CI_Creation_Validation_Script</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_435c1b951bdab450acde777dcc4bcb2a</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 07:46:54</sys_updated_on>
+    </sys_script_include>
+</record_update>

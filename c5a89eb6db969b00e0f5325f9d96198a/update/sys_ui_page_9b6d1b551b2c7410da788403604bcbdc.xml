@@ -1,0 +1,1086 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script/>
+        <description>.</description>
+        <direct>false</direct>
+        <endpoint>x_ibmg3_hcms_Enterprise_EMP_UI.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js">
+	</script> 
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </link> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</link>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+</script>
+<script src="x_ibmg3_hcms.EMP_Enterprise_UI.jsdbx">
+</script>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />  
+<meta http-equiv="Pragma" content="no-cache" />  
+<meta http-equiv="Expires" content="0" /> 
+<style>
+  .font-family-MCMP{
+    width:100%;
+    font-weight: 400;
+    font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .form-width{
+    width:600px;
+  }
+  .bx--dropdown {
+    float:none;
+    outline: transparent solid 2px;
+    outline-offset: -2px;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 3.5rem;
+    color: #161616;
+    list-style: none;
+    background-color: #f4f4f4;
+    border: none;
+    border-bottom: 1px solid #8d8d8d;
+    cursor: pointer;
+    transition: background-color 70ms cubic-bezier(.2,0,.38,.9);
+    order: 0;
+    text-align: left
+  }
+  .bx--list-box__label {
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.29;
+    letter-spacing: .16px;
+    overflow: hidden;
+    color: #161616;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none
+  }
+  .bx--label {
+    font-weight: 700;
+    letter-spacing: .32px;
+    display: inline-block;
+    color: #525252;
+  }
+  .bx--list-box__menu-icon {
+    position: absolute;
+    top: 0;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 70ms cubic-bezier(.2,0,.38,.9)
+  }
+  .bx--list-box__field {
+    border: 0
+  }
+  .bx--list-box__field:focus {
+    outline: #0f62fe solid 2px;
+    outline-offset: -2px;
+  }
+  .bx--list-box__menu {
+    box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 6000;
+    width: 100%;
+    overflow-y: auto;
+    background-color: #f4f4f4;
+    transition: max-height 110ms cubic-bezier(.2,0,.38,.9);
+  }
+  .bx--list-box__menu-item{
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.29;
+    letter-spacing: .16px;
+    position: relative;
+    height: 2.5rem;
+    color: #525252;
+    cursor: pointer;
+    transition: background 70ms
+  }
+  .bx--list-box__menu-item--active {
+    color: #161616;
+    background-color: #e0e0e0;
+    border-bottom-color: #e0e0e0;
+  }
+  .dropdown-toggle::after{
+    display:none;
+  }
+  .input-text-MCMP{
+    font-family:inherit;
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.29;
+    letter-spacing: .16px;
+    outline: transparent solid 2px;
+    outline-offset: -2px;
+    width: 100%;
+    height: 3.5rem;
+    padding: 0 1rem;
+    color: #161616;
+    background-color: #f4f4f4;
+    border: none;
+    border-bottom: 1px solid #8d8d8d;
+    transition: background-color 70ms cubic-bezier(.2,0,.38,.9),outline 70ms cubic-bezier(.2,0,.38,.9);
+  }
+  .form-check{
+    padding-left:0px;
+  }
+  .checkbox-input{
+    position:relative;
+  }
+  .form-check-label{
+    padding-left:32px;
+  }
+  .select {
+    padding: 15px;
+    border-radius: 3px;
+    height: 50px;
+    color: #ffffff;
+    padding-right: 30px;
+    font-size: 14px;
+    border-color: blue;
+    position: relative;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background: grey url("data:image/svg+xml;utf8,<svg viewBox='0 0 140 140' width='24' height='24' xmlns='http://www.w3.org/2000/svg'><g><path d='m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z' fill='white'/></g></svg>") no-repeat;
+    background-position: right 5px top 50%;
+  }
+  .bx--header{
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    height: 4rem;
+    background-color: #161616;
+    border-bottom: 1px solid #393939;
+  }
+  .bx--header__name,.bx--header__name:hover{
+    color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 2rem 0 2rem;
+    text-decoration: none;
+    border: .125rem solid transparent;
+    outline: 0;
+    transition: border-color 110ms;
+  }
+  .mcmp-header{
+    background-image: url(mcmp-base.png);
+    background-color: #f4f4f4;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: right center;
+  }
+  .bx--grid{
+    display: flex;
+    padding: 3.5rem 0 0 2rem;
+    margin-bottom: 2rem;
+    min-height: 12rem;
+    color: #fff;
+  }
+  .bx--form-field-required:before {
+    content: '*';
+    color: #da1e28;
+  }
+  .info-icon {
+    fill: #0f62fe;
+  }
+  .bx--tooltip-trigger{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    overflow: visible;
+    cursor: pointer;
+  }
+  .bx--tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  .bx--tooltip .tooltiptext {
+    visibility: hidden;
+    min-height: 40px;
+    min-width: 100px;
+    background-color: #f4f4f4;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 2;
+    left: 34px;
+    color: #161616;
+    word-wrap:break-word;
+  }
+  .bx--tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+  }
+  .bx--tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+  .btn-margin {
+    margin-right: 15px;
+  }
+  .slidecontainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  .slider:hover {
+    opacity: 1;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: .875rem;
+    height: .875rem;
+    border-radius: 50%;
+    background: #161616;
+    cursor: pointer;
+    border-radius: 50%;
+    outline: 0;
+  }
+  .slider::-webkit-slider-thumb:focus {
+    background-color: #0f62fe;
+    box-shadow: inset 0 0 0 2px #0f62fe,inset 0 0 0 3px #f4f4f4;
+    transform: translate(-20%,-20%) scale(1.5)
+  }
+  .slider::-webkit-slider-thumb:hover {
+    transform: translate(-20%,-20%) scale(1.5)
+  }
+  .slider::-webkit-slider-thumb:active {
+    box-shadow: inset 0 0 0 2px #0f62fe;
+    transform: translate(-20%,-20%) scale(1.5)
+  }
+   .slider::-moz-range-thumb {
+     -webkit-appearance: none;
+    appearance: none;
+    width: .875rem;
+    height: .875rem;
+    border-radius: 50%;
+    background: #161616;
+    cursor: pointer;
+    border-radius: 50%;
+    outline: 0;
+  } 
+	.slider::-moz-range-slider-thumb:focus {
+    background-color: #0f62fe;
+    box-shadow: inset 0 0 0 2px #0f62fe,inset 0 0 0 3px #f4f4f4;
+    transform: translate(-20%,-20%) scale(1.5)
+  }
+  .slider::-moz-range-slider-thumb:hover {
+    transform: translate(-20%,-20%) scale(1.5)
+  }
+  .slider::-moz-range-slider-thumb:active {
+    box-shadow: inset 0 0 0 2px #0f62fe;
+    transform: translate(-20%,-20%) scale(1.5)
+  }
+  .bx--slider__range-label {
+    font-family: 'IBM Plex Mono',Menlo,'DejaVu Sans Mono','Bitstream Vera Sans Mono',Courier,monospace;
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: .32px;
+    color: #161616;
+    white-space: nowrap
+  }
+  .bx--slider__filled-track {
+    position: absolute;
+    width: 100%;
+    height: .125rem;
+    background: #161616;
+    transform: translate(0,-50%);
+    transform-origin: left;
+    transition: background 110ms cubic-bezier(.2,0,.38,.9);
+    pointer-events: none
+  }
+  .bx--slider__track {
+    position: absolute;
+    width: 100%;
+    height: .125rem;
+    background: #e0e0e0;
+    transform: translate(0,-50%);
+    cursor: pointer
+  }
+  @media screen and (prefers-contrast) {
+    .slider::-webkit-slider-thumb:focus, {
+      outline-style: dotted
+    }
+  }
+  .margin-left-19{
+    margin-left:19px;
+  }
+  .marginbottom-2{
+    margin-bottom : 2rem !important;
+  }
+  .margin-right-16{
+    margin-right: 16px;
+  }
+  .button-min-height{
+    min-height: 4rem;
+  }
+
+  .bx--form-item {
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.29;
+    letter-spacing: .16px;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bx--form-item.bx--checkbox-wrapper {
+    margin-bottom: .25rem
+  }
+  .font-weight-bold{
+    font-weight:bold;
+  }
+  .bx--radio-button-group {
+    display: flex;
+    align-items: center;
+    margin-top: .375rem
+  }
+  .bx--radio-button-wrapper .bx--radio-button__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0
+  }
+  .bx--radio-button {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    visibility: inherit;
+    clip: rect(0,0,0,0);
+    visibility: inherit
+  }
+  .bx--radio-button__label {
+    font-size: .875rem;
+    font-weight: 400;
+    line-height: 1.29;
+    letter-spacing: .16px;
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+    cursor: pointer
+  }
+  .bx--radio-button__appearance {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 2px 1rem;
+    background-color: transparent;
+    border: 1px solid #161616;
+    border-radius: 50%
+  }
+  .bx--radio-button:checked+.bx--radio-button__label .bx--radio-button__appearance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: #161616
+  }
+  .bx--radio-button:checked+.bx--radio-button__label .bx--radio-button__appearance::before {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background-color: #161616;
+    border-radius: 50%;
+    transform: scale(.5);
+    content: ''
+  }
+  @media screen and (-ms-high-contrast:active) {
+    svg {
+      fill: ButtonText
+    }
+    .bx--radio-button:checked+.bx--radio-button__label .bx--radio-button__appearance::before {
+      background-color: WindowText
+    }
+  }
+  @media screen and (prefers-contrast) {
+    .bx--radio-button:checked+.bx--radio-button__label .bx--radio-button__appearance::before {
+      border: 2px solid WindowText
+    }
+  }
+  .bx--radio-button:disabled+.bx--radio-button__label {
+    color: #c6c6c6;
+    cursor: not-allowed
+  }
+  .bx--radio-button:disabled+.bx--radio-button__label .bx--radio-button__appearance,.bx--radio-button:disabled:checked+.bx--radio-button__label .bx--radio-button__appearance {
+    border-color: #c6c6c6
+  }
+  .bx--radio-button:disabled+.bx--radio-button__label .bx--radio-button__appearance::before,.bx--radio-button:disabled:checked+.bx--radio-button__label .bx--radio-button__appearance::before {
+    background-color: #c6c6c6
+  }
+  .bx--radio-button:focus+.bx--radio-button__label .bx--radio-button__appearance {
+    outline: transparent solid 1px;
+    box-shadow: 0 0 0 2px #0f62fe
+  }
+  .bx--radio-button-wrapper .bx--radio-button__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0
+  }
+  #myInput {
+    box-sizing: border-box;
+    // background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+  }
+  #myInput:focus {
+    outline: 3px solid #ddd;
+  }
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    // display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 230px;
+    border: 1px solid #ddd;
+    z-index: 1;
+  }
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {
+    background-color: #f1f1f1}
+  #loading{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .tooltip-button{
+    padding: 12px 0 0 8px
+  }
+  .tooltip-radio{
+    padding: 2px 0 0 8px
+  }
+  .tooltip-slider{
+    padding: 4px;
+  }
+  .tooltip-input{
+    padding: 4px 0 0 10px;
+  }
+  .tooltip-dropdown{
+    padding: 6px 0 0 8px;
+  }
+  input[name='apiCredentialList']
+  {
+    width: 66%;
+  }
+  datalist {
+    width:66%;
+  }
+  .tooltip-enpoint{
+    top : -6px;
+  }
+  .tooltip-credential{
+    top : -13px;
+  }
+  .tooltip-fetchConfig{
+    top : 0px;
+  }
+  .tooltip-approval{
+    top : -27px;
+  }
+  .tooltip-provisioning{
+    top : -30px;
+  }
+  .tooltip-retries{
+    top : -44px;
+    left: 25px !important;
+  }
+  .tooltip-discovery{
+    top : -60px;
+  }
+  .tooltip-cart{
+    top : -24px;
+  }
+  .tooltip-quickstart{
+    top : -66px;
+  }
+	.tooltip-authprofile{
+	top: -6px;
+	}
+	.tooltip-outbound-server{
+	top:-16px;
+	}
+  .input-width{
+    width:600px;
+  }
+  .input-search{
+    width:432px;
+  }
+  .error-text{
+    color:red;
+  }
+  .error-style{
+    border-bottom: none;
+    border-color: red;
+    border-style: solid;
+  }
+  .spinner-width{
+    width: 5rem;
+    height: 5rem;
+    color: #0f62fe;
+  }
+  .spinner_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    opacity: 0.2;
+    z-index: 1000;
+  }
+  .modal-display{
+    display:block;
+  }
+  .modal.fade .modal-dialog {
+    transition: -webkit-transform .3s ease-out;
+    transition: transform .3s ease-out;
+    transition: transform .3s ease-out,-webkit-transform .3s ease-out;
+    -webkit-transform: translate(0,-50px);
+    transform: translate(0,-50px);
+  }
+  .modal.in .modal-dialog {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  .modal.fade .modal-dialog {
+    -webkit-transform: translate3d(0, -25%, 0);
+    transform: translate3d(0, -25%, 0);
+    -webkit-transition: -webkit-transform 0.3s ease-out;
+    -moz-transition: -moz-transform 0.3s ease-out;
+    -o-transition: -o-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+  }
+  .modal-dialog {
+    max-width: 500px;
+    margin: 22.75rem auto;
+  }
+  .fade:not(.show) {
+    opacity: 0.8;
+  }
+	.logo {
+    margin-right: 1rem;
+    padding: 10px 0;
+    height: 48px;
+    display: block;
+}
+.range-slider__value {
+	
+  display: inline-block;
+  position: relative;
+  width: 60px;
+  color: #161616;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 3px;
+  background: #f4f4f4;
+  padding: 5px 10px;
+  margin-left: 8px;
+	}
+.error-font{
+font-size : 2rem;	
+}
+.bx-input{
+	height: 3.5rem;
+    color: #161616;
+	background-color: #f4f4f4;
+    border: none;
+    border-bottom: 1px solid #8d8d8d;
+	text-align: left;
+	}
+
+
+</style>
+<div ng-app="angularapp" ng-controller="AngularAppCtrl as appctrl">
+  <header class="bx--header navbar-main">
+    <a class="bx--header__name" title="Services for Multicloud Management" href="/">
+		<span>
+			<img class="logo" src="kyndryl-logo.png" alt="Services for Multicloud Management logo"></img></span>
+      <span class="bx--header__name__title">Services for Multicloud Management
+      </span>
+    </a>
+  </header>
+  <div class="header mcmp-header">
+    <div class="bx--grid">
+      <h1>Multicloud Management
+      </h1>
+    </div>
+  </div>
+  <div class="container">	
+    <div class="row">
+		<div ng-if="!appctrl.validRole" class="error-font">Unauthorized Access
+		</div>
+      <form name="snowMcmpCatalog" class="text-left border border-light p-5 font-family-MCMP form-width" ng-show="appctrl.validRole">
+		 
+        <div class="d-flex justify-content-center" ng-show="appctrl.showLoader || appctrl.showLoaderFetch">
+          <div class="spinner_overlay">
+          </div>
+          <div class="spinner-border spinner-width" role="status">
+            <span class="sr-only" id="loading">
+            </span>
+          </div>
+        </div>
+        <div class="error-text" ng-if="!appctrl.validForm">
+          {{appctrl.errorMessage}} 
+        </div>
+        <h4>
+          <p class="font-weight-bold">Kyndryl Marketplace Configuration Management
+          </p>
+        </h4>		  
+		    <label for="url" class="bx--label">Marketplac URL
+        </label>
+        <div class="input-group input-width mb-3" >
+          <div class="bx--list-box bx-input" style ="width:67%">
+            <input class="form-control  bx-input" ng-model="mcmpUrl" type="text" ng-change="checkFormParams()"> 
+			  </input>
+          </div>
+			 <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-approval"> Enter Marketplace tentant api host(url) 
+              </p>
+            </span>
+          </div>
+		  </div>		  
+<!-- 		  as part of INT-15724 - adding credential field -->		  
+		   <label for="approval-workflow" class="bx--label">Marketplace Credential
+        </label>
+        <div class="dropdown input-group input-width mb-3" >
+          <div class="bx--list-box bx--dropdown" style ="width:67%">
+            <select class="form-control bx--dropdown  dropdown-toggle" ng-model="mcmpCredentialSelected" ng-change="checkFormParams()">
+              <option value="">None
+              </option>
+              <option ng-repeat="credentials in mcmpCredential" value="{{credentials.name}}">
+                {{credentials.name}}
+              </option>
+            </select>
+          </div>
+          <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-approval"> Select "None" to use the default credential. 
+              </p>
+            </span>
+          </div>
+        </div>
+		  
+		  
+        <label for="approval-workflow" class="bx--label">Approval Workflow
+        </label>
+        <div class="dropdown input-group input-width mb-3" >
+          <div class="bx--list-box bx--dropdown" style ="width:67%">
+            <select class="form-control bx--dropdown  dropdown-toggle" ng-model="approvalWorkflowSelected" ng-change="checkFormParams()">
+              <option value="">None
+              </option>
+              <option ng-repeat="approval in approvalWorkflow" value="{{approval.name}}">
+                {{approval.name}}
+              </option>
+            </select>
+          </div>
+          <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-approval"> To use custom approval workflow for SR approval. Select "None" to use the default workflow. 
+              </p>
+            </span>
+          </div>
+        </div>
+     
+        <label class="bx--label" for="bx--slider_quantity">Number of retries to be performed for failed O/B request
+        </label>
+        <div class="mb-3 marginbottom-2">
+          <div class="slidecontainer col-sm-8">
+            <span class="bx--slider__range-label margin-right-16">1
+            </span>
+            <div class="bx--slider__filled-track range-wrap" style="width: 0%;">
+            </div>
+            <input type="range" name="myRange"  min="1" max="10" value="1"  class="slider range" ng-model="sliderValue"  id="myRange" ng-click="showDetails(this)">
+			  </input>
+			  <span id="slider_value" class="range-slider__value"></span>
+          <span class="bx--slider__range-label margin-left-19">10
+          </span>
+        </div>	
+        <div tabindex="0">
+          <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-slider">
+            <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+              <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+              </path>
+            </svg>
+            <p class="tooltiptext tooltip-retries"> The number of retries to be performed for the failed outbound requests from ServiceNow to Enterprise Marketplace. 
+            </p>
+          </span>
+        </div>
+        </div>
+      <label for="config-values" class="bx--label">Enable Discovery
+      </label>
+      <div class="bx--radio-button-group bx--row--condensed mb-3">
+        <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+          <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-discovery-yes" value="true" name="enable-discovery" ng-model="enableDiscovery">
+          </input>
+        <label class="bx--radio-button__label" for="radio-button-enable-discovery-yes">
+          <span class="bx--radio-button__appearance">
+          </span>
+          <span class="bx--checkbox-main-label"> Yes 
+          </span>
+        </label>
+      </div>
+      <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+        <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-discovery-no" value="false" ng-model="enableDiscovery" name="enable-discovery">
+        </input>
+      <label class="bx--radio-button__label" for="radio-button-enable-discovery-no">
+        <span class="bx--radio-button__appearance">
+        </span>
+        <span class="bx--checkbox-main-label"> No 
+        </span>
+      </label>
+    </div>
+    <div tabindex="0">
+      <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-radio">
+        <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+          <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+          </path>
+        </svg>
+        <p class="tooltiptext tooltip-discovery"> Discovers the assets provisioned in the Cloud and stores them in ServiceNow CMDB. It helps to perform DAY2 operations and maintain the states of these assets. 
+        </p>
+      </span>
+    </div>
+  </div>
+  <label for="config-values" class="bx--label">Enable QuickStart
+  </label>
+  <div class="bx--radio-button-group bx--row--condensed mb-3">
+    <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+      <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-quickstart-yes" value="true" ng-model="enableQuickstart" name="radio-button-enable-quickstart-yes">
+      </input>
+    <label class="bx--radio-button__label" for="radio-button-enable-quickstart-yes">
+      <span class="bx--radio-button__appearance">
+      </span>
+      <span class="bx--checkbox-main-label"> Yes 
+      </span>
+    </label>
+  </div>
+  <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+    <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-quickstart-no" value="false" ng-model="enableQuickstart" name="radio-button-enable-quickstart-no">
+    </input>
+  <label class="bx--radio-button__label" for="radio-button-enable-quickstart-no">
+    <span class="bx--radio-button__appearance">
+    </span>
+    <span class="bx--checkbox-main-label"> No 
+    </span>
+  </label>
+</div>
+<div tabindex="0">
+  <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-radio">
+    <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+      <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+      </path>
+    </svg>
+    <p class="tooltiptext tooltip-quickstart"> To integration Enterprise Marketplace with ServiceNow using IBM QuickStart. Say 'No' to use Droplet for Enterprise Marketplace and ServiceNow integration. 
+    </p>
+  </span>
+</div>
+</div>
+		 <div ng-if="enableQuickstart === 'true'">
+		<label for="approval-workflow" class="bx--label">Quickstart Authentication Profile
+        </label>
+        <div class="dropdown input-group input-width mb-3" >
+          <div class="bx--list-box bx--dropdown" style ="width:67%">
+            <select class="form-control bx--dropdown  dropdown-toggle" ng-model="appctrl.qsAuthProfile" ng-change="checkFormParams()">
+              <option value="">None
+              </option>
+              <option ng-repeat="authprofile in authProfile" value="{{authprofile.name}}">
+                {{authprofile.name}}
+              </option>
+            </select>
+          </div>
+			     <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-authprofile">Select Quickstart Authentication Profile 
+              </p>
+            </span>
+          </div>
+        </div>
+	</div>		
+		  
+		  
+		   <label for="config-values" class="bx--label">Allow Anonymous User
+      </label>
+      <div class="bx--radio-button-group bx--row--condensed mb-3">
+        <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+          <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-anonymous-yes" value="true" name="enable-anonymous" ng-model="enableAnonymous">
+          </input>
+        <label class="bx--radio-button__label" for="radio-button-enable-anonymous-yes">
+          <span class="bx--radio-button__appearance">
+          </span>
+          <span class="bx--checkbox-main-label"> Yes 
+          </span>
+        </label>
+      </div>
+      <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+        <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-anonymous-no" value="false" ng-model="enableAnonymous" name="enable-anonymous">
+        </input>
+      <label class="bx--radio-button__label" for="radio-button-enable-anonymous-no">
+        <span class="bx--radio-button__appearance">
+        </span>
+        <span class="bx--checkbox-main-label"> No 
+        </span>
+      </label>
+    </div>
+    <div tabindex="0">
+      <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-radio">
+        <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+          <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+          </path>
+        </svg>
+        <p class="tooltiptext tooltip-anonymous"> anonymous user is allowed to create Request using integration user.
+        </p>
+      </span>
+    </div>
+  </div>
+		 
+		  
+		 <label for="config-values" class="bx--label">Enable Outbound Call's using MID Server 
+  </label>
+  <div class="bx--radio-button-group bx--row--condensed mb-3">
+    <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+      <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-outbound-yes" value="true" ng-model="enableOutboundCall" name="radio-button-enable-outbound-yes">
+      </input>
+    <label class="bx--radio-button__label" for="radio-button-enable-outbound-yes">
+      <span class="bx--radio-button__appearance">
+      </span>
+      <span class="bx--checkbox-main-label"> Yes 
+      </span>
+    </label>
+  </div>
+  <div class="bx--col-sm-4 bx--col-md-4 bx--radio-button-wrapper">
+    <input class="bx--radio-button" tabindex="0" type="radio" id="radio-button-enable-outbound-no" value="false" ng-model="enableOutboundCall" name="radio-button-enable-outbound-no">
+    </input>
+  <label class="bx--radio-button__label" for="radio-button-enable-outbound-no">
+    <span class="bx--radio-button__appearance">
+    </span>
+    <span class="bx--checkbox-main-label"> No 
+    </span>
+  </label>
+</div> 
+	  <div tabindex="0">
+  <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-radio">
+    <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+      <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+      </path>
+    </svg>
+    <p class="tooltiptext tooltip-outbound-server"> Enable Outbound Call's using MID Server. 
+    </p>
+  </span>
+</div>
+		  </div>
+		   <div ng-if="enableOutboundCall === 'true'">
+		   <label for="api-endpoint" class="bx--label bx--form-field-required">MID Server Details</label>
+<div class="input-group input-width mb-3">
+	<input type="text" name="api-endpoint" class="form-control col-sm-8 input-text-MCMP" id="mid-server" aria-describedby="mid-server"  ng-model="appctrl.midServerDetails"  placeholder="MID Server Details"></input>
+	 <div tabindex="0"><span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-input"><svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16"><path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z"></path></svg>
+		  <p class="tooltiptext tooltip-authprofile">MID Server Details</p>
+		 </span></div>
+</div>
+		  </div>
+		  <label for="approval-workflow" class="bx--label">Cloud Assignment Group
+        </label>
+        <div class="dropdown input-group input-width mb-3" >
+          <div class="bx--list-box bx--dropdown" style ="width:67%">
+            <select class="form-control bx--dropdown  dropdown-toggle" ng-model="appctrl.cloudAssignmentGroupSelected">
+              <option value="">None
+              </option>
+              <option ng-repeat="cloudAssignment in cloudAssignmentGroup" value="{{cloudAssignment.name}}">
+                {{cloudAssignment.name}}
+              </option>
+            </select>
+          </div>
+			     <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-authprofile">Cloud Assignment Group
+              </p>
+            </span>
+          </div>
+        </div>
+		  <label for="approval-workflow" class="bx--label">Cloud Assigned To
+        </label>
+        <div class="dropdown input-group input-width mb-3" >
+          <div class="bx--list-box bx--dropdown" style ="width:67%">
+            <select class="form-control bx--dropdown  dropdown-toggle" ng-model="appctrl.cloudAssignedToSelected">
+              <option value="">None
+              </option>
+              <option ng-repeat="cloudAssigned in cloudAssignedTo" value="{{cloudAssigned.name}}">
+                {{cloudAssigned.name}}
+              </option>
+            </select>
+          </div>
+			     <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-authprofile">Cloud Assigned To 
+              </p>
+            </span>
+          </div>
+        </div>
+		  <label for="approval-workflow" class="bx--label">Configuration Item Assignment Group
+        </label>
+        <div class="dropdown input-group input-width mb-3" >
+          <div class="bx--list-box bx--dropdown" style ="width:67%">
+            <select class="form-control bx--dropdown  dropdown-toggle" ng-model="appctrl.itemAssignmentGroupSelected">
+              <option value="">None
+              </option>
+              <option ng-repeat="itemAssignment in cloudAssignmentGroup" value="{{itemAssignment.name}}">
+                {{itemAssignment.name}}
+              </option>
+            </select>
+          </div>
+			     <div tabindex="0">
+            <span class="bx--tooltip-trigger bx--tooltip bx--tooltip-text-normal tooltip-dropdown">
+              <svg  focusable="false" class="info-icon" height="16" width="16" viewBox="0 0 16 16">
+                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 4c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zm2 8H6v-1h1V8H6V7h3v4h1v1z">
+                </path>
+              </svg>
+              <p class="tooltiptext tooltip-authprofile">Configuration Item Assignment Group
+              </p>
+            </span>
+          </div>
+        </div>
+<div>
+  <button ng-click="reset()" type="button" class="btn btn-secondary button-min-height btn-margin col-sm-4">Reset
+  </button>
+  <button ng-click="submit()"  type="button" class="btn btn-primary button-min-height col-sm-4">Submit
+  </button>
+</div>
+<!-- Modal -->
+<div id="confirmModal" class="modal fade in"  role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Confirmation
+        </h4>
+      </div>
+      <div class="modal-body">
+        <p>Properties updated successfully.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</j:jelly>]]></html>
+        <name>Enterprise_EMP_UI</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>Shweta.Banerjee@ibm.com</sys_created_by>
+        <sys_created_on>2021-06-04 09:24:35</sys_created_on>
+        <sys_id>9b6d1b551b2c7410da788403604bcbdc</sys_id>
+        <sys_mod_count>586</sys_mod_count>
+        <sys_name>Enterprise_EMP_UI</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ui_page_9b6d1b551b2c7410da788403604bcbdc</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 09:15:48</sys_updated_on>
+    </sys_ui_page>
+</record_update>

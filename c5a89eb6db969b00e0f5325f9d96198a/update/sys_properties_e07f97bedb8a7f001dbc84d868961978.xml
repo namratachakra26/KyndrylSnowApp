@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description>Configuration Rest method Name to send to emp</description>
+        <ignore_cache>false</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_ibmg3_hcms.send_configuration</name>
+        <read_roles/>
+        <suffix>send_configuration</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-06-19 06:15:20</sys_created_on>
+        <sys_id>e07f97bedb8a7f001dbc84d868961978</sys_id>
+        <sys_mod_count>11</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.send_configuration</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_properties_e07f97bedb8a7f001dbc84d868961978</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 05:52:12</sys_updated_on>
+        <type>string</type>
+        <value>sendConfigurationsToEmp</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=e07f97bedb8a7f001dbc84d868961978"/>
+</record_update>

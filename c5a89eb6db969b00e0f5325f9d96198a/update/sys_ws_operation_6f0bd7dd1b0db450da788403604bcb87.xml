@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_ibmg3_hcms/broker/configuraitonItemUpdate</default_operation_uri>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>POST</http_method>
+        <name>configuraitonItemUpdate</name>
+        <operation_script><![CDATA[/** 
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+* Schedule Contract with Kyndryl Corp. 
+ * @author Shalini S 
+ * @Rest Api is invoked from Kyndryl Marketplace for CD ci update update**/
+
+(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    // implement resource here
+
+    var body, strBody, resBody, responseBody, ResponsePayload, strResponsePayload, provider, type, update_id, payLog;
+    body = request.body.data;
+    strBody = JSON.stringify(body);
+    var entittype = body.entity_type;
+    provider = body.provider;
+    type = body.gpd.raw_config_data.type;
+    update_id = body.u_ci_id;
+	var subscriber_id = body.subscriber_id;
+	var resource_name = body.gpd.provider_resource_name;
+	if(!resource_name) resource_name = body.entity_id;
+
+
+    var validationError = "false";
+    // Validate the Incoming Payload and set the response accordingly 
+    validateCIUpdationBody(update_id);
+
+
+    if (validationError == 'false') {
+
+        if (provider == 'AWS' && entittype == 'vms') {
+
+            var vm_ci = new Emp_CIWizMapper_Update().updateVMInstanceCI(strBody);
+
+            setResponseBody(vm_ci);
+
+        } else if (provider == 'Azure' && entittype == 'virtualMachines') {
+
+            var aZureVm_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureVMCI(strBody);
+
+            setResponseBody(aZureVm_ci);
+
+        } else if (provider == 'Azure' && entittype == 'servers') {
+
+            var aZureServer_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureServerCI(strBody);
+
+            setResponseBody(aZureServer_ci);
+
+        } else if (provider == 'Azure' && entittype == 'servers/databases' && type == 'Microsoft.Sql/servers/databases') {
+
+            var aZureServerDatabase_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureServerDatabaseCI(strBody);
+
+            setResponseBody(aZureServerDatabase_ci);
+
+        } else if (provider == 'Azure' && entittype == 'sites') {
+
+            var aZureAppService_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureAppServiceCI(strBody);
+
+            setResponseBody(aZureAppService_ci);
+			
+        } else if (provider == 'Azure' && entittype == 'trafficmanagerprofiles') {
+
+            var aZuretrafficProfiles_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureTrafficManagerCI(strBody);
+
+             setResponseBody(aZuretrafficProfiles_ci);
+
+        } else if (provider == 'Azure' && entittype == 'networkInterfaces') {
+
+            var aZureNetworkInterface_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureNetworkInterfaceCI(strBody);
+
+            setResponseBody(aZureNetworkInterface_ci);
+
+        } else if (provider == 'AWS' && entittype == 'rds') {
+
+            var rds_ci = new Emp_CIWizMapper_Update().updateRDSInstanceCI(strBody);
+
+            setResponseBody(rds_ci);
+
+        } else if (provider == 'AWS' && entittype == 'vpcs') {
+
+            var vpc_ci = new Emp_CIWizMapper_Update().updateVPCInstanceCI(strBody);
+            
+			 setResponseBody(vpc_ci);
+			
+        } else if (provider == 'AWS' && entittype == 's3') {
+
+            var s3_ci = new Emp_CIWizMapper_Update().updates3InstanceCI(strBody);
+            
+			setResponseBody(s3_ci);
+
+        } else if (provider == 'AWS' && entittype == 'dynamodb') {
+
+            var dYnamodb_ci = new Emp_CIWizMapper_Update().updateDynamodbInstanceCI(strBody);
+            
+			setResponseBody(dYnamodb_ci); //return dynamodb id
+
+        } else if (provider == 'Azure' && entittype == 'virtualNetworks') {
+
+            var vpnInstance_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateVirtualNetwork(strBody);
+            setResponseBody(vpnInstance_ci);
+
+        } else if (provider == 'Azure' && entittype == 'networkSecurityGroups') {
+
+            var nsg_ci = new Emp_CIWizMapper_Update().updateNetworkSecurityGroupsInstanceCI(strBody);
+            
+			setResponseBody(nsg_ci);
+
+        } else if (provider == 'Azure' && entittype == 'publicIPAddresses') {
+
+            var publicIp_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updatepublicIpAddressCI(strBody);
+            
+			setResponseBody(publicIp_ci);
+
+        } else if (provider == 'Azure' && entittype == 'storageAccounts') {
+
+            var storageAccounts_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureStorageCI(strBody);
+            
+			setResponseBody(storageAccounts_ci);
+
+        } else if (provider == 'Azure' && entittype == 'virtualMachineScaleSets') {
+
+            var virtualMachines_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureVirtualMachinesScaleCI(strBody);
+            
+			setResponseBody(virtualMachines_ci);
+			
+        } else if (provider == 'Azure' && entittype == 'databaseAccounts') {
+
+            var cosmos_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureCosmosdbCI(strBody);
+            
+			setResponseBody(cosmos_ci);
+
+        } else if (provider == 'Azure' && entittype == 'Redis') {
+
+            var redis_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureRedisCI(strBody);
+            
+			setResponseBody(redis_ci);
+
+        } else if (provider == 'Azure' && entittype == 'vaults') {
+
+            var vaults_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureVaultsCI(strBody);
+            
+			setResponseBody(vaults_ci);
+
+        } else if (provider == 'Azure' && entittype == 'loadBalancers') {
+
+            var lb_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureLoadBalancerCI(strBody);
+            
+			setResponseBody(lb_ci);
+			
+        } else if ((provider == 'Azure') && (entittype == 'dnszones' || entittype == 'privateDnsZones')) {
+
+            var dns_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureDnsZonerCI(strBody);
+            
+			setResponseBody(dns_ci);
+
+        } else if (provider == 'Azure' && entittype == 'managedClusters') {
+
+            var mclusters_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureManagedClustersCI(strBody);
+            
+			setResponseBody(mclusters_ci);			
+			
+        } else if (provider == 'Azure' && entittype == 'virtualNetworkGateways') {
+
+            var vn_gateway_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureVNGatewayCI(strBody);
+           
+			setResponseBody(vn_gateway_ci);		
+
+        } else if (provider == 'Azure' && entittype == 'batchAccounts') {
+
+            var batch_accounts_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateBatchAccountsCI(strBody);
+            
+			setResponseBody(batch_accounts_ci);		
+
+        } else if (provider == 'Azure' && entittype == 'backupProtectedItems') {
+
+            var backup_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateBackupItemCI(strBody);
+            
+			setResponseBody(backup_ci);	
+
+        } else if (provider == 'Azure' && entittype == 'managedInstances') {
+
+            var mi_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateManagedInstancesCI(strBody);
+            
+			setResponseBody(mi_ci);		
+
+        } else if (provider == 'Azure' && entittype == 'container_storage') {
+
+            var cStorage_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateContainerStorageCI(strBody);
+            
+			setResponseBody(cStorage_ci);	
+
+        } else if (provider == 'Azure' && entittype == 'applicationGateways') {
+
+            var appGateways_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureApplicationGatewayCI(strBody);
+            
+			setResponseBody(appGateways_ci);
+
+        } else if (provider == 'Azure' && entittype == 'expressRouteCircuits') {
+
+            var expressRC_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Update().updateAzureExpressRouteCI(strBody);
+            setResponseBody(expressRC_ci);
+
+        }
+		else if (provider == 'GCP' && entittype == 'vms') {
+
+			var gvm_ci = new Emp_CIWizMapper_Update().updateVMInstanceCI(strBody);
+			setResponseBody(gvm_ci);      
+
+        }
+		else if (provider == 'AWS' && entittype == 'ebs') {
+
+			var ebs_ci = new Emp_CIWizMapper_Update().updateEBSInstanceCI(strBody);
+			setResponseBody(ebs_ci);      
+
+        }
+		else if (provider == 'AWS' && entittype == 'elasticloadbalancing') {
+
+			var elb_ci = new Emp_CIWizMapper_Update().updateELBInstanceCI(strBody);
+			setResponseBody(elb_ci);      
+
+        }
+		else if (provider == 'AWS' && entittype == 'elasticfilesystem') {
+
+			var efs_ci = new Emp_CIWizMapper_Update().updateEFSInstanceCI(strBody);
+			setResponseBody(efs_ci);      
+
+        }
+		else if (provider == 'AWS' && entittype == 'stack') {
+
+			var stack_ci = new Emp_CIWizMapper_Update().updateStackInstanceCI(strBody);
+			setResponseBody(stack_ci);      
+
+        }
+		else if (provider == 'VRA' && entittype == 'vms') {
+
+			var vms_ci = new Emp_CIWizMapper_VRA_CI_Configurations_Update().updateVRAVmInstanceCI(strBody);
+			setResponseBody(vms_ci);      
+
+        }
+		else if (provider == 'VRA' && entittype == 'disk') {
+
+			var disk_ci = new Emp_CIWizMapper_VRA_CI_Configurations_Update().updateVRADiskInstanceCI(strBody);
+			setResponseBody(disk_ci);      
+
+        }
+		else if (provider == 'VRA' && entittype == 'stack') {
+
+			var stack = new Emp_CIWizMapper_VRA_CI_Configurations_Update().updateVraStack(strBody);
+			setResponseBody(stack);      
+
+        }
+		else if (provider == 'VRA' && entittype == 'network') {
+
+			var network = new Emp_CIWizMapper_VRA_CI_Configurations_Update().updateVraNetwork(strBody);
+			setResponseBody(network);      
+
+        }
+		else {
+            raiseResponseError(" Bad Request provider/Entity type "+entittype+", does not exists");
+        }
+
+    }
+
+
+
+    //-----------------------validate base elements of the update payload --------------
+
+    function validateCIUpdationBody(ciId) {
+
+        var delCi = new GlideRecord('cmdb_ci');
+        delCi.addEncodedQuery('sys_id=' + ciId);
+        delCi.query();
+        if (!delCi.next()) {
+            validationError = 'true';
+            raiseResponseError("Bad Request CI does not exists");
+        }
+    }
+
+
+
+    function raiseResponseError(message) {
+
+        //Raises a response error
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(403);
+        theError.setMessage("JSON payload error.");
+        theError.setDetail(message);
+        response.setError(theError);
+
+        //Log the error on processing the request
+
+        new HCMSLogLevel().LogMsg("info", "CI  Updation Validation : ERROR: " + message);
+
+    }
+	
+	function setResponseBody(refRec){
+		
+		ResponsePayload = {
+                "u_ci_id": refRec,
+				"status": "CI Updated Successful"
+            };
+
+            strResponsePayload = JSON.stringify(ResponsePayload);
+            new HCMSLogLevel().LogMsg("info", provider+" " + entittype + "  CI Updation v1 api"+ '\n' + "{subscriber id: "+subscriber_id+' , '+" provider_resource_name: "+resource_name+"}"+ '\n' +" Response Payload: " + strResponsePayload);
+            response.setBody(ResponsePayload);
+	}
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_ibmg3_hcms/v1/broker/configuraitonItemUpdate</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/configuraitonItemUpdate</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-06-29 05:45:23</sys_created_on>
+        <sys_id>6f0bd7dd1b0db450da788403604bcb87</sys_id>
+        <sys_mod_count>50</sys_mod_count>
+        <sys_name>configuraitonItemUpdate</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ws_operation_6f0bd7dd1b0db450da788403604bcb87</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 06:23:41</sys_updated_on>
+        <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
+        <web_service_version display_value="v1">e691e14ddbe3d70037ad349f9d961962</web_service_version>
+    </sys_ws_operation>
+</record_update>

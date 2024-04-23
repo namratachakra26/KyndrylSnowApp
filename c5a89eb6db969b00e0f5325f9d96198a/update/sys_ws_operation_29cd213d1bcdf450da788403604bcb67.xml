@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_ibmg3_hcms/broker/deleteCI</default_operation_uri>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>POST</http_method>
+        <name>deleteConfigurationItem</name>
+        <operation_script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
+ * @author Shalini S 
+ * @Rest Api is invoked from Kyndryl Marketplace for CD ci delete **/
+
+
+(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+    try {
+        // implement resource here
+        var body, strBody, ResponsePayload, strResponsePayload, del_ci_id;
+        body = request.body.data;
+        strBody = JSON.stringify(body);
+        del_ci_id = body.u_ci_id;
+
+        var delCi = new GlideRecord('cmdb_ci');
+
+        if (delCi.get('sys_id', del_ci_id)) {
+            if (delCi.sys_class_name != 'cmdb_ci_linux_server' && delCi.sys_class_name != 'cmdb_ci_win_server' && delCi.sys_class_name != 'cmdb_ci_vmware_instance') {
+
+                delCi.operational_status = '6'; //Retired
+                delCi.install_status = '7'; //Retired
+
+                var ci = delCi.update();
+
+                ResponsePayload = {
+                    "u_ci_id": ci,
+                    "status": "Ci Retired Successful"
+                };
+
+            } else {
+
+                var vm_ci = new Emp_CIWizMapper_Azure_CI_Configurations_Delete().deleteAzureVMCI(strBody);
+
+                ResponsePayload = {
+                    "u_ci_id": vm_ci,
+                    "status": "Ci Retired Successful"
+                };
+
+
+            }
+            strResponsePayload = JSON.stringify(ResponsePayload);
+            new HCMSLogLevel().LogMsg("info", "CI Deletion v1 api - Response Payload: " + strResponsePayload);
+            response.setBody(ResponsePayload);
+
+        } else {
+            //return new sn_ws_err.BadRequestError("Unsupported Resource type");
+            raiseResponseError('Bad Request: Sys id ' + del_ci_id + ' does not exists');
+
+        }
+
+    } catch (err) {
+        new HCMSLogLevel().LogMsg("error", "CI Delete API Error: " + this.type + "(" + err.message + ")");
+        var deleteRec = body.u_ci_id;
+
+        //Update the status of the CI Delete
+        var failedDeleteStatus = "CI Delete Failed";
+        var failureResponsePayload = {
+            "config_id": deleteRec,
+            "status": failedDeleteStatus
+        };
+        //Set the response body 
+        response.setBody(failureResponsePayload);
+    }
+
+
+    function raiseResponseError(message) {
+
+        //Raises a response error
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(400);
+        theError.setMessage("JSON payload error");
+        theError.setDetail(message);
+        response.setError(theError);
+
+        //Log the error on processing the request
+
+        new HCMSLogLevel().LogMsg("info", "CI  deletion Validation : ERROR: " + message);
+
+    }
+
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_ibmg3_hcms/v1/broker/deleteCI</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/deleteCI</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-06-30 11:05:04</sys_created_on>
+        <sys_id>29cd213d1bcdf450da788403604bcb67</sys_id>
+        <sys_mod_count>73</sys_mod_count>
+        <sys_name>deleteConfigurationItem</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ws_operation_29cd213d1bcdf450da788403604bcb67</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 06:24:14</sys_updated_on>
+        <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
+        <web_service_version display_value="v1">e691e14ddbe3d70037ad349f9d961962</web_service_version>
+    </sys_ws_operation>
+</record_update>

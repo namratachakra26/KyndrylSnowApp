@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_task</collection>
+        <condition>new CheckIfEmpCatalogItems().checkCatalogItem(current.change_request)</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="change_task">stateCHANGESTO3^ORstateCHANGESTO4^assignment_group=b432caa90f9a2200061b5d78a1050e2b^assigned_to=51485741dbb0e3006b6d5ad3ca9619b6^change_request.type=standard^EQ<item display_value="Closed" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="3"/>
+            <item display_value="Cancelled" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="true" value="4"/>
+            <item display_table="sys_user_group" display_value="CLOUDGROUP" endquery="false" field="assignment_group" goto="false" newquery="false" operator="=" or="false" value="b432caa90f9a2200061b5d78a1050e2b"/>
+            <item display_table="sys_user" display_value="CLOUDAUTO " endquery="false" field="assigned_to" goto="false" newquery="false" operator="=" or="false" value="51485741dbb0e3006b6d5ad3ca9619b6"/>
+            <item display_value="Standard" endquery="false" field="change_request.type" goto="false" newquery="false" operator="=" or="false" value="standard"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp_AutoClose_Std_chg_NonProv_Tasks</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
+ * @author Asha Bagade 
+ * @Business Rule automates closure of std change
+ **/
+
+(function executeRule(current, previous /*null when async*/ ) {
+    //Fetch the value ChangeRequired from RITM and automate closure of manual chg tasks if value is false
+    var chgRequired = '';
+    var ritm = new GlideRecord('sc_req_item');
+    ritm.addQuery('x_ibmg3_hcms_related_change_request', current.change_request);
+    ritm.query();
+    if (ritm.next()) {
+        chgRequired = ritm.variables.var_change_required;
+    }
+    if (chgRequired == "false") {
+        var rectasks = new GlideRecord('change_task');
+        rectasks.addQuery('change_request', current.change_request);
+        rectasks.addQuery('active', true);
+        rectasks.query();
+        while (rectasks.next()) {
+            //set to close
+            rectasks.state = 3;
+            rectasks.update();
+        }
+    }
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-10-28 07:33:49</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>ff6ecf3edb04a8102019d90d68961923</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Emp_AutoClose_Std_chg_NonProv_Tasks</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_ff6ecf3edb04a8102019d90d68961923</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-27 15:44:41</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=ff6ecf3edb04a8102019d90d68961923"/>
+</record_update>

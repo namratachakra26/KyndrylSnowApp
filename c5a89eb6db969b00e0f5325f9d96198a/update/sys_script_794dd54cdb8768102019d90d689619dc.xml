@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_task</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="change_task">stateCHANGESTO2^short_descriptionSTARTSWITHProvisioning Task^change_request.state=-1^change_request.parent.ref_sc_req_item.cat_item=d863b2b7dbd0730037ad349f9d961914^ORchange_request.parent.ref_sc_req_item.cat_item=4de9b051db64370037ad349f9d96195b^ORchange_request.parent.ref_sc_req_item.cat_item=c92d681cdb64b300e0f5325f9d9619cf^EQ<item display_value="In Progress" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="2"/>
+            <item endquery="false" field="short_description" goto="false" newquery="false" operator="STARTSWITH" or="false" value="Provisioning Task"/>
+            <item display_value="Implement" endquery="false" field="change_request.state" goto="false" newquery="false" operator="=" or="false" value="-1"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Provisioning Request" endquery="false" field="change_request.parent.ref_sc_req_item.cat_item" goto="false" newquery="false" operator="=" or="false" value="d863b2b7dbd0730037ad349f9d961914"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Start/Stop/Restart Request" endquery="false" field="change_request.parent.ref_sc_req_item.cat_item" goto="false" newquery="false" operator="=" or="true" value="4de9b051db64370037ad349f9d96195b"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Decommission CI Request" endquery="false" field="change_request.parent.ref_sc_req_item.cat_item" goto="false" newquery="false" operator="=" or="true" value="c92d681cdb64b300e0f5325f9d9619cf"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp Change Task Provision Inititation </name>
+        <order>120</order>
+        <priority>120</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp.  
+ * @author Asha Bagade 
+ * @Business Rule is used to trigger pre provisioning call
+ **/
+
+(function executeRule(current, previous /*null when async*/ ) {
+    //Fetch cloud group and user of the grp
+    var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
+    var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
+    //initiate provisioning only for MCMP Cloud grp
+    var changeApprovalStatus = current.change_request.approval.getDisplayValue();
+    gs.info('Testing Approval Status' + changeApprovalStatus);
+    var message, changeRequestStatus = ""; //Variable to hold change values
+    var requester; // To hold value for requester
+    var cancelUser = current.change_request.sys_updated_by;
+    var query = 'state=approved^ORstate=rejected^sysapproval=' + current.change_request.sys_id;
+    // Fetch the change approved by/ rejected by
+    var requestor = new GlideRecord('sysapproval_approver');
+    requestor.addEncodedQuery(query);
+    requestor.orderByDesc('sys_updated_on');
+    requestor.query();
+    if (requestor.next()) {
+        requester = requestor.approver.getDisplayValue();
+    }
+
+    var provTsk = new GlideRecord('change_task');
+    provTsk.addQuery('change_request', current.change_request.sys_id);
+    provTsk.addQuery('assignment_group.name', assgnGrp);
+    provTsk.addQuery('assigned_to.name', assgnTo);
+    provTsk.addQuery('short_description', 'Provisioning Task');
+    provTsk.query();
+    if (provTsk.next()) {
+        if (current.change_request.state == '-1') {
+            changeRequestStatus = "INPROGRESS";
+            message = "Start execution of change task " + provTsk.number;
+        }
+        var cart = gs.getProperty('x_ibmg3_hcms.mvp3.cart.enabled');
+        //Initiate Provisioning to EM when cart if true(for v2 api) or when state is implement (for v1)
+        if (cart == "true" || (cart == "false" && current.change_request.state == '-1')) {
+            var preProv = new ChangeTaskProvisioningCallToBroker().changeTaskStatusCall(provTsk, changeRequestStatus, message);
+        }
+    }
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-03-17 13:16:39</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>794dd54cdb8768102019d90d689619dc</sys_id>
+        <sys_mod_count>41</sys_mod_count>
+        <sys_name>Emp Change Task Provision Inititation </sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_794dd54cdb8768102019d90d689619dc</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-27 15:39:54</sys_updated_on>
+        <template/>
+        <when>async_always</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=794dd54cdb8768102019d90d689619dc"/>
+</record_update>

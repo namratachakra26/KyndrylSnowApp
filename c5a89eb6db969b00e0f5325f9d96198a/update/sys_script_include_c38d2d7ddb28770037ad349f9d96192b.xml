@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.ChangeTaskProvisioningCallToBroker</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from BR "MCMP Initiate Provisioning To Broker" - outbound call to send Change Task provisioning status to Enterprise Marketplace**/</description>
+        <name>ChangeTaskProvisioningCallToBroker</name>
+        <script><![CDATA[var ChangeTaskProvisioningCallToBroker = Class.create();
+ChangeTaskProvisioningCallToBroker.prototype = {
+    initialize: function() {},
+
+    changeTaskStatusCall: function(current, changeRequestStatus, message) {
+        try {
+            //fetch the outbound rest message name
+            var chgReq = current.change_request;
+            var rm;
+            var midserver_details;
+            var out_bound_flag;
+            //Define variables to hold response body and status code
+            var responseBody, statusCode, endPoint = '';
+            var ritm = new GlideRecord('sc_req_item');
+            ritm.get('x_ibmg3_hcms_related_change_request', chgReq);
+			//Fetch the source url and credential details from SR create payload
+            var requestPayload = ritm.variables.var_broker_json;
+            var jsonPayload = JSON.parse(requestPayload);
+			var url = jsonPayload.source;
+			var credential = jsonPayload.credential;
+            var req_orderNumber = jsonPayload.orderNumber;
+            var restMethodName = gs.getProperty('x_ibmg3_hcms.pre_provisioning.rest.method');
+// 			var adpVersion = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration'); ////as per INT-11672
+// 			if(adpVersion == 'v3')restMethodName = restMethodName+'-v3';
+            var catTask = new GlideRecord('sc_task');
+            catTask.get('request_item', ritm.sys_id);
+            //initialize object to build the payload
+            var reqbody = {};
+            reqbody.changeTaskId = current.number.toString();
+            reqbody.orderNumber = ritm.variables.order_number.toString();
+            reqbody.serviceInstanceId = ritm.variables.var_service_instance_id.toString();
+            reqbody.requestItemId = ritm.number.toString();
+            reqbody.catalogTaskId = catTask.number.toString();
+            reqbody.changeRequestStatus = changeRequestStatus;
+            reqbody.message = message;
+			
+            var str = JSON.stringify(reqbody);			
+            new HCMSLogLevel().LogMsg("info", "Outbound Change Task Status " + changeRequestStatus + ", to Kyndryl Marketplace for order " + ritm.variables.order_number + " : " + str);
+            //Invoke the below function to make an outbound call to mcmp for sending pre prov response
+			var req_domain = new HCMSGetTenatDetails().getRequestDomain(req_orderNumber);
+            var preProvHook = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, reqbody, req_domain);
+            if (preProvHook) {
+                responseBody = preProvHook.responseBody;
+                statusCode = preProvHook.statusCode;
+				endPoint = preProvHook.endPoint;
+            } else {
+                new HCMSLogLevel().LogMsg("info", "* Invalid response from Kyndryl Marketplace for  *" + ritm.variables.order_number);
+            }
+            new HCMSLogLevel().LogMsg("info", "Change Task Status " + changeRequestStatus + ", Response from EM for order " + ritm.variables.order_number + " : " + responseBody + " \nhttpStatus: " + statusCode + " \nEndPoint : " + endPoint);
+            //Create record in ecc queue for unsuccessful outbound call
+            if (statusCode > 201 || statusCode == 0) {
+                var topic = ritm.request.x_ibmg3_hcms_order_number.toString() + "-PreProvisioning";
+                var source = ritm.getDisplayValue().toString();
+                var responsefromHost = "Response received from broker : " + responseBody + " \nResponse status code : " + statusCode;
+                //Call the outbound retry script include
+                var ecc = new RetryOutboundcalltoBroker().eccQueueRetryRecord(topic, source, str, responsefromHost);
+            }
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg("error", "Sending Change Task Status to Kyndryl Marketplace error " + ex);
+        }
+    },
+    type: 'ChangeTaskProvisioningCallToBroker'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-04-02 07:09:01</sys_created_on>
+        <sys_id>c38d2d7ddb28770037ad349f9d96192b</sys_id>
+        <sys_mod_count>109</sys_mod_count>
+        <sys_name>ChangeTaskProvisioningCallToBroker</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_c38d2d7ddb28770037ad349f9d96192b</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-27 16:47:30</sys_updated_on>
+    </sys_script_include>
+</record_update>

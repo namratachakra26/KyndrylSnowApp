@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>sc_req_item</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="sc_req_item">cat_item=d863b2b7dbd0730037ad349f9d961914^ORcat_item=4de9b051db64370037ad349f9d96195b^ORcat_item=c92d681cdb64b300e0f5325f9d9619cf^request.x_ibmg3_hcms_order_numberISNOTEMPTY^stateCHANGESTO3^ORstateCHANGESTO4^EQ<item display_table="sc_cat_item" display_value="Kyndryl Marketplace Provisioning Request" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="false" value="d863b2b7dbd0730037ad349f9d961914"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Start/Stop/Restart Request" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="true" value="4de9b051db64370037ad349f9d96195b"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Decommission CI Request" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="true" value="c92d681cdb64b300e0f5325f9d9619cf"/>
+            <item endquery="false" field="request.x_ibmg3_hcms_order_number" goto="false" newquery="false" operator="ISNOTEMPTY" or="false" value=""/>
+            <item display_value="Closed Complete" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="3"/>
+            <item display_value="Closed Incomplete" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="true" value="4"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp Post Provision HookStatus to Broker</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+* Schedule Contract with Kyndryl Corp.  
+* @author Asha Bagade 
+* This BR triggers post provisioning call after RITM closure
+**/
+
+(function executeRule(current, previous /*null when async*/) {
+	//invoke outbound call
+	var outboundCall = new PostProvisioningHookCallToBroker().postProvisionStatus(current);
+})(current, previous);
+
+]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-06-06 08:35:21</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>f20309b6db797300e0f5325f9d96199f</sys_id>
+        <sys_mod_count>12</sys_mod_count>
+        <sys_name>Emp Post Provision HookStatus to Broker</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_f20309b6db797300e0f5325f9d96199f</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-27 15:41:55</sys_updated_on>
+        <template/>
+        <when>async_always</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=f20309b6db797300e0f5325f9d96199f"/>
+</record_update>

@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.Emp_CIWizMapper_VRA_CI_Configurations</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Shalini S &#13;
+* @Script Include is used for VRA Cloud Resource Creation Script&#13;
+**/</description>
+        <name>Emp_CIWizMapper_VRA_CI_Configurations</name>
+        <script><![CDATA[var Emp_CIWizMapper_VRA_CI_Configurations = Class.create();
+Emp_CIWizMapper_VRA_CI_Configurations.prototype = {
+    initialize: function() {},
+
+    createVRAVMCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for VRA VM payload' + strBody);
+
+            var tagSet, name, manufacturer, InstanceState, status, category, uuid, instanceUUID, os, os_version, object_id, az_vm_details_rec_id, vra_datacenter_name, vra_datacenter_region, providerCode, vra_datacenter_rec_id, location, state, country, latitude, longitude, provider_resource_id, correlation_id, cpu, coreCount, dns_name, ipaddress, res_rec, totMemory, osTyp, diskSize = 0,
+                region_val_id, imageId, vra_network, vra_network_len, deploy_id, vra_disks_len;
+
+            var inputJSON = JSON.parse(strBody);
+            tagSet = inputJSON.gpd.tags;
+            name = inputJSON.gpd.provider_resource_name;
+            object_id = inputJSON.entity_id.toString();
+            manufacturer = inputJSON.provider;
+            providerCode = inputJSON.gpd.provider_code;
+            osTyp = inputJSON.gpd.raw_config_data.properties.softwareName;
+            var man = new GlideRecord('core_company');
+            man.addEncodedQuery('name=' + manufacturer);
+            man.query();
+            if (man.next()) {
+                manufacturer = man.sys_id;
+            }
+            cpu = inputJSON.gpd.raw_config_data.properties.cpuCount;
+            coreCount = inputJSON.gpd.raw_config_data.properties.coreCount;
+            location = inputJSON.location.location;
+            state = inputJSON.location.state;
+            country = inputJSON.location.country;
+            latitude = inputJSON.location.latitude;
+            longitude = inputJSON.location.longitude;
+            uuid = inputJSON.uuid;
+            totMemory = inputJSON.gpd.raw_config_data.properties.totalMemoryMB;
+            instanceUUID = inputJSON.gpd.raw_config_data.properties.instanceUUID;
+            imageId = inputJSON.gpd.raw_config_data.properties.imageId;
+            provider_resource_id = inputJSON.gpd.provider_resource_id;
+            correlation_id = inputJSON.gpd.correlation_id;
+            category = inputJSON.gpd.service_category;
+            deploy_id = inputJSON.gpd.raw_config_data.deploymentId;
+
+            var vra_disks = inputJSON.gpd.raw_config_data.properties.storage;
+            if (vra_disks) {
+                vra_disks = vra_disks.disks;
+                if (vra_disks) {
+                    vra_disks_len = vra_disks.length;
+
+                    for (var y = 0; y < vra_disks_len; y++) {
+                        diskSize = diskSize + parseInt(vra_disks[y].capacityGb);
+                    }
+                }
+            }
+            InstanceState = inputJSON.gpd.provider_status;
+
+            InstanceState = InstanceState.toLowerCase();
+            if (InstanceState == 'on') {
+                InstanceState = '1'; //operational
+                status = 'on';
+            } else {
+                InstanceState = '2'; //non-operational
+                status = 'off';
+            }
+
+            vra_network = inputJSON.gpd.raw_config_data.properties.networks;
+            if (vra_network) {
+                vra_network_len = vra_network.length;
+            }
+
+            //Datacenter
+            var vra_dc_name = inputJSON.gpd.raw_config_data.properties.datacenter;
+            vra_dc_name = vra_dc_name.split(':');
+            vra_dc_name = vra_dc_name[1];
+            vra_datacenter_region = inputJSON.gpd.raw_config_data.properties.region;
+
+            var vra_netwrk = inputJSON.gpd.raw_config_data.properties.networks;
+
+            var vra_att_disk_id = inputJSON.gpd.raw_config_data.properties.attachedDisks;
+
+            var vra_disk_id = inputJSON.gpd.raw_config_data.properties.storage;
+            if (vra_disk_id)
+                vra_disk_id = vra_disk_id.disks;
+
+            // Create VM resource
+            var vraVm = new GlideRecord('cmdb_ci_vmware_instance');
+            vraVm.initialize();
+            vraVm.name = name;
+            vraVm.manufacturer = manufacturer;
+            vraVm.category = category;
+            vraVm.vm_instance_uuid = instanceUUID;
+            vraVm.chassis_type = 'Other';
+            vraVm.install_status = InstanceState;
+            vraVm.state = status;
+            if (osTyp) vraVm.guest_os_fullname = osTyp;
+            if (imageId) vraVm.image_path = imageId;
+            vraVm.memory = totMemory;
+            vraVm.disks = vra_disks_len;
+            vraVm.nics = vra_network_len;
+            vraVm.disks_size = diskSize;
+            vraVm.u_qs_cmdb_ci_managed_by = 'IBM';
+            vraVm.operational_status = InstanceState;
+            vraVm.comments = 'VRA Virtual Machine  ' + provider_resource_id;
+            vraVm.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            vraVm.object_id = object_id;
+            vraVm.correlation_id = correlation_id;
+            vraVm.cpus = cpu;
+            res_rec = vraVm.insert();
+
+
+
+            // Create a record to store the virtual machines datacenter details
+            var vra_datacenter_details = new GlideRecord('cmdb_ci_vcenter_datacenter');
+            vra_datacenter_details.addQuery('object_id', vra_dc_name);
+            vra_datacenter_details.query();
+
+            if (!vra_datacenter_details.next()) {
+                vra_datacenter_details.name = vra_datacenter_region;
+                vra_datacenter_details.object_id = vra_dc_name;
+                vra_datacenter_details.region = vra_datacenter_region;
+                vra_datacenter_rec_id = vra_datacenter_details.insert();
+            } else
+                vra_datacenter_rec_id = vra_datacenter_details.sys_id;
+
+            // Create a relationship with the datacenter and the Virtual Machine  as Hosted on relationship
+            var datacenter_rel = new GlideRecord('cmdb_rel_ci');
+            datacenter_rel.addEncodedQuery('parent=' + res_rec + '^child=' + vra_datacenter_rec_id);
+            datacenter_rel.query();
+
+            if (!datacenter_rel.next()) {
+
+                datacenter_rel.parent = res_rec;
+                datacenter_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Hosted', 'Hosts');
+                datacenter_rel.child = vra_datacenter_rec_id;
+                datacenter_rel.insert();
+            }
+
+            //Relate ntwrk to VM
+            if (vra_network) {
+                for (var w = 0; w < vra_network_len; w++) {
+                    var ntwrk = vra_network[w].network;
+                    ntwrk = ntwrk.split('compute-networks/');
+                    var netwrkId = ntwrk[1];
+                    if (netwrkId) {
+                        var vra_network_rec = new GlideRecord('cmdb_ci_vcenter_network');
+                        vra_network_rec.addQuery('object_id', netwrkId);
+                        vra_network_rec.query();
+                        if (vra_network_rec.next()) {
+                            //add relation
+                            var vm_vra_net_rec = vra_network_rec.sys_id;
+                            // Create a relationship with the VM instance and the VM record as CONTAINS relationship
+                            var vm_rel_ci = new GlideRecord('cmdb_rel_ci');
+                            vm_rel_ci.initialize();
+                            vm_rel_ci.parent = res_rec;
+                            vm_rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                            vm_rel_ci.child = vm_vra_net_rec;
+                            vm_rel_ci.insert();
+                        }
+                    }
+                }
+            }
+
+
+            //Relate ntwrk Interface to VM
+
+            if (vra_netwrk) {
+                for (var e = 0; e < vra_network_len; e++) {
+                    var ntwrk1 = vra_netwrk[e].id;
+                    var macAdd = vra_netwrk[e].mac_address;
+                    ntwrk1 = ntwrk1.split('network-interfaces/');
+                    var ntwrkId = ntwrk1[1];
+                    if (ntwrkId) {
+                        var vra_netwrk_interface = new GlideRecord('cmdb_ci_vmware_nic');
+                        vra_netwrk_interface.addEncodedQuery('object_id=' + ntwrkId + '^cmdb_ci=' + res_rec);
+                        vra_netwrk_interface.query();
+                        if (!vra_netwrk_interface.next()) {
+                            //create interface record
+                            vra_netwrk_interface.name = macAdd;
+                            vra_netwrk_interface.object_id = ntwrkId;
+                            vra_netwrk_interface.mac_address = macAdd;
+                            vra_netwrk_interface.cmdb_ci = res_rec;
+                            vra_netwrk_interface.insert();
+                        }
+                    }
+                }
+            }
+
+            //Relate Disks to VMware -for vra 86 vra version
+            var diskId, diskd;
+            if (vra_disk_id) {
+                for (var v = 0; v < vra_disk_id.length; v++) {
+                    diskd = vra_disk_id[v].resourceLink;
+                    if (diskd) {
+                        diskd = diskd.split('disks/');
+                        diskId = diskd[1];
+                        if (diskId) {
+                            var vra_disks_id = new GlideRecord('cmdb_ci_storage_volume');
+                            vra_disks_id.addQuery('object_id', diskId);
+                            vra_disks_id.query();
+                            if (vra_disks_id.next()) {
+                                //add relation
+                                var vm_vra_parent_rec1 = vra_disks_id.sys_id;
+                                // Create a relationship with the VM instance and the vmware record as CONTAINS relationship
+                                var vm_rel_ci1 = new GlideRecord('cmdb_rel_ci');
+                                vm_rel_ci1.initialize();
+                                vm_rel_ci1.parent = res_rec;
+                                vm_rel_ci1.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                                vm_rel_ci1.child = vm_vra_parent_rec1;
+                                vm_rel_ci1.insert();
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            //Relate Disks with VMware from attachedDisk - for vra 85 vra version
+
+            var diskIda, diskda;
+            if (vra_att_disk_id) {
+                for (var q = 0; q < vra_att_disk_id.length; q++) {
+                    diskda = vra_att_disk_id[q].source;
+                    diskda = diskda.split('disks/');
+                    diskIda = diskda[1];
+                    if (diskIda) {
+                        var vra_disk = new GlideRecord('cmdb_ci_storage_volume');
+                        vra_disk.addQuery('object_id', diskId);
+                        vra_disk.query();
+                        if (vra_disk.next()) {
+                            //add relation
+                            var vm_vra_parent = vra_disk.sys_id;
+                            // Create a relationship with the VM instance and the vmware record as CONTAINS relationship
+                            var vm_rel_ci2 = new GlideRecord('cmdb_rel_ci');
+                            vm_rel_ci2.addEncodedQuery('parent=' + res_rec + '^child=' + vm_vra_parent);
+                            vm_rel_ci2.query();
+
+                            if (!vm_rel_ci2.next()) {
+                                vm_rel_ci2.parent = res_rec;
+                                vm_rel_ci2.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                                vm_rel_ci2.child = vm_vra_parent;
+                                vm_rel_ci2.insert();
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            //Relate stack to VMware
+
+            var stack_disk = new GlideRecord('cmdb_ci_cmp_resource');
+            stack_disk.addQuery('object_id', deploy_id);
+            stack_disk.query();
+            if (stack_disk.next()) {
+                var stack_disk_id = stack_disk.sys_id;
+                // Create a relationship with the disk and the stack
+                var diskStack_rel = new GlideRecord('cmdb_rel_ci');
+                diskStack_rel.addEncodedQuery('parent=' + stack_disk_id + '^child=' + res_rec);
+                diskStack_rel.query();
+
+                if (!diskStack_rel.next()) {
+                    diskStack_rel.parent = stack_disk_id;
+                    diskStack_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    diskStack_rel.child = res_rec;
+                    diskStack_rel.insert();
+                }
+
+            }
+
+            //soici linking with vmware
+
+            this.updateTagSoiciLink(tagSet, res_rec, object_id, instanceUUID); //Create tags if exist and soici link with record
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg("info", "VM CI Creation v1 api - Error " + ex);
+        }
+    },
+
+
+    createVRADiskCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset VRA Disk payload ' + strBody);
+
+            var provider_resource_name, provider_resource_id, res_rec, disk_status, volumeId, object_id, deploy_id;
+            var json_disk = JSON.parse(strBody);
+            provider_resource_name = json_disk.gpd.provider_resource_name;
+            if (!provider_resource_name) provider_resource_name = json_disk.entity_id;
+            provider_resource_id = json_disk.gpd.provider_resource_id;
+            disk_status = json_disk.gpd.provider_status.toLowerCase();
+            var size = json_disk.gpd.raw_config_data.properties.capacityGb;
+            var correlation_id = json_disk.gpd.correlation_id;
+            var deviceId = json_disk.gpd.raw_config_data.id;
+            object_id = json_disk.entity_id;
+            deploy_id = json_disk.gpd.raw_config_data.deploymentId;
+
+            var location, state, country, latitude, longitude;
+
+            location = json_disk.location.location;
+            state = json_disk.location.state;
+            country = json_disk.location.country;
+            latitude = json_disk.location.coordinates.latitude;
+            longitude = json_disk.location.coordinates.longitude;
+            var category = json_disk.gpd.service_category;
+            var manufacturer = json_disk.provider;
+
+            var man = new GlideRecord('core_company');
+            man.addEncodedQuery('name=' + manufacturer);
+            man.query();
+            if (man.next()) {
+                manufacturer = man.sys_id;
+            }
+            var reg = json_disk.gpd.raw_config_data.properties.region;
+
+            var disk_rec = new GlideRecord('cmdb_ci_storage_volume');
+            disk_rec.initialize();
+            disk_rec.name = provider_resource_name;
+            if (disk_status == 'attached') {
+                disk_rec.operational_status = '1';
+                disk_rec.state = 'in_use';
+            } else {
+                disk_rec.operational_status = '2';
+                disk_rec.state = 'terminated';
+            }
+            disk_rec.correlation_id = correlation_id;
+            disk_rec.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            disk_rec.category = category;
+            disk_rec.size_bytes = parseInt(size) * 1024 * 1024 * 1024;
+            disk_rec.storage_type = json_disk.entity_type;
+            disk_rec.short_description = provider_resource_id;
+            disk_rec.manufacturer = manufacturer;
+            disk_rec.object_id = object_id;
+            res_rec = disk_rec.insert();
+
+            //relate stack to disk by deployment id
+
+            var stack_disk = new GlideRecord('cmdb_ci_cmp_resource');
+            stack_disk.addQuery('object_id', deploy_id);
+            stack_disk.query();
+            if (stack_disk.next()) {
+                var stack_disk_id = stack_disk.sys_id;
+                // Create a relationship with the disk and the stack
+                var diskStack_rel = new GlideRecord('cmdb_rel_ci');
+                diskStack_rel.addEncodedQuery('parent=' + stack_disk_id + '^child=' + res_rec);
+                diskStack_rel.query();
+
+                if (!diskStack_rel.next()) {
+                    diskStack_rel.parent = stack_disk_id;
+                    diskStack_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    diskStack_rel.child = res_rec;
+                    diskStack_rel.insert();
+                }
+
+            }
+
+            //Datacenter
+            var resource_region, region_val_id, region;
+            if (reg) {
+                reg = reg.split(':');
+                region = reg[1];
+
+                if (region) {
+                    resource_region = new GlideRecord('cmdb_ci_vcenter_datacenter');
+                    resource_region.addQuery('object_id', region);
+                    resource_region.query();
+                    if (resource_region.next()) {
+                        region_val_id = resource_region.sys_id;
+                        // Create a relationship with the datacenter and the storage volume as Hosted on relationship
+                        var datacenter_rel = new GlideRecord('cmdb_rel_ci');
+                        datacenter_rel.addEncodedQuery('parent=' + res_rec + '^child=' + region_val_id);
+                        datacenter_rel.query();
+
+                        if (!datacenter_rel.next()) {
+                            datacenter_rel.parent = res_rec;
+                            datacenter_rel.type = '5f985e0ec0a8010e00a9714f2a172815';
+                            datacenter_rel.child = region_val_id;
+                            datacenter_rel.insert();
+                        }
+                    }
+                }
+            }
+
+            var tagSet = json_disk.gpd.tags;
+            //soici linking with disk
+
+            this.updateTagSoiciLink(tagSet, res_rec, object_id); //Create tags if exist and soici link with record
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Create Call for Disk failed ' + ex);
+        }
+
+    },
+
+    createVraStack: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset Stack payload ' + strBody);
+            var provider_resource_name, provider_resource_id, res_rec, stack_status, object_id;
+            var json_stack = JSON.parse(strBody);
+            provider_resource_name = json_stack.gpd.provider_resource_name;
+            provider_resource_id = json_stack.gpd.provider_resource_id;
+            stack_status = json_stack.gpd.provider_status.toLowerCase();
+            var correlation_id = json_stack.gpd.correlation_id;
+            object_id = json_stack.entity_id;
+
+            var location, state, country, latitude, longitude;
+            location = json_stack.location.location;
+            state = json_stack.location.state;
+            country = json_stack.location.country;
+            latitude = json_stack.location.coordinates.latitude;
+            longitude = json_stack.location.coordinates.longitude;
+
+            var stack_rec = new GlideRecord('cmdb_ci_cmp_resource');
+            stack_rec.initialize();
+            stack_rec.name = provider_resource_name;
+
+            if (stack_status == 'create_successful' || stack_status == 'update_successful' || stack_status == 'import_successful') {
+                stack_rec.operational_status = '1';
+                stack_rec.state = 'available';
+            } else if (stack_status == 'create_inprogress' || stack_status == 'update_inprogress' || stack_status == 'delete_inprogress' || stack_status == 'delete_failed') {
+                stack_rec.operational_status = '2';
+                stack_rec.state = 'available';
+            } else {
+                stack_rec.operational_status = '2';
+                stack_rec.state = 'terminated';
+            }
+
+            stack_rec.correlation_id = correlation_id;
+            stack_rec.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            stack_rec.category = json_stack.gpd.service_category;
+            stack_rec.object_id = object_id;
+            stack_rec.short_description = json_stack.gpd.raw_config_data.description;
+            res_rec = stack_rec.insert();
+
+            //Relate disk/vm/network  to stack
+            var diskId, vmId, netwrkId;
+            var stack_res_id = json_stack.gpd.extended_data.resources;
+            if (stack_res_id) {
+                for (var v = 0; v < stack_res_id.length; v++) {
+                    var resArr = stack_res_id[v].properties.id;
+                    diskId = resArr.split('disks/');
+                    diskId = diskId[1]; //disk
+
+                    if (diskId) {
+                        var stack_disks_id = new GlideRecord('cmdb_ci_storage_volume');
+                        stack_disks_id.addQuery('object_id', diskId);
+                        stack_disks_id.query();
+                        if (stack_disks_id.next()) {
+                            //add relation
+                            var disk_rec = stack_disks_id.sys_id;
+                            // Create a relationship with the stack instance and the disk record as CONTAINS relationship
+                            var stack_rel_ci = new GlideRecord('cmdb_rel_ci');
+                            stack_rel_ci.initialize();
+                            stack_rel_ci.parent = res_rec;
+                            stack_rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                            stack_rel_ci.child = disk_rec;
+                            stack_rel_ci.insert();
+                        }
+
+                    } else {
+                        vmId = resArr.split('compute/');
+                        vmId = vmId[1]; //vm
+                        if (vmId) {
+                            var stack_vm_rec = new GlideRecord('cmdb_ci_vmware_instance');
+                            stack_vm_rec.addQuery('object_id', vmId);
+                            stack_vm_rec.query();
+                            if (stack_vm_rec.next()) {
+                                //add relation
+                                var stack_vmrec = stack_vm_rec.sys_id;
+                                // Create a relationship with the VM instance and the VM record as CONTAINS relationship
+                                var stack_rel_vm = new GlideRecord('cmdb_rel_ci');
+                                stack_rel_vm.initialize();
+                                stack_rel_vm.parent = res_rec;
+                                stack_rel_vm.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                                stack_rel_vm.child = stack_vmrec;
+                                stack_rel_vm.insert();
+                            }
+                        } else {
+
+                            netwrkId = resArr.split('compute-networks/');
+                            netwrkId = netwrkId[1]; //network
+                            if (netwrkId) {
+                                var stack_network_rec = new GlideRecord('cmdb_ci_vcenter_network');
+                                stack_network_rec.addQuery('object_id', netwrkId);
+                                stack_network_rec.query();
+                                if (stack_network_rec.next()) {
+                                    //add relation
+                                    var stack_net_rec = stack_network_rec.sys_id;
+                                    // Create a relationship with the VM instance and the VM record as CONTAINS relationship
+                                    var stack_rel_nw = new GlideRecord('cmdb_rel_ci');
+                                    stack_rel_nw.initialize();
+                                    stack_rel_nw.parent = res_rec;
+                                    stack_rel_nw.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                                    stack_rel_nw.child = stack_net_rec;
+                                    stack_rel_nw.insert();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+
+            var tagSet = json_stack.gpd.tags;
+            //soici linking with vmware
+            this.updateTagSoiciLink(tagSet, res_rec, object_id); //Create tags if exist and soici link with record
+
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Create Call for Stack failed ' + ex);
+        }
+    },
+
+    createVraNetwork: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery  vra network payload ' + strBody);
+
+            var provider_resource_name, provider_resource_id, res_rec, nw_status, volumeId, availablity_zone, object_id, deploy_id;
+            var json_nw = JSON.parse(strBody);
+            provider_resource_name = json_nw.gpd.provider_resource_name;
+            if (!provider_resource_name) provider_resource_name = json_nw.entity_id;
+            provider_resource_id = json_nw.gpd.provider_resource_id;
+            nw_status = json_nw.gpd.provider_status.toLowerCase();
+            var correlation_id = json_nw.gpd.correlation_id;
+            object_id = json_nw.entity_id;
+
+            var location, state, country, latitude, longitude;
+            location = json_nw.location.location;
+            state = json_nw.location.state;
+            country = json_nw.location.country;
+            latitude = json_nw.location.coordinates.latitude;
+            longitude = json_nw.location.coordinates.longitude;
+
+            deploy_id = json_nw.gpd.raw_config_data.deploymentId;
+
+            var nw_rec = new GlideRecord('cmdb_ci_vcenter_network');
+            nw_rec.initialize();
+            nw_rec.name = provider_resource_name;
+            if (nw_status == 'available' || nw_status == 'active' || nw_status == 'in-use' || nw_status == '') {
+                nw_rec.operational_status = '1';
+                nw_rec.state = 'available';
+            } else {
+                nw_rec.operational_status = '2';
+                nw_rec.state = 'terminated';
+            }
+            nw_rec.correlation_id = correlation_id;
+            nw_rec.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            nw_rec.category = json_nw.gpd.service_category;
+            nw_rec.object_id = object_id;
+            nw_rec.short_description = provider_resource_id;
+            nw_rec.cidr = json_nw.gpd.raw_config_data.properties.networkCidr;
+            nw_rec.default_gateway = json_nw.gpd.raw_config_data.properties.gateway;
+            nw_rec.netmask = json_nw.gpd.raw_config_data.properties.netmask;
+            res_rec = nw_rec.insert();
+
+
+            //Relate stack to Network
+
+            var stack_disk = new GlideRecord('cmdb_ci_cmp_resource');
+            stack_disk.addQuery('object_id', deploy_id);
+            stack_disk.query();
+            if (stack_disk.next()) {
+                var stack_disk_id = stack_disk.sys_id;
+                // Create a relationship with the disk and the stack
+                var diskStack_rel = new GlideRecord('cmdb_rel_ci');
+                diskStack_rel.addEncodedQuery('parent=' + stack_disk_id + '^child=' + res_rec);
+                diskStack_rel.query();
+
+                if (!diskStack_rel.next()) {
+                    diskStack_rel.parent = stack_disk_id;
+                    diskStack_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    diskStack_rel.child = res_rec;
+                    diskStack_rel.insert();
+                }
+
+            }
+
+
+            var tagSet = json_nw.gpd.tags;
+            //soici linking with vmware
+            this.updateTagSoiciLink(tagSet, res_rec, object_id); //Create tags if exist and soici link with record
+
+
+            return res_rec;
+
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Create Call for Network failed ' + ex);
+        }
+    },
+
+    updateTagSoiciLink: function(tagSet, res_rec, object_id, instanceUUID) {
+        if (tagSet.length > 0) {
+            var serviceInstance_ID = new Emp_CI_Creation_Validation_Script().createTagResources(tagSet, res_rec);
+
+            // Check if the SOI CI exists  with the corresponding serviceInstanceName
+            if (serviceInstance_ID) {
+                var soi_ci_exists = new Emp_CI_Creation_Validation_Script().validateSOICIExists(serviceInstance_ID);
+
+                if (soi_ci_exists) {
+                    var soi_ci_rel = new GlideRecord('cmdb_rel_ci');
+                    soi_ci_rel.initialize();
+                    soi_ci_rel.parent = soi_ci_exists;
+                    soi_ci_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    soi_ci_rel.child = res_rec;
+                    soi_ci_rel.insert();
+                }
+            }
+        } else {
+            var vra = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+            var qry = 'resource_idLIKE' + object_id + '^ORresource_idLIKE' + instanceUUID;
+            vra.addEncodedQuery(qry);
+            vra.query();
+            if (vra.next()) {
+                var vraRec = vra.sys_id;
+                var enQuery = 'child=' + res_rec + '^parent=' + vraRec;
+                var rel_ci = new GlideRecord('cmdb_rel_ci');
+                rel_ci.addEncodedQuery(enQuery);
+                rel_ci.query();
+                if (!rel_ci.next()) {
+                    rel_ci.initialize();
+                    rel_ci.parent = vraRec;
+                    rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    rel_ci.child = res_rec;
+                    rel_ci.insert();
+                }
+
+            } else {
+                new HCMSLogLevel().LogMsg('info', 'No matching SOI found for the CI, Hence the CI is not mapped with SOI');
+            }
+        }
+    },
+
+
+    type: 'Emp_CIWizMapper_VRA_CI_Configurations'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>shalini.s11@kyndryl.com</sys_created_by>
+        <sys_created_on>2022-06-22 10:52:30</sys_created_on>
+        <sys_id>fd7ac4381b54d510da788403604bcb55</sys_id>
+        <sys_mod_count>174</sys_mod_count>
+        <sys_name>Emp_CIWizMapper_VRA_CI_Configurations</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_fd7ac4381b54d510da788403604bcb55</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 07:51:20</sys_updated_on>
+    </sys_script_include>
+</record_update>

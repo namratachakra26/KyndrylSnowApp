@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_task</collection>
+        <condition>current.change_request.parent.variables.var_offering_provider == "snow"</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="change_task">stateCHANGESFROM-5^stateCHANGESTO4^EQ<item display_value="Pending" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESFROM" or="false" value="-5"/>
+            <item display_value="Cancelled" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="4"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp_Cancel_Change_Task_Initiation</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp.  
+ * @author Rajesh Annepaka 
+ * @Business Rule is used to trigger outbound call upon change task cancellation when provider type is snow 
+ **/
+
+(function executeRule(current, previous /*null when async*/ ) {
+
+    if (current.assignment_group.name.equals(gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group')) && current.assigned_to.name.trim().equals(gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to'))) {
+
+        // send provisioning status call to EM marketplace
+        var outboundCall = new ProvisioningCallToEMmarketplace().provisionStatus(current);
+    }
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-04-06 05:41:27</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>a77472de1b5360109c340e55cc4bcb73</sys_id>
+        <sys_mod_count>13</sys_mod_count>
+        <sys_name>Emp_Cancel_Change_Task_Initiation</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_a77472de1b5360109c340e55cc4bcb73</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-27 15:45:41</sys_updated_on>
+        <template/>
+        <when>before</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=a77472de1b5360109c340e55cc4bcb73"/>
+</record_update>

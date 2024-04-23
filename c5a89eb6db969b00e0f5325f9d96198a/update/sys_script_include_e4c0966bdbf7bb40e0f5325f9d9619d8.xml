@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.CheckIfEmpCatalogItems</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from several BR to check if order is created for EMP integration(public catalog itesm)&#13;
+**/</description>
+        <name>CheckIfEmpCatalogItems</name>
+        <script><![CDATA[var CheckIfEmpCatalogItems = Class.create();
+CheckIfEmpCatalogItems.prototype = {
+	initialize: function() {
+	},
+	
+	checkCatalogItem : function(chgSysId) {
+		//property stores the mcmp public catalog item names
+		var mcmCat_items = gs.getProperty('x_ibmg3_hcms.EMP_catalog_items');
+		var catItem;
+		var ritm = new GlideRecord('sc_req_item');//check if change is linked to RITM
+		ritm.addQuery('x_ibmg3_hcms_related_change_request', chgSysId);
+		ritm.query();
+		if(ritm.next()) {
+			catItem = ritm.cat_item.name;//catalog item name
+			if(mcmCat_items.indexOf(catItem) > -1 && ritm.request.x_ibmg3_hcms_order_number)//check if MCMP catalog item and order number exists
+				return true;//MCMP cat item
+		}
+		return false;//Non MCMP cat items
+	},
+	
+	checkCatalogItemFForPostProvisioning : function(current) {
+		var mcmCat_items = gs.getProperty('x_ibmg3_hcms.EMP_catalog_items');
+		if(mcmCat_items.indexOf(current.cat_item.name) > -1 && current.request.x_ibmg3_hcms_order_number) {//check if MCMP catalog item and order number exists
+			return true;//MCMP cat item
+		}
+		return false;//Non MCMP cat items
+	},
+	
+	type: 'CheckIfEmpCatalogItems'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>ashabagade</sys_created_by>
+        <sys_created_on>2019-09-16 10:51:28</sys_created_on>
+        <sys_id>e4c0966bdbf7bb40e0f5325f9d9619d8</sys_id>
+        <sys_mod_count>21</sys_mod_count>
+        <sys_name>CheckIfEmpCatalogItems</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_e4c0966bdbf7bb40e0f5325f9d9619d8</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 05:02:43</sys_updated_on>
+    </sys_script_include>
+</record_update>

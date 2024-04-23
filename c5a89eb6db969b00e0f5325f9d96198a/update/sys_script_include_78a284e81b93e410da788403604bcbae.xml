@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.EmpSnowProvisioning</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Payload modification and Redirection to Quick Start&#13;
+/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from Scripted Rest API to fetch the SOC details for SNOW Provisioning&#13;
+**/</description>
+        <name>EmpSnowProvisioning</name>
+        <script><![CDATA[var EmpSnowProvisioning = Class.create();
+EmpSnowProvisioning.prototype = {
+    initialize: function() {},
+
+    getSocDeatils: function(instanceId) {
+        var soc = {
+            resources: [],
+            "errorCode": "",
+            "errorMessage": ""
+        };
+        var properties = [];
+        var shellCi = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+        if (shellCi.get('correlation_id', instanceId) && shellCi.resource_mapping == true) {
+            var rel = new GlideRecord('cmdb_rel_ci');
+            rel.addQuery('parent', shellCi.sys_id);
+            rel.query();
+            while (rel.next()) {
+                var obj = rel.child.getRefRecord();
+                var fields = obj.getElements();
+                for (var i = 0; i < fields.length; i++) {
+                    var glideElement = fields[i];
+                    if (glideElement.getDisplayValue()) {
+                        properties.push({
+                            "name": glideElement.getName().toString(),
+                            "type": "string",
+                            "value": glideElement.getDisplayValue().toString()
+                        });
+                    }
+                }
+                var tag = {
+                    "serviceOfferingInstanceId": instanceId
+                };
+                soc.resources.push({
+                    "resourceId": obj.sys_id.toString(),
+                    "name": obj.name.toString(),
+                    "resourceType": obj.sys_class_name.toString(),
+                    "status": obj.state.toString(),
+                    "providerName": "snow",
+                    "tags": tag,
+                    "properties": properties,
+                    "connectInstruction": ""
+                });
+            }
+        } else {
+            soc.errorCode = "404";
+            soc.errorMessage = "No Data Found";
+        }
+        var socResponse = JSON.stringify(soc);
+        new HCMSLogLevel().LogMsg("info", "* Soc Response Paylod:* " + socResponse);
+        return soc;
+    },
+
+    type: 'EmpSnowProvisioning'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-03-31 06:23:30</sys_created_on>
+        <sys_id>78a284e81b93e410da788403604bcbae</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>EmpSnowProvisioning</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_78a284e81b93e410da788403604bcbae</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 06:28:13</sys_updated_on>
+    </sys_script_include>
+</record_update>

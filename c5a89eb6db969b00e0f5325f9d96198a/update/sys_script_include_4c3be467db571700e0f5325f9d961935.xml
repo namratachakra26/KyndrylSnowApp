@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.HCMSCreateTasksRequestedItems</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from Workflow "HCMS RQF Default Workflow " - This script include creates Tasks for the Requested Items created from emp&#13;
+**/</description>
+        <name>HCMSCreateTasksRequestedItems</name>
+        <script><![CDATA[var HCMSCreateTasksRequestedItems = Class.create();
+HCMSCreateTasksRequestedItems.prototype = {
+    initialize: function() {},
+
+    createBrokerTasks: function(current) {
+        try {
+            //Create the task record for all requested items in the requested item array
+            var reqItemGR = new GlideRecord('sc_req_item');
+            reqItemGR.addQuery('request.number', current.number);
+            reqItemGR.query();
+            while (reqItemGR.next()) {
+                var gr = new GlideRecord('sc_task');
+                gr.initialize();
+				gr.short_description =  reqItemGR.short_description;
+                gr.request_item.setDisplayValue(reqItemGR.number);
+                gr.state = '1';
+                gr.insert();				
+            new HCMSLogLevel().LogMsg("info", "*Catalog Task created for order: " + reqItemGR.variables.order_number + " : " + gr.number);
+            }
+        } catch (ex) {
+            workflow.error("Kyndryl Marketplace Provision Workflow: Create Tasks for Requested Items: " + this.type + "(" + err.message + ")");
+        }
+    },
+    type: 'HCMSCreateTasksRequestedItems'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2018-07-20 12:12:10</sys_created_on>
+        <sys_id>4c3be467db571700e0f5325f9d961935</sys_id>
+        <sys_mod_count>21</sys_mod_count>
+        <sys_name>HCMSCreateTasksRequestedItems</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_4c3be467db571700e0f5325f9d961935</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 07:27:36</sys_updated_on>
+    </sys_script_include>
+</record_update>

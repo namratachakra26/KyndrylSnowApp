@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.Emp_CIWizMapper_Update</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Shalini S &#13;
+* @Script Include is used for CDupdate&#13;
+**/</description>
+        <name>Emp_CIWizMapper_Update</name>
+        <script><![CDATA[var Emp_CIWizMapper_Update = Class.create();
+Emp_CIWizMapper_Update.prototype = {
+    initialize: function() {},
+
+    updateVMInstanceCI: function(strBody) {
+        try {
+            var parser = JSON.parse(strBody);
+            var providerR = parser.provider;
+            var config_id = parser.u_ci_id;
+            var machineType = parser.gpd.raw_config_data.machineType;
+            var region = parser.location.data_center_id;
+            var cpu;
+
+            if (machineType) {
+                var macType = machineType.split('machineTypes/');
+                macType = macType[1];
+            }
+
+            var osType = 'Linux'; //server type set linux by default
+
+            if (parser.gpd.raw_config_data.cpuOptions) {
+                cpu = parser.gpd.raw_config_data.cpuOptions.coreCount;
+            }
+            var provider_resource_id = parser.gpd.provider_resource_id;
+            if (parser.gpd.raw_config_data.disks)
+                var serverType = parser.gpd.raw_config_data.disks[0].guestOsFeatures;
+            var soi_ci_exists, soi_ci_rel, serviceInstance_ID;
+            var dns_nmeLnx;
+            var internet_facing = 'false';
+            if (parser.gpd.raw_config_data.networkInterfaceSet) {
+                if (parser.gpd.raw_config_data.networkInterfaceSet.item.association) {
+                    internet_facing = parser.gpd.raw_config_data.networkInterfaceSet.item.association.publicIp;
+                    dns_nmeLnx = parser.gpd.raw_config_data.networkInterfaceSet.item.association.ipOwnerId;
+                }
+            }
+            var category = parser.gpd.service_category;
+            var manufacturer = parser.provider;
+            var man = new GlideRecord('core_company');
+            man.addEncodedQuery('name=' + manufacturer);
+            man.query();
+            if (man.next()) {
+                manufacturer = man.sys_id;
+            }
+
+            if (serverType) {
+                for (var m = 0; m < serverType.length; m++) {
+                    if (serverType[m].type == 'WINDOWS')
+                        osType = 'Windows';
+                }
+            }
+
+            var correlation_id = parser.gpd.correlation_id;
+            var location, state, country, latitude, longitude;
+
+            location = parser.location.location;
+            state = parser.location.state;
+            country = parser.location.country;
+            latitude = parser.location.latitude;
+            longitude = parser.location.longitude;
+            config_id = parser.u_ci_id;
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset provider ' + providerR + ' virtual Machines Update payload ' + strBody);
+
+            var InstanceState = parser.gpd.provider_status;
+            var vmState;
+            InstanceState = InstanceState.toLowerCase();
+            if (InstanceState == 'running' || InstanceState == 'active') {
+                vmState = 'on';
+                InstanceState = '1'; //operational
+            } else {
+                vmState = 'off';
+                InstanceState = '2'; //non-operational
+            }
+
+
+            if (providerR == 'GCP') {
+                var res_returned;
+
+                new HCMSLogLevel().LogMsg('OrderNumber:' + parser.gpd.raw_config_data.labels.ordernumber + '\nName:' + parser.gpd.provider_resource_name + '\nServiceInstanceName:' + parser.gpd.raw_config_data.labels.serviceinstancename + '\nManufacturer:' +
+                    parser.provider + '\nCategory' + parser.gpd.service_category + '\nOperating_system' + '\nInstanceState:' + parser.gpd.status);
+
+                if (osType == 'Linux') {
+                    var gpc_newVM = new GlideRecord('cmdb_ci_linux_server');
+                    gpc_newVM.addEncodedQuery('sys_id=' + config_id);
+                    gpc_newVM.query();
+                    if (gpc_newVM.next()) {
+                        gpc_newVM.name = parser.gpd.provider_resource_name;
+                        gpc_newVM.manufacturer = manufacturer;
+                        gpc_newVM.category = category;
+                        gpc_newVM.u_qs_cmdb_ci_server_uuid = parser.uuid;
+                        gpc_newVM.os = osType;
+                        gpc_newVM.correlation_id = correlation_id;
+                        gpc_newVM.operational_status = InstanceState;
+                        gpc_newVM.location = this.updateResourceLocation(location, state, country, latitude, longitude);
+                        gpc_newVM.chassis_type = 'Other';
+                        gpc_newVM.install_status = parser.gpd.status;
+                        gpc_newVM.internet_facing = internet_facing;
+                        gpc_newVM.start_date = parser.gpd.provider_resource_created;
+                        gpc_newVM.object_id = parser.entity_id;
+                        gpc_newVM.u_qs_cmdb_ci_managed_by = 'IBM';
+                        gpc_newVM.ip_address = parser.gpd.raw_config_data.networkInterfaces[0].networkIP;
+                        res_returned = gpc_newVM.update();
+                    }
+                } else {
+                    var gpc_newVMWin = new GlideRecord('cmdb_ci_win_server');
+                    gpc_newVMWin.addEncodedQuery('sys_id=' + config_id);
+                    gpc_newVMWin.query();
+                    if (gpc_newVMWin.next()) {
+                        gpc_newVMWin.name = parser.gpd.provider_resource_name;
+                        gpc_newVMWin.disk_space = parser.gpd.raw_config_data.disks[0].diskSizeGb;
+                        gpc_newVMWin.manufacturer = manufacturer;
+                        gpc_newVMWin.category = category;
+                        gpc_newVMWin.u_qs_cmdb_ci_server_uuid = parser.uuid;
+                        gpc_newVMWin.os = osType;
+                        gpc_newVMWin.correlation_id = correlation_id;
+                        gpc_newVMWin.operational_status = InstanceState;
+                        gpc_newVMWin.location = this.updateResourceLocation(location, state, country, latitude, longitude);
+                        gpc_newVMWin.chassis_type = 'Other';
+                        gpc_newVMWin.install_status = parser.gpd.status;
+                        gpc_newVMWin.internet_facing = internet_facing;
+                        gpc_newVMWin.u_qs_cmdb_ci_managed_by = 'IBM';
+                        gpc_newVMWin.object_id = parser.entity_id;
+                        gpc_newVMWin.ip_address = parser.gpd.raw_config_data.networkInterfaces[0].networkIP;
+                        res_returned = gpc_newVMWin.update();
+                    }
+                }
+
+                // update a record in the Virtual Machines Table with the common discovery data
+
+                var vm_data = new GlideRecord('cmdb_ci_vm_instance');
+                vm_data.addEncodedQuery('correlation_id=' + correlation_id);
+                vm_data.query();
+                if (vm_data.next()) {
+                    vm_data.name = provider_resource_id;
+                    vm_data.state = vmState;
+                    vm_data.operational_status = InstanceState; //set OS
+                    vm_data.cpus = cpu;
+                    vm_data.disks = cpu;
+                    vm_data.nics = cpu;
+                    vm_data.object_id = provider_resource_id;
+                    var vm_parent_rec = vm_data.update();
+                }
+                // End for the creation of parent record under virtual machines table
+
+                //Hardware Type
+                if (macType) {
+
+                    var instance_rec_id;
+                    var instance_type_rec = new GlideRecord('cmdb_ci_compute_template');
+                    instance_type_rec.addEncodedQuery('correlation_id=' + correlation_id);
+                    instance_type_rec.query();
+
+                    if (instance_type_rec.next()) {
+                        instance_type_rec.name = macType;
+                        instance_type_rec.object_id = macType;
+                        instance_type_rec.vcpus = cpu;
+                        instance_rec_id = instance_type_rec.update();
+                    }
+                }
+
+                //Datacenter
+                var resource_region, region_val_id;
+
+                if (region) {
+                    resource_region = new GlideRecord('cmdb_ci_aws_datacenter');
+                    resource_region.addEncodedQuery('correlation_id=' + correlation_id);
+                    resource_region.query();
+
+                    if (resource_region.next()) {
+                        resource_region.name = region;
+                        resource_region.region = region;
+                        region_val_id = resource_region.update();
+                    }
+                }
+
+
+                var tagSet = parser.gpd.tags;
+                this.updateTagSoiciLink(tagSet, res_returned); //Create tags if exist and soici link with record
+
+                return res_returned;
+
+            } else {  //AWS
+
+                var vm_id, subNetid, provider, region, data_center, provider_resource_type, provider_resource_crn, res_rec, uuid,
+                    provider_resource_location, provider_status, status, vpc_id, tag_key_value, imageid, entity_id, InstanceId, orderNumber, name, stack_Id, dns_name, ipaddress, platform, coreCount, resource_region, availablity_zone, region_val, hostName, mac_address, object_id, storage_volume, mount_point, storage_vol_status, instance_type, region_val_id, soi_id, tag_name, tag_stack_name;
+                var rel_arr = [];
+                tagSet = parser.gpd.tags;
+
+
+                location = parser.location.location;
+                state = parser.location.state;
+                country = parser.location.country;
+                latitude = parser.location.latitude;
+                longitude = parser.location.longitude;
+                uuid = parser.uuid;
+                manufacturer = parser.provider;
+                data_center = parser.location.data_center;
+                region = parser.location.data_center_id;
+                provider = parser.location.provider_code;
+
+                correlation_id = parser.gpd.correlation_id;
+                provider_resource_crn = parser.gpd.provider_resource_crn;
+                name = parser.gpd.provider_resource_name;
+                //cpu = parser.gpd.raw_config_data.cpuOptions.coreCount;
+
+                if (parser.gpd.raw_config_data.networkInterfaceSet) {
+                    mac_address = parser.gpd.raw_config_data.networkInterfaceSet.item.macAddress;
+                    subNetid = parser.gpd.raw_config_data.networkInterfaceSet.item.subnetId;
+                    //internet_facing = parser.gpd.raw_config_data.networkInterfaceSet.item.association; //.publicIp;
+                }
+                coreCount = parser.gpd.raw_config_data.cpuOptions.threadsPerCore;
+                instance_type = parser.gpd.raw_config_data.instanceType;
+                dns_name = parser.gpd.raw_config_data.dnsName;
+                hostName = parser.gpd.raw_config_data.ipAddress;
+                imageid = parser.gpd.raw_config_data.imageId;
+
+                if (parser.gpd.raw_config_data.blockDeviceMapping) {
+                    if (parser.gpd.raw_config_data.blockDeviceMapping.item.length > 0) {
+
+                        for (var r = 0; r < parser.gpd.raw_config_data.blockDeviceMapping.item.length; r++) {
+                            storage_vol_status = parser.gpd.raw_config_data.blockDeviceMapping.item[r].ebs.status; // INT - 14541
+                            storage_volume = parser.gpd.raw_config_data.blockDeviceMapping.item[r].ebs.volumeId;
+                            mount_point = parser.gpd.raw_config_data.blockDeviceMapping.item[r].deviceName;
+                            this.createStorageVol(storage_volume, storage_vol_status, correlation_id, vm_parent_rec);
+                            this.createMountPoint(storage_volume, mount_point, correlation_id, vm_parent_rec);
+                        }
+
+                    } else {
+                        storage_vol_status = parser.gpd.raw_config_data.blockDeviceMapping.item.ebs.status; // INT - 14541
+                        storage_volume = parser.gpd.raw_config_data.blockDeviceMapping.item.ebs.volumeId;
+                        mount_point = parser.gpd.raw_config_data.blockDeviceMapping.item.deviceName;
+                        this.createStorageVol(storage_volume, storage_vol_status, correlation_id, vm_parent_rec);
+                        this.createMountPoint(storage_volume, mount_point, correlation_id, vm_parent_rec);
+
+                    }
+                }
+
+
+                ipaddress = parser.gpd.raw_config_data.ipAddress;
+                platform = parser.gpd.raw_config_data.platform;
+                availablity_zone = parser.gpd.raw_config_data.placement.availabilityZone;
+
+
+                if (storage_vol_status == 'attached') storage_vol_status = 'in_use';
+                if (internet_facing) internet_facing = 'true';
+
+                // Create a datacenter record in the aws datacenter
+                if (region) {
+                    resource_region = new GlideRecord('cmdb_ci_aws_datacenter');
+                    resource_region.addEncodedQuery('correlation_id=' + correlation_id);
+                    resource_region.query();
+                    if (resource_region.next()) {
+
+                        resource_region.name = region;
+                        resource_region.region = region;
+                        region_val_id = resource_region.update();
+                    }
+                }
+
+
+                if (!platform) platform = 'linux';
+                // if (InstanceState == 'runnig') InstanceState = '1';
+
+
+                // Create record in the availablity_zone for the resource to be resource
+
+                if (availablity_zone) {
+                    var availablty_zone = this.updateAvailabilityZoneCI(availablity_zone);
+                }
+
+
+
+
+                // update a record in the Virtual Machines Table with the common discovery data
+
+                vm_data = new GlideRecord('cmdb_ci_vm_instance');
+                vm_data.addEncodedQuery('correlation_id=' + correlation_id);
+                vm_data.query();
+                if (vm_data.next()) {
+                    vm_data.name = provider_resource_id;
+                    vm_data.state = vmState;
+                    vm_data.operational_status = InstanceState;
+                    vm_data.object_id = provider_resource_id;
+                    vm_data.cpus = cpu;
+                    vm_data.disks = cpu;
+                    vm_data.nics = cpu;
+                    vm_parent_rec = vm_data.update();
+                }
+                // End for the creation of parent record under virtual machines table
+
+
+                // Create a record for AWS Image details 
+
+                if (imageid) {
+                    var img_id;
+                    var img = new GlideRecord('cmdb_ci_os_template');
+                    img.addEncodedQuery('correlation_id=' + correlation_id);
+                    img.query();
+                    if (img.next()) {
+                        img.object_id = imageid;
+                        img.name = imageid;
+                        img_id = img.update();
+                    }
+                }
+
+
+                if (storage_volume) {
+                    var storage_rec_id;
+                    var storage_rec = new GlideRecord('cmdb_ci_storage_volume');
+                    storage_rec.addEncodedQuery('correlation_id=' + correlation_id);
+                    storage_rec.query();
+                    if (storage_rec.next()) {
+                        //storage_rec.name = storage_volume;
+                        storage_rec.state = storage_vol_status;
+                        storage_rec.object_id = storage_volume;
+                        storage_rec.storage_type = 'block';
+                        storage_rec_id = storage_rec.update();
+                    }
+                }
+
+                if (mount_point) {
+                    var mount_rec_id;
+                    var mount_rec = new GlideRecord('cmdb_ci_storage_mapping');
+                    mount_rec.addEncodedQuery('correlation_id=' + correlation_id);
+                    mount_rec.query();
+                    if (mount_rec.next()) {
+                        mount_rec.name = storage_volume;
+                        mount_rec.object_id = storage_volume;
+                        mount_rec.mapping_type = 'ebs';
+                        mount_rec.mount_point = mount_point;
+                        mount_rec_id = mount_rec.update();
+                    }
+                }
+
+
+
+                if (instance_type) {
+
+
+                    instance_type_rec = new GlideRecord('cmdb_ci_compute_template');
+                    instance_type_rec.addEncodedQuery('correlation_id=' + correlation_id);
+                    instance_type_rec.query();
+                    if (instance_type_rec.next()) {
+                        instance_type_rec.name = instance_type;
+                        instance_type_rec.object_id = instance_type;
+                        instance_type_rec.vcpus = cpu;
+                        instance_rec_id = instance_type_rec.update();
+                    }
+                }
+
+
+
+                gs.info('OrderNumber:' + orderNumber + '\nName:' + name + '\nserviceInstanceName:' + InstanceId + '\nStackID:' + stack_Id + '\nlocation:' + location + '\ndata_center:' + data_center + '\nregion:' + region + '\nprovider:' + provider + '\nprovider_resource_crn:' + provider_resource_crn + '\nCPU:' + cpu + '\ndns_name:' + dns_name + '\nimageid:' + imageid + '\nInstanceState:' + InstanceState + '\nipAddress:' + ipaddress + '\nvpc_id:' + vpc_id + '\nSubNet:' + subNetid + '\nPlatform:' + platform);
+
+                switch (platform) {
+
+                    case 'windows':
+
+                        var awsWindows = new GlideRecord('cmdb_ci_win_server');
+                        awsWindows.addEncodedQuery('sys_id=' + config_id);
+                        awsWindows.query();
+                        if (awsWindows.next()) {
+                            awsWindows.name = name;
+                            awsWindows.manufacturer = manufacturer;
+                            awsWindows.category = category;
+                            awsWindows.install_status = InstanceState;
+                            awsWindows.operational_status = InstanceState;
+                            awsWindows.comments = 'AWS Windows Virtual Machine ' + provider_resource_id;
+                            awsWindows.u_qs_cmdb_ci_server_uuid = uuid; //Applicable only if Quickstart is Installed 
+                            awsWindows.location = this.updateResourceLocation(location, state, country, latitude, longitude);
+                            awsWindows.os = 'Windows';
+                            awsWindows.host_name = hostName;
+                            awsWindows.mac_address = mac_address;
+                            awsWindows.object_id = provider_resource_id;
+                            awsWindows.correlation_id = correlation_id;
+                            awsWindows.chassis_type = 'Other';
+                            awsWindows.dns_domain = dns_name;
+                            awsWindows.cpu_count = cpu;
+                            awsWindows.cpu_core_count = coreCount;
+                            awsWindows.ip_address = ipaddress;
+                            awsWindows.internet_facing = internet_facing;
+                            awsWindows.cpu_core_thread = parser.gpd.raw_config_data.cpuOptions.threadsPerCore;
+                            awsWindows.start_date = parser.gpd.provider_resource_created;
+                            res_rec = awsWindows.update();
+                        }
+                        break;
+
+                    case 'linux':
+                        var awsLinux = new GlideRecord('cmdb_ci_linux_server');
+                        awsLinux.addEncodedQuery('sys_id=' + config_id);
+                        awsLinux.query();
+                        if (awsLinux.next()) {
+                            awsLinux.name = name;
+                            awsLinux.manufacturer = manufacturer;
+                            awsLinux.category = category;
+                            awsLinux.operational_status = InstanceState;
+                            awsLinux.install_status = InstanceState;
+                            awsLinux.comments = 'AWS Linux  Virtual Machine  ' + provider_resource_id;
+                            awsLinux.u_qs_cmdb_ci_server_uuid = uuid; //Applicable only if Quickstart is Installed 
+                            awsLinux.location = this.updateResourceLocation(location, state, country, latitude, longitude);
+                            awsLinux.os = platform;
+                            awsLinux.host_name = parser.gpd.provider_resource_name;
+                            awsLinux.mac_address = mac_address;
+                            awsLinux.object_id = provider_resource_id;
+                            awsLinux.correlation_id = correlation_id;
+                            awsLinux.chassis_type = 'Other';
+                            awsLinux.dns_domain = dns_nmeLnx;
+                            awsLinux.cpu_count = cpu;
+                            awsLinux.cpu_core_count = coreCount;
+                            awsLinux.ip_address = ipaddress;
+                            awsLinux.internet_facing = internet_facing;
+                            awsLinux.u_qs_cmdb_ci_managed_by = 'IBM';
+                            awsLinux.cpu_core_thread = parser.gpd.raw_config_data.cpuOptions.threadsPerCore;
+                            res_rec = awsLinux.update();
+                        }
+                        break;
+
+                }
+
+                tagSet = parser.gpd.tags;
+                this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+
+                return res_rec;
+            }
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for VMS failed ' + ex);
+        }
+
+    },
+
+    createStorageVol: function(storage_volume, storage_vol_status, correlation_id, vm_parent_rec) {
+
+        var storage_rec_id;
+        var storage_rec = new GlideRecord('cmdb_ci_storage_volume');
+        storage_rec.addQuery('correlation_id', correlation_id);
+        storage_rec.query();
+        if (storage_rec.next()) {
+            storage_rec.name = storage_volume;
+            if (storage_vol_status == 'attached') storage_vol_status = 'in_use';
+            storage_rec.state = storage_vol_status;
+            storage_rec.correlation_id = correlation_id;
+            storage_rec.object_id = storage_volume;
+            storage_rec.storage_type = 'block';
+            storage_rec_id = storage_rec.update();
+        }
+
+        // Create a relationship with the Virtual Machine and the Storage Volume record as Use End Point From FROM TO relationship
+
+        var storage_rel_ci = new GlideRecord('cmdb_rel_ci');
+        storage_rel_ci.addEncodedQuery('parent=' + vm_parent_rec + '^child=' + storage_rec_id);
+        storage_rel_ci.query();
+
+        if (!storage_rel_ci.next()) {
+            storage_rel_ci.parent = vm_parent_rec;
+            storage_rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+            storage_rel_ci.child = storage_rec_id;
+            storage_rel_ci.insert();
+        }
+
+    },
+
+    createMountPoint: function(storage_volume, mount_point, correlation_id, vm_parent_rec) {
+        var mount_rec_id;
+        var mount_rec = new GlideRecord('cmdb_ci_storage_mapping');
+        mount_rec.addQuery('object_id', storage_volume);
+        mount_rec.query();
+        if (mount_rec.next()) {
+            mount_rec.name = storage_volume;
+            mount_rec.object_id = storage_volume;
+            //mount_rec.correlation_id = correlation_id;
+            mount_rec.mapping_type = 'ebs';
+            mount_rec.mount_point = mount_point;
+            mount_rec_id = mount_rec.update();
+        } else {
+            mount_rec.name = storage_volume;
+            mount_rec.object_id = storage_volume;
+            mount_rec.correlation_id = correlation_id;
+            mount_rec.mapping_type = 'ebs';
+            mount_rec.mount_point = mount_point;
+            mount_rec_id = mount_rec.insert();
+
+        }
+
+        // Create a relationship with the EBS and the Storage Mapping record as Use End Point From FROM TO relationship
+
+        var mount_rel_ci = new GlideRecord('cmdb_rel_ci');
+        mount_rel_ci.addEncodedQuery('parent=' + vm_parent_rec + '^child=' + mount_rec_id);
+        mount_rel_ci.query();
+        if (!mount_rel_ci.next()) {
+            mount_rel_ci.parent = vm_parent_rec;
+            mount_rel_ci.type = '55c95bf6c0a8010e0118ec7056ebc54d';
+            mount_rel_ci.child = mount_rec_id;
+            mount_rel_ci.insert();
+        }
+
+    },
+
+
+    updateResourceLocation: function(loc, state, country, latitude, longitude) {
+        var loc_response;
+        // Verify if the location already exists 
+        if (loc != 'unknown') {
+            var loc_exists = new GlideRecord('cmn_location');
+            loc_exists.addEncodedQuery('city=' + loc + '^country=' + country + '^state=' + state);
+            loc_exists.query();
+            if (loc_exists.next()) {
+                return loc_exists.sys_id;
+            } else {
+                var loc_res = new GlideRecord('cmn_location');
+                loc_res.initialize();
+                loc_res.name = loc + ',' + state + ',' + country;
+                loc_res.street = loc + ',' + state;
+                loc_res.city = loc;
+                loc_res.country = country;
+                loc_res.state = state;
+                loc_res.parent = country;
+                loc_res.latitude = latitude;
+                loc_res.longitude = longitude;
+                loc_response = loc_res.insert();
+                return loc_response;
+
+            }
+        }
+        return '';
+    },
+
+
+    updateRDSInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset RDS Update payload ' + strBody);
+
+            var provider_resource_name, provider_resource_id, res_rec, rds_status;
+            var json_rds = JSON.parse(strBody);
+            var config_id = json_rds.u_ci_id;
+            provider_resource_name = json_rds.gpd.provider_resource_name;
+            provider_resource_id = json_rds.gpd.provider_resource_id;
+            rds_status = json_rds.gpd.provider_status.toLowerCase();
+
+            var rds_rec = new GlideRecord('cmdb_ci_cloud_database');
+            rds_rec.addEncodedQuery('sys_id=' + config_id);
+            rds_rec.query();
+            if (rds_rec.next()) {
+                rds_rec.name = provider_resource_name;
+                if (rds_status == 'available') {
+                    rds_rec.operational_status = '1';
+                } else {
+                    rds_rec.operational_status = '2';
+                }
+                rds_rec.category = json_rds.gpd.service_category;
+                rds_rec.version = json_rds.gpd.version;
+                rds_rec.short_description = provider_resource_id;
+                res_rec = rds_rec.update();
+            }
+
+            var tagSet = json_rds.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for RDS failed ' + ex);
+        }
+
+    },
+
+    updateAvailabilityZoneCI: function(zoneInfo) {
+        var zone_rec;
+        new HCMSLogLevel().LogMsg('info', ' Incoming  availability_zone ' + zoneInfo);
+        var zone_rec_id;
+        var av_zone_exists = this.ValidateAVZone(zoneInfo);
+        if (av_zone_exists == 'true') {
+            zone_rec = new GlideRecord('cmdb_ci_availability_zone');
+            zone_rec.initialize();
+            zone_rec.name = zoneInfo;
+            zone_rec_id = zone_rec.insert();
+            return zone_rec_id;
+        }
+
+        return av_zone_exists;
+
+    },
+
+    ValidateAVZone: function(zone) {
+        var av_zone_rec = new GlideRecord('cmdb_ci_availability_zone');
+        av_zone_rec.get('name', zone);
+        av_zone_rec.query();
+        if (!av_zone_rec.next()) {
+            return 'true';
+        } else {
+            return av_zone_rec.sys_id;
+        }
+    },
+
+    updateVPCInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset vpcs Update payload ' + strBody);
+            var vpc_name, vpc_state, vpc_cidr, vpc_object_id, state, res_rec;
+            var json_vpcs = JSON.parse(strBody);
+            vpc_state = json_vpcs.gpd.provider_status.toLowerCase();
+            var config_id = json_vpcs.u_ci_id;
+
+            var vpc_rec = new GlideRecord('cmdb_ci_network');
+            vpc_rec.addEncodedQuery('sys_id=' + config_id);
+            vpc_rec.query();
+            if (vpc_rec.next()) {
+                vpc_rec.name = json_vpcs.gpd.provider_resource_name;
+                vpc_rec.state = vpc_state;
+                vpc_rec.object_id = json_vpcs.gpd.provider_resource_id;
+                vpc_rec.cidr = json_vpcs.gpd.raw_config_data.cidrBlock;
+                vpc_rec.correlation_id = json_vpcs.gpd.correlation_id;
+
+                location = json_vpcs.location.location;
+                state = json_vpcs.location.state;
+                country = json_vpcs.location.country;
+                latitude = json_vpcs.location.latitude;
+                longitude = json_vpcs.location.longitude;
+                vpc_rec.location = this.updateResourceLocation(location, state, country, latitude, longitude);
+                //vpc_rec.location = json_vpcs.location.location;
+                if (vpc_state == 'available') {
+                    vpc_rec.operational_status = '1';
+                } else {
+                    vpc_rec.operational_status = '2';
+                }
+                vpc_rec.operational_status = vpc_state;
+                res_rec = vpc_rec.update();
+            }
+
+            var tagSet = json_vpcs.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for VPCS failed ' + ex);
+        }
+
+    },
+
+
+    updates3InstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset S3 Update payload ' + strBody);
+            var res_rec, config_id;
+            var json_s3 = JSON.parse(strBody);
+            config_id = json_s3.u_ci_id;
+            gs.info('Discovered S3: ' + json_s3.gpd.provider_resource_name + ' Manufacturer: ' + json_s3.provider + ' Resource id: ' + json_s3.gpd.provider_resource_id);
+
+            var s3_rec = new GlideRecord('cmdb_ci_cloud_object_storage');
+            s3_rec.addEncodedQuery('sys_id=' + config_id);
+            s3_rec.query();
+            if (s3_rec.next()) {
+                s3_rec.name = json_s3.gpd.provider_resource_name;
+                s3_rec.version = json_s3.gpd.version;
+                if (json_s3.gpd.status == 'Active')
+                    s3_rec.operational_status = '1'; //provider_status
+                s3_rec.short_description = json_s3.gpd.correlation_id;
+                s3_rec.storage_type = 'Logical';
+                s3_rec.device_id = json_s3.gpd.provider_resource_id;
+                s3_rec.manufacturer = this.getManufacturerDetails(json_s3.provider);
+                res_rec = s3_rec.update();
+            }
+
+            var tagSet = json_s3.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+
+            return res_rec;
+
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for S3 failed ' + ex);
+        }
+    },
+
+
+    updateTagSoiciLink: function(tagSet, res_rec) {
+
+        if (tagSet.length > 0) {
+            var serviceInstance_ID = new Emp_CI_Creation_Validation_Script().updateTagResources(tagSet, res_rec);
+        }
+
+        // Check if the SOI CI exists  with the corresponding serviceInstanceName
+        if (serviceInstance_ID) {
+
+            var soi_ci_exists = new Emp_CI_Creation_Validation_Script().validateSOICIExists(serviceInstance_ID);
+            if (soi_ci_exists) {
+                var soi_ci_rel = new GlideRecord('cmdb_rel_ci');
+                soi_ci_rel.addEncodedQuery('parent=' + soi_ci_exists + '^child=' + res_rec);
+                soi_ci_rel.query();
+                if (!soi_ci_rel.next()) {
+                    soi_ci_rel.parent = soi_ci_exists;
+                    soi_ci_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    soi_ci_rel.child = res_rec;
+                    soi_ci_rel.insert();
+                }
+            }
+        }
+    },
+
+
+    getManufacturerDetails: function(provider) {
+        var grs = new GlideRecord('core_company');
+        grs.get('name', provider);
+        grs.query();
+        if (grs.next()) return grs.sys_id;
+    },
+
+
+
+
+    updateDynamodbInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for DynamoDB Update payload ' + strBody);
+            var dbName, dbVersion, operational_status, desc, category, res_rec;
+            var parser = JSON.parse(strBody);
+            var config_id = parser.u_ci_id;
+            var tagSet = parser.gpd.tags;
+
+
+            var db_data = new GlideRecord('cmdb_ci_dynamodb_table');
+            db_data.addEncodedQuery('sys_id=' + config_id);
+            db_data.query();
+
+            if (db_data.next()) {
+                db_data.name = parser.gpd.provider_resource_name;
+                db_data.version = parser.gpd.version;
+                db_data.category = parser.gpd.service_category;
+                res_rec = db_data.update();
+            }
+
+            tagSet = parser.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for DynamoDB failed ' + ex);
+        }
+    },
+
+    updateNetworkSecurityGroupsInstanceCI: function(strBody) {
+        new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Network Security group Update payload ' + strBody);
+        var parser = JSON.parse(strBody);
+        var tagSet = parser.gpd.tags;
+        var config_id = parser.u_ci_id;
+        var nsg_rec = new GlideRecord('cmdb_ci_compute_security_group');
+        gs.info('Network Security Groups - Name :' + parser.gpd.provider_resource_name + '\nObject ID :' + parser.gpd.provider_resource_id + '\nState: ' + parser.gpd.provider_status);
+        nsg_rec.addEncodedQuery('sys_id=' + config_id);
+        nsg_rec.query();
+        if (nsg_rec.next()) {
+
+            nsg_rec.name = parser.gpd.provider_resource_name;
+            nsg_rec.object_id = parser.entity_id;
+            nsg_rec.state = parser.gpd.provider_status;
+
+            res_rec = nsg_rec.update();
+
+            if (tagSet.length > 0) {
+
+                new Emp_CI_Creation_Validation_Script().updateTagResources(tagSet, res_rec);
+            }
+
+            return res_rec;
+
+
+
+        }
+    },
+
+    createAzureCosmosdbCI: function(strBody) {
+        new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Cosmos DB payload ' + strBody);
+        var state, country, latitude, longitude, location;
+        var cosmosJson = JSON.parse(strBody);
+        var cosmos_status = cosmosJson.gpd.status;
+        state = cosmosJson.location.state;
+        country = cosmosJson.location.country;
+        latitude = cosmosJson.location.latitude;
+        longitude = cosmosJson.location.longitude;
+        location = cosmosJson.location.location;
+        var cosmosExt = cosmosJson.gpd.raw_config_data.properties.documentEndpoint;
+        var myArr = cosmosExt.split("//");
+        var reqArr = myArr[1].split(":");
+        var reqPort = reqArr[1].split("/");
+        var cosmosdb_data = new GlideRecord('cmdb_ci_cloud_database');
+        cosmosdb_data.initialize();
+        cosmosdb_data.name = cosmosJson.gpd.provider_resource_name;
+        cosmosdb_data.version = cosmosJson.gpd.version;
+        if (cosmos_status == 'Active') {
+            cosmosdb_data.operational_status = '1';
+            cosmosdb_data.install_status = '1';
+        } else {
+            cosmosdb_data.operational_status = '2';
+            cosmosdb_data.install_status = '2';
+        }
+        cosmosdb_data.fqdn = reqArr[0]; //'mongodbcosmoscmdb.documents.azure.com';
+        cosmosdb_data.object_id = cosmosJson.entity_id;
+        cosmosdb_data.type = cosmosJson.gpd.raw_config_data.type;
+        //cosmosdb_data.vendor = 'Microsoft'; // this property is not string
+        cosmosdb_data.correlation_id = cosmosJson.gpd.correlation_id;
+        cosmosdb_data.tcp_port = reqPort[0]; //'443';
+        cosmosdb_data.dns_domain = cosmosJson.gpd.raw_config_data.properties.documentEndpoint;
+        cosmosdb_data.attributes = cosmosJson.gpd.raw_config_data;
+        cosmosdb_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+        res_rec = cosmosdb_data.insert();
+        return res_rec;
+    },
+
+    createAzureSQLdbCI: function(strBody) {
+        new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure SQL DB payload ' + strBody);
+        var state, country, latitude, longitude, location;
+        var inputJSON = JSON.parse(strBody);
+        state = inputJSON.location.state;
+        country = inputJSON.location.country;
+        latitude = inputJSON.location.latitude;
+        longitude = inputJSON.location.longitude;
+        location = inputJSON.location.location;
+
+        var db_data = new GlideRecord('cmdb_ci_db_instance');
+        db_data.initialize();
+        db_data.name = inputJSON.gpd.provider_resource_name;
+        db_data.version = inputJSON.gpd.version;
+        db_data.category = inputJSON.gpd.service_category;
+        db_data.type = inputJSON.gpd.provider_resource_type;
+        db_data.correlation_id = db_data.gpd.correlation_id;
+        db_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+        res_rec = db_data.insert();
+        return res_rec;
+    },
+
+    updateEBSInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset EBS Update payload ' + strBody);
+
+            var res_rec, ebs_status, volumeId, provider_resource_name;
+            var json_ebs = JSON.parse(strBody);
+
+            var config_id = json_ebs.u_ci_id;
+            var size = json_ebs.gpd.raw_config_data.size;
+            provider_resource_name = json_ebs.gpd.provider_resource_name;
+            if (!provider_resource_name) provider_resource_name = json_ebs.entity_id;
+            provider_resource_id = json_ebs.gpd.provider_resource_id;
+            ebs_status = json_ebs.gpd.provider_status.toLowerCase();
+
+            volumeId = json_ebs.gpd.raw_config_data.volumeId;
+            var correlation_id = json_ebs.gpd.correlation_id;
+
+            var ebs_rec = new GlideRecord('cmdb_ci_storage_volume');
+            ebs_rec.addEncodedQuery('sys_id=' + config_id);
+            ebs_rec.query();
+            if (ebs_rec.next()) {
+                ebs_rec.name = provider_resource_name;
+                if (ebs_status == 'available') {
+                    ebs_rec.operational_status = '1';
+                    ebs_rec.state = 'available';
+
+                } else if (ebs_status == 'in-use') {
+                    ebs_rec.operational_status = '1';
+                    ebs_rec.state = 'in_use';
+
+                } else {
+                    ebs_rec.operational_status = '2';
+                    ebs_rec.state = 'terminated';
+                }
+                ebs_rec.correlation_id = correlation_id;
+                ebs_rec.category = json_ebs.gpd.service_category;
+                ebs_rec.size_bytes = parseInt(size) * 1024 * 1024 * 1024;
+                res_rec = ebs_rec.update();
+            }
+
+            //VM instance
+
+            var attSet = json_ebs.gpd.raw_config_data.attachmentSet.item;
+            if (attSet) {
+
+                var vmId = attSet.instanceId;
+                var volId = attSet.volumeId;
+                var mtPoint = attSet.device;
+
+                //Create storage mapping record and relate to EBS
+                this.createMountPoint(volId, mtPoint, correlation_id, res_rec);
+
+                var vm_Ins = new GlideRecord('cmdb_ci_vm_instance');
+                vm_Ins.addQuery('object_id=' + vmId);
+                vm_Ins.query();
+
+
+                // Create a relationship with the Virtual Machine Instance and the EBS record as CONTAINS relationship
+                if (vm_Ins.next()) {
+                    var vm_rel_ci = new GlideRecord('cmdb_rel_ci');
+                    vm_rel_ci.initialize();
+                    vm_rel_ci.parent = vm_Ins.sys_id;
+                    vm_rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    vm_rel_ci.child = res_rec;
+                    vm_rel_ci.insert();
+                }
+            }
+
+            // delete relationship with the Virtual Machine and the EBS record
+            var vm_rel_del = new GlideRecord('cmdb_rel_ci');
+            vm_rel_del.addEncodedQuery('parent.sys_class_name=cmdb_ci_vm_instance^child=' + res_rec);
+            vm_rel_del.query();
+            while (vm_rel_del.next()) {
+                if (vmId != vm_rel_del.parent.object_id) {
+                    vm_rel_del.deleteRecord();
+                    new HCMSLogLevel().LogMsg('info', 'deleted the relation between VM Instance parent record ' + res_rec + '  with child EBS record   ' + vm_rel_del.parent.name);
+                }
+            }
+
+            // delete relationship with the storage_mapping and the EBS record
+            var sm_rel_del = new GlideRecord('cmdb_rel_ci');
+            sm_rel_del.addEncodedQuery('parent=' + res_rec + '^child.sys_class_name=cmdb_ci_storage_mapping');
+            sm_rel_del.query();
+            while (sm_rel_del.next()) {
+                if (mtPoint != sm_rel_del.child.mount_point) {
+
+                    sm_rel_del.deleteRecord();
+                    new HCMSLogLevel().LogMsg('info', 'deleted the relation between EBS parent record ' + res_rec + '  with child storage mapping record   ' + sm_rel_del.child.name);
+                }
+            }
+
+            var tagSet = json_ebs.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec);
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for EBS failed ' + ex);
+        }
+
+    },
+
+
+    updateELBInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset ELB Update payload ' + strBody);
+
+            var res_rec, elb_status, config_id, provider_resource_name;
+            var json_elb = JSON.parse(strBody);
+            var correlation_id = json_elb.gpd.correlation_id;
+            elb_status = json_elb.gpd.provider_status.toLowerCase();
+            var dnsName = json_elb.gpd.raw_config_data.DNSName;
+            config_id = json_elb.u_ci_id;
+            provider_resource_name = json_elb.gpd.provider_resource_name;
+            var elb_rec = new GlideRecord('cmdb_ci_cloud_load_balancer');
+            elb_rec.addEncodedQuery('sys_id=' + config_id);
+            elb_rec.query();
+            if (elb_rec.next()) {
+                elb_rec.name = provider_resource_name;
+                if (elb_status == 'available' || elb_status == 'active') {
+                    elb_rec.operational_status = '1';
+                    elb_rec.state = 'available';
+                } else {
+                    elb_rec.operational_status = '2';
+                    elb_rec.state = 'terminated';
+                }
+                elb_rec.correlation_id = correlation_id;
+                elb_rec.category = json_elb.gpd.service_category;
+                elb_rec.object_id = json_elb.entity_id;
+                elb_rec.canonical_hosted_zone_id = json_elb.gpd.raw_config_data.CanonicalHostedZoneId;
+                elb_rec.dns_name = dnsName;
+                elb_rec.fqdn = dnsName;
+                res_rec = elb_rec.update();
+
+            }
+
+            //VPC
+
+            var vpcObj = json_elb.gpd.extended_data.target_groups.VpcId;
+            if (vpcObj) {
+                var gr = new GlideRecord('cmdb_ci_network');
+                gr.addQuery('object_id', vpcObj);
+                gr.query();
+                if (gr.next()) {
+                    var vpcId = gr.sys_id;
+
+                    // Create a relationship with the ELB and VPC
+                    var vpc_rel_ci = new GlideRecord('cmdb_rel_ci');
+                    vpc_rel_ci.addEncodedQuery('parent=' + res_rec + '^child=' + vpcId);
+                    vpc_rel_ci.query();
+
+                    if (!vpc_rel_ci.next()) {
+                        vpc_rel_ci.parent = res_rec;
+                        vpc_rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                        vpc_rel_ci.child = vpcId;
+                        vpc_rel_ci.insert();
+                    }
+                }
+            }
+
+
+            //Datacenter
+            var resource_region, region_val_id, subnetArr = [];
+            var region = json_elb.location.data_center_id;
+
+            if (region) {
+                resource_region = new GlideRecord('cmdb_ci_aws_datacenter');
+                resource_region.addQuery('correlation_id', correlation_id);
+                resource_region.query();
+                if (!resource_region.next()) {
+                    resource_region.name = region;
+                    resource_region.correlation_id = correlation_id;
+                    resource_region.region = region;
+                    region_val_id = resource_region.insert();
+                } else {
+                    resource_region.name = region;
+                    resource_region.region = region;
+                    region_val_id = resource_region.update();
+                }
+            }
+
+
+            var availablity_zone, subnets, arrAZs = [];
+            var avZones = json_elb.gpd.raw_config_data.AvailabilityZones;
+            if (avZones) {
+                for (var w = 0; w < avZones.member.length; w++) {
+                    availablity_zone = avZones.member[w].ZoneName;
+                    arrAZs.push(availablity_zone); // payload AZs stored in an array
+                    // Create record in the availablity_zone for the resource to be resource
+                    if (availablity_zone) {
+                        var availablty_zone = this.updateAvailabilityZoneCI(availablity_zone);
+                    }
+
+                    // Create a relationship with the datacenter and the availability_zone 
+
+                    var avail_zone_rel = new GlideRecord('cmdb_rel_ci');
+                    avail_zone_rel.addEncodedQuery('parent=' + region_val_id + '^child=' + availablty_zone);
+                    avail_zone_rel.query();
+
+                    if (!avail_zone_rel.next()) {
+                        avail_zone_rel.parent = region_val_id;
+                        avail_zone_rel.type = '55c95bf6c0a8010e0118ec7056ebc54d';
+                        avail_zone_rel.child = availablty_zone;
+                        avail_zone_rel.insert();
+                    }
+
+
+
+                    //Subnets
+                    var subCrted;
+                    subnets = avZones.member[w].SubnetId;
+                    subnetArr.push(subnets);
+
+                    // Create record for the subnets in subnet table
+                    if (subnets) {
+                        var subnetId = new GlideRecord('cmdb_ci_cloud_subnet');
+                        subnetId.addEncodedQuery('object_id=' + subnets);
+                        subnetId.query();
+
+                        if (!subnetId.next()) { // if records doesnt exist, create
+                            subnetId.name = subnets;
+                            subnetId.object_id = subnets;
+                            subCrted = subnetId.insert();
+                        } else
+                            subCrted = subnetId.sys_id;
+                        // Create a relationship with the subnets and the availability_zone 
+
+                        var subnet_rel = new GlideRecord('cmdb_rel_ci');
+                        subnet_rel.addEncodedQuery('parent=' + availablty_zone + '^child=' + subCrted);
+                        subnet_rel.query();
+                        if (!subnet_rel.next()) {
+                            subnet_rel.parent = availablty_zone;
+                            subnet_rel.type = '55c95bf6c0a8010e0118ec7056ebc54d';
+                            subnet_rel.child = subCrted;
+                            subnet_rel.insert();
+                        }
+
+                    }
+
+                }
+
+
+            }
+
+            //find Azs under data center
+            var azArr = [];
+            var vm_rel_dc = new GlideRecord('cmdb_rel_ci');
+            vm_rel_dc.addEncodedQuery('parent.correlation_id=' + correlation_id + '^parent.sys_class_name=cmdb_ci_aws_datacenter');
+            vm_rel_dc.query();
+            while (vm_rel_dc.next()) {
+                azArr.push(vm_rel_dc.child.name.trim());
+                if (arrAZs.indexOf(vm_rel_dc.child.name.trim()) == -1) {
+                    //delete relation
+                    vm_rel_dc.deleteRecord();
+                    new HCMSLogLevel().LogMsg('info', 'deleted the relation between datacenter parent record with child AZs  ' + vm_rel_dc.child.name);
+                }
+            }
+
+
+
+            // delete subnet relations if not received in payload
+            var vm_rel_del = new GlideRecord('cmdb_rel_ci');
+            vm_rel_del.addEncodedQuery('parent.nameIN' + azArr + '^child.sys_class_name=cmdb_ci_cloud_subnet');
+            vm_rel_del.query();
+            while (vm_rel_del.next()) {
+                if (subnetArr.indexOf(vm_rel_del.child.name.trim()) == -1) {
+                    vm_rel_del.deleteRecord();
+                    new HCMSLogLevel().LogMsg('info', 'deleted the relation between availablty_zone parent record ' + availablty_zone + '  with child vm Instance record   ' + vm_rel_del.child.name);
+
+                }
+            }
+
+
+            //VM instance update
+
+            var extData = json_elb.gpd.extended_data;
+            var vmId = [];
+            if (extData)
+                var targetType = extData.target_groups.TargetType;
+            if (targetType == 'instance') {
+                var vmI = extData.target_health_checks;
+                if (vmI.length) {
+                    for (j = 0; j < vmI.length; j++) {
+
+
+                        var vmInst = vmI[j].Target.Id;
+                        vmId.push(vmInst); //put all the vm instance ids in an array
+                        var vm_Ins = new GlideRecord('cmdb_ci_vm_instance');
+                        vm_Ins.addQuery('object_id=' + vmI[j].Target.Id.trim());
+                        vm_Ins.query();
+
+                        // Create a relationship with the Virtual Machine and the ELB record as CONTAINS relationship
+                        if (vm_Ins.next()) {
+                            var vm_rel_ci = new GlideRecord('cmdb_rel_ci');
+                            vm_rel_ci.addEncodedQuery('parent=' + res_rec + '^child=' + vm_Ins.sys_id);
+                            vm_rel_ci.query();
+
+                            if (!vm_rel_ci.next()) { // if relation doesnt exist
+
+                                vm_rel_ci.parent = res_rec;
+                                vm_rel_ci.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                                vm_rel_ci.child = vm_Ins.sys_id;
+                                vm_rel_ci.insert();
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+            // delete vm instance relations if not received in payload
+
+            var vmI_rel_del = new GlideRecord('cmdb_rel_ci');
+            vmI_rel_del.addEncodedQuery('parent=' + res_rec + '^child.sys_class_name=cmdb_ci_vm_instance');
+            vmI_rel_del.query();
+            while (vmI_rel_del.next()) {
+                if (vmId.indexOf(vmI_rel_del.child.object_id.trim()) == -1) {
+                    vmI_rel_del.deleteRecord();
+                    new HCMSLogLevel().LogMsg('info', 'deleted the relation between ELB parent record ' + res_rec + '  with child VM instance  record   ' + vmI_rel_del.child.name);
+
+                }
+            }
+
+
+
+            //tagset creation
+            var tagSet = json_elb.gpd.tags;
+
+            this.updateTagSoiciLink(tagSet, res_rec);
+
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for ELB failed ' + ex);
+        }
+    },
+
+    updateEFSInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset EFS Update payload ' + strBody);
+
+            var provider_resource_name, provider_resource_id, res_rec, efs_status, FileSystemId;
+            var json_efs = JSON.parse(strBody);
+            provider_resource_name = json_efs.gpd.provider_resource_name;
+            if (!provider_resource_name) provider_resource_name = json_efs.entity_id;
+            provider_resource_id = json_efs.gpd.provider_resource_id;
+            efs_status = json_efs.gpd.provider_status.toLowerCase();
+            FileSystemId = json_efs.gpd.raw_config_data.FileSystemId;
+            var correlation_id = json_efs.gpd.correlation_id;
+            var config_id = json_efs.u_ci_id;
+            // var location, state, country, latitude, longitude;
+
+
+            var efs_rec = new GlideRecord('cmdb_ci_cloud_storage_account');
+            efs_rec.addEncodedQuery('sys_id=' + config_id);
+            efs_rec.query();
+
+            if (efs_rec.next()) {
+                efs_rec.name = provider_resource_name;
+                if (efs_status == 'available') {
+                    efs_rec.operational_status = '1';
+                    efs_rec.state = 'available';
+                } else {
+                    efs_rec.operational_status = '2';
+                    efs_rec.state = 'terminated';
+                }
+                efs_rec.correlation_id = correlation_id;
+                efs_rec.category = json_efs.gpd.service_category;
+                efs_rec.object_id = json_efs.entity_id;
+                efs_rec.short_description = FileSystemId;
+                res_rec = efs_rec.update();
+            }
+
+
+
+            var tagSet = json_efs.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec);
+
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for EFS failed ' + ex);
+        }
+    },
+
+    updateStackInstanceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset Stack Update payload ' + strBody);
+
+            var provider_resource_name, provider_resource_id, res_rec, stack_status;
+            var json_stack = JSON.parse(strBody);
+            var config_id = json_stack.u_ci_id;
+            provider_resource_name = json_stack.gpd.provider_resource_name;
+            provider_resource_id = json_stack.gpd.provider_resource_id;
+            stack_status = json_stack.gpd.provider_status.toLowerCase();
+            var correlation_id = json_stack.gpd.correlation_id;
+
+            var stack_rec = new GlideRecord('cmdb_ci_cmp_resource');
+            stack_rec.addEncodedQuery('sys_id=' + config_id);
+            stack_rec.query();
+
+            if (stack_rec.next()) {
+                stack_rec.name = provider_resource_name;
+
+                if (stack_status == 'create_complete' || stack_status == 'update_complete' || stack_status == 'import_complete') {
+                    stack_rec.operational_status = '1';
+                    stack_rec.state = 'available';
+                } else if (stack_status == 'delete_complete') {
+                    stack_rec.operational_status = '2';
+                    stack_rec.state = 'terminated';
+                } else {
+                    stack_rec.operational_status = '2';
+                    stack_rec.state = 'available';
+                }
+
+                stack_rec.correlation_id = correlation_id;
+                stack_rec.category = json_stack.gpd.service_category;
+                stack_rec.object_id = json_stack.entity_id;
+                stack_rec.short_description = provider_resource_id;
+                res_rec = stack_rec.update();
+            }
+
+            var tagSet = json_stack.gpd.tags;
+            this.updateTagSoiciLink(tagSet, res_rec);
+
+            // Create relationship with the Stack & the Resources in it
+            var ciRec, stackID = json_stack.gpd.raw_config_data.StackId;
+
+            var stackRes = new GlideRecord('cmdb_key_value');
+            stackRes.addEncodedQuery('key=aws:cloudformation:stack-id^ORkey=stackId^value=' + stackID);
+            stackRes.query();
+
+            while (stackRes.next()) {
+                ciRec = stackRes.configuration_item.sys_id;
+
+                var ci_rel = new GlideRecord('cmdb_rel_ci');
+                ci_rel.addEncodedQuery('parent=' + res_rec + '^child=' + ciRec);
+                ci_rel.query();
+                if (!ci_rel.next()) {
+                    ci_rel.parent = res_rec;
+                    ci_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    ci_rel.child = ciRec;
+                    ci_rel.insert();
+                }
+            }
+
+
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for Stack failed ' + ex);
+        }
+    },
+
+    type: 'Emp_CIWizMapper_Update'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>shalini.s11@kyndryl.com</sys_created_by>
+        <sys_created_on>2021-09-28 11:23:31</sys_created_on>
+        <sys_id>370199361bfab450da788403604bcba7</sys_id>
+        <sys_mod_count>114</sys_mod_count>
+        <sys_name>Emp_CIWizMapper_Update</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_370199361bfab450da788403604bcba7</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 07:50:55</sys_updated_on>
+    </sys_script_include>
+</record_update>

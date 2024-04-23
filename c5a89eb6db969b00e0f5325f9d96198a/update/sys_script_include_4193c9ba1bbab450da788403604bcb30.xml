@@ -1,0 +1,1627 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.Emp_CIWizMapper_Azure_CI_Configurations_Update</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Shalini S &#13;
+* @Script Include is used for Azure_CI_Configurations_Update&#13;
+**/</description>
+        <name>Emp_CIWizMapper_Azure_CI_Configurations_Update</name>
+        <script><![CDATA[var Emp_CIWizMapper_Azure_CI_Configurations_Update = Class.create();
+Emp_CIWizMapper_Azure_CI_Configurations_Update.prototype = {
+    initialize: function() {},
+
+
+    updateAzureVMCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for Azure Update vm payload' + strBody);
+
+            var tagSet, orderNumber, InstanceId, name, manufacturer, InstanceState, statuses, category, uuid, os, os_version, object_id, vm_azure_parent_rec, az_img_version, az_offer, az_publisher, az_sku, az_version, platform, az_image_name, img_azure_rec_id, az_vm_size, az_vm_details_rec_id, az_datacenter_name, az_datacenter_region, az_datacenter_rec_id, az_network_interface_id, az_network_interface_rec_id, location, state, country, latitude, longitude, provider_resource_id, correlation_id, cpu, mac_address, coreCount, instance_type, dns_name, hostName, storage_vol_status, storage_volume, mount_point, ipaddress, subNetid, internet_facing, res_rec, availablity_zone, os_type, resource_grp_name, resource_grp_id, storage_account_type, az_disk_size, az_host_name, stack_Id, soi_id, tag_stack_name, tag_name, config_id, operation_status;
+
+            var inputJSON = JSON.parse(strBody);
+
+            tagSet = inputJSON.gpd.tags;
+            name = inputJSON.gpd.provider_resource_name;
+            config_id = inputJSON.u_ci_id;
+            object_id = inputJSON.entity_id;
+            manufacturer = inputJSON.provider;
+            az_img_version = inputJSON.gpd.raw_config_data.properties.storageProfile.imageReference.exactVersion;
+            az_offer = inputJSON.gpd.raw_config_data.properties.storageProfile.imageReference.offer;
+            az_publisher = inputJSON.gpd.raw_config_data.properties.storageProfile.imageReference.publisher;
+            az_sku = inputJSON.gpd.raw_config_data.properties.storageProfile.imageReference.sku;
+            az_version = inputJSON.gpd.raw_config_data.properties.storageProfile.imageReference.version;
+            az_image_name = az_img_version + "/" + az_offer + "/" + az_publisher + "/" + az_sku + "/" + az_version;
+            platform = inputJSON.gpd.raw_config_data.platform;
+            az_vm_size = inputJSON.gpd.raw_config_data.properties.hardwareProfile.vmSize;
+            az_datacenter_name = inputJSON.location.data_center;
+            az_datacenter_region = inputJSON.location.data_center_id;
+            az_network_interface_id = inputJSON.gpd.raw_config_data.properties.networkProfile.networkInterfaces;
+            az_disk_size = inputJSON.gpd.raw_config_data.properties.storageProfile.osDisk.diskSizeGB;
+            az_host_name = inputJSON.gpd.raw_config_data.properties.osProfile.computerName;
+            location = inputJSON.location.location;
+            state = inputJSON.location.state;
+            country = inputJSON.location.country;
+            latitude = inputJSON.location.latitude;
+            longitude = inputJSON.location.longitude;
+            uuid = inputJSON.uuid;
+            manufacturer = inputJSON.provider;
+            provider_resource_id = inputJSON.gpd.provider_resource_id;
+            correlation_id = inputJSON.gpd.correlation_id;
+            name = inputJSON.gpd.provider_resource_name;
+            os_type = inputJSON.gpd.raw_config_data.properties.storageProfile.osDisk.osType;
+            instance_type = inputJSON.gpd.raw_config_data.instanceType;
+            dns_name = inputJSON.gpd.raw_config_data.dnsName;
+            ipaddress = inputJSON.gpd.raw_config_data.ipAddress;
+            availablity_zone = inputJSON.gpd.raw_config_data.name;
+
+            statuses = inputJSON.gpd.provider_status.toString();
+            if (statuses == 'PowerState/deallocated' || statuses == 'PowerState/stopped') {
+                InstanceState = 'off';
+                operation_status = '2';
+            }
+            if (statuses == 'PowerState/running') {
+                InstanceState = 'on';
+                operation_status = '1';
+            }
+
+            category = inputJSON.gpd.service_category;
+            uuid = inputJSON.uuid;
+            os = inputJSON.gpd.raw_config_data.properties.instanceView.osName;
+            os_version = inputJSON.gpd.raw_config_data.properties.instanceView.osVersion;
+
+            if (az_network_interface_id) {
+                for (k = 0; k < inputJSON.gpd.raw_config_data.properties.networkProfile.networkInterfaces.length; k++) {
+                    az_network_interface_id = inputJSON.gpd.raw_config_data.properties.networkProfile.networkInterfaces[k].id;
+                }
+            }
+            if (availablity_zone) {
+                var availablty_zone = new Emp_CIWizMapper().updateAvailabilityZoneCI(availablity_zone);
+            }
+
+            //fetch the resource group name and resource group id 
+            if (object_id) {
+                var resource_grp_details = new Emp_CI_Creation_Validation_Script().getResourceGrpDetails(object_id);
+            }
+
+            //create a VM record under Virtual Machines table (cmdb_ci_vm_instance)
+            var azure_VM_CI = new GlideRecord('cmdb_ci_vm_instance');
+            azure_VM_CI.addEncodedQuery('correlation_id=' + correlation_id);
+            azure_VM_CI.query();
+            if (azure_VM_CI.next()) {
+                azure_VM_CI.name = name;
+                azure_VM_CI.state = InstanceState;
+                azure_VM_CI.operational_status = operation_status; // 2 - non-operational
+                azure_VM_CI.object_id = object_id;
+                azure_VM_CI.cpus = '1';
+                azure_VM_CI.disks = '1';
+                azure_VM_CI.nics = '1';
+                vm_azure_parent_rec = azure_VM_CI.update();
+            }
+
+            // Create a record to store the computer network interface details 
+            var az_network_interface_details = new GlideRecord('cmdb_ci_nic');
+            az_network_interface_details.addEncodedQuery('correlation_id=' + correlation_id);
+            az_network_interface_details.query();
+            if (az_network_interface_details.next()) {
+                az_network_interface_details.name = az_network_interface_id;
+                az_network_interface_details.object_id = az_network_interface_id;
+                az_network_interface_details.correlation_id = az_network_interface_id;
+                az_network_interface_details.install_status = '1';
+                az_network_interface_rec_id = az_network_interface_details.update();
+            }
+
+            // Update a record to store the virtual machines datacenter details
+            var az_datacenter_details = new GlideRecord('cmdb_ci_azure_datacenter');
+            az_datacenter_details.addEncodedQuery('correlation_id=' + correlation_id);
+            az_datacenter_details.query();
+            if (az_datacenter_details.next()) {
+                az_datacenter_details.name = az_datacenter_name;
+                az_datacenter_details.region = az_datacenter_region;
+                az_datacenter_rec_id = az_datacenter_details.update();
+            }
+
+            // Update a record to store the resource group details 
+            var resource_grp_rec = new GlideRecord('cmdb_ci_resource_group');
+            resource_grp_rec.addEncodedQuery('object_idSTARTSWITH' + resource_grp_details.resGrpID);
+            resource_grp_rec.query();
+            if (resource_grp_rec.next()) {
+                resource_grp_rec.name = resource_grp_details.resGrpName;
+                resource_grp_rec.object_id = resource_grp_details.resGrpID;
+                resource_grp_rec.state = 'available';
+                resource_grp_id = resource_grp_rec.update();
+            }
+
+            // Update a record to store the Image reference details 
+            var img_azure_rec = new GlideRecord('cmdb_ci_os_template');
+            img_azure_rec.addEncodedQuery('correlation_id=' + correlation_id);
+            img_azure_rec.query();
+            if (img_azure_rec.next()) {
+                img_azure_rec.name = az_image_name;
+                img_azure_rec.object_id = az_image_name;
+                img_azure_rec.guest_os = os_type;
+                img_azure_rec_id = img_azure_rec.update();
+            }
+
+            // Update a record to store the hardware detials of the azure virtual machine 
+            var vm_details = new GlideRecord('cmdb_ci_compute_template');
+            vm_details.addQuery('correlation_id', correlation_id);
+            vm_details.query();
+            if (vm_details.next()) {
+                vm_details.object_id = az_vm_size;
+                vm_details.vcpus = '1';
+                az_vm_details_rec_id = vm_details.update();
+            }
+
+            switch (os_type) {
+                case 'Windows':
+                    var azureWindows = new GlideRecord('cmdb_ci_win_server');
+                    azureWindows.addEncodedQuery('sys_id=' + config_id);
+                    azureWindows.query();
+                    if (azureWindows.next()) {
+                        azureWindows.name = name;
+                        azureWindows.manufacturer = manufacturer;
+                        azureWindows.category = category; //'Hardware';
+                        azureWindows.uuid = uuid;
+                        azureWindows.os = os;
+                        azureWindows.os_version = os_version;
+                        azureWindows.chassis_type = 'Other';
+                        azureWindows.install_status = '1';
+                        azureWindows.u_qs_cmdb_ci_managed_by = 'IBM';
+                        azureWindows.manufacturer = manufacturer;
+                        azureWindows.operational_status = operation_status;
+                        azureWindows.manufacturer = manufacturer;
+                        azureWindows.comments = 'Azure Windows  Virtual Machine  ' + provider_resource_id;
+                        azureWindows.u_qs_cmdb_ci_server_uuid = uuid; //Applicable only if Quickstart is Installed 
+                        azureWindows.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                        azureWindows.os = os_type;
+                        azureWindows.disk_space = az_disk_size;
+                        azureWindows.host_name = az_host_name;
+                        azureWindows.mac_address = mac_address;
+                        azureWindows.object_id = object_id;
+                        azureWindows.correlation_id = correlation_id;
+                        azureWindows.chassis_type = 'Other';
+                        azureWindows.dns_domain = dns_name;
+                        azureWindows.cpu_count = cpu;
+                        azureWindows.cpu_core_count = coreCount;
+                        azureWindows.ip_address = ipaddress;
+                        azureWindows.internet_facing = internet_facing;
+                        res_rec = azureWindows.update();
+                    }
+                    break;
+
+                case 'Linux':
+                    var azureLinux = new GlideRecord('cmdb_ci_linux_server');
+                    azureLinux.addEncodedQuery('sys_id=' + config_id);
+                    azureLinux.query();
+                    if (azureLinux.next()) {
+                        azureLinux.name = name;
+                        azureLinux.manufacturer = manufacturer;
+                        azureLinux.category = category; // 'Hardware';
+                        azureLinux.uuid = uuid;
+                        azureLinux.os = os;
+                        azureLinux.os_version = os_version;
+                        azureLinux.chassis_type = 'Other';
+                        azureLinux.install_status = '1';
+                        azureLinux.u_qs_cmdb_ci_managed_by = 'IBM';
+                        azureLinux.manufacturer = manufacturer;
+                        azureLinux.operational_status = operation_status;
+                        azureLinux.manufacturer = manufacturer;
+                        azureLinux.comments = 'Azure Linux  Virtual Machine  ' + provider_resource_id;
+                        azureLinux.u_qs_cmdb_ci_server_uuid = uuid; //Applicable only if Quickstart is Installed 
+                        azureLinux.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                        azureLinux.os = os_type;
+                        azureLinux.disk_space = az_disk_size;
+                        azureLinux.host_name = az_host_name;
+                        azureLinux.mac_address = mac_address;
+                        azureLinux.object_id = object_id;
+                        azureLinux.correlation_id = correlation_id;
+                        azureLinux.chassis_type = 'Other';
+                        azureLinux.dns_domain = dns_name;
+                        azureLinux.cpu_count = cpu;
+                        azureLinux.cpu_core_count = coreCount;
+                        azureLinux.ip_address = ipaddress;
+                        azureLinux.internet_facing = internet_facing;
+                        res_rec = azureLinux.update();
+                    }
+            }
+			
+			//soici linking with azure vm
+			
+			this.updateTagSoiciLink(tagSet, vm_azure_parent_rec); //Create tags if exist and soici link with record
+			
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Linux VM Update  call  failed' + ex);
+        }
+    },
+
+    updateAzureLoadBalancerCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update LoadBalancer payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var lb_Json = JSON.parse(strBody);
+            var lb_status = lb_Json.gpd.status;
+            state = lb_Json.location.state;
+            country = lb_Json.location.country;
+            latitude = lb_Json.location.latitude;
+            longitude = lb_Json.location.longitude;
+            location = lb_Json.location.location;
+            config_id = lb_Json.u_ci_id.toString();
+            var tagSet = lb_Json.gpd.tags;
+            var network_ip_id = lb_Json.gpd.raw_config_data.properties.frontendIPConfigurations[0].properties.publicIPAddress;
+            if (network_ip_id)
+                var network_public_ip = this.getPublicIpAddress(network_ip_id.id);
+
+            var lb_data = new GlideRecord('cmdb_ci_cloud_load_balancer');
+            lb_data.addEncodedQuery('sys_id=' + config_id);
+            lb_data.query();
+            if (lb_data.next()) {
+                lb_data.name = lb_Json.gpd.provider_resource_name;
+                if (lb_status == 'Active') {
+                    lb_data.install_status = '1';
+                    lb_data.operational_status = '1';
+                } else {
+                    lb_data.install_status = '2';
+                    lb_data.operational_status = '2';
+                }
+                lb_data.object_id = lb_Json.entity_id;
+                lb_data.correlation_id = lb_Json.gpd.correlation_id;
+                lb_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                lb_data.ip_address = lb_Json.gpd.raw_config_data.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
+                res_rec = lb_data.update();
+            }
+
+            // Create a relationship with the NI and the PublicIPaddress
+            var pIA_rel = new GlideRecord('cmdb_rel_ci');
+            pIA_rel.addEncodedQuery('parent=' + res_rec + '^child=' + network_public_ip);
+            pIA_rel.query();
+            if (!pIA_rel.next()) {
+                pIA_rel.initialize();
+                pIA_rel.parent = res_rec;
+                pIA_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                pIA_rel.child = network_public_ip;
+                pIA_rel.insert();
+            }
+           
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure Cloud Load balancer update call failed ' + ex);
+        }
+    },
+
+
+    updateAzureVaultsCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update Vault payload: ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var vault_Json = JSON.parse(strBody);
+            var vault_status = vault_Json.gpd.status;
+            var vault_objectid = vault_Json.entity_id;
+            var tagSet = vault_Json.gpd.tags;
+            state = vault_Json.location.state;
+            country = vault_Json.location.country;
+            latitude = vault_Json.location.latitude;
+            longitude = vault_Json.location.longitude;
+            location = vault_Json.location.location;
+            config_id = vault_Json.u_ci_id;
+            var id;
+            var virtual_net = [];
+            var virtual_network_id = vault_Json.gpd.raw_config_data.properties.networkAcls;
+            if (virtual_network_id) {
+                for (var j = 0; j < virtual_network_id.virtualNetworkRules.length; j++) {
+                    id = virtual_network_id.virtualNetworkRules[j].id;
+                    virtual_net.push(this.getVirtualNetwork(id));
+                }
+            }
+
+            var vault_data = new GlideRecord('cmdb_ci_email_server_ent_vault');
+            vault_data.addEncodedQuery('sys_id=' + config_id);
+            vault_data.query();
+            if (vault_data.next()) {
+                vault_data.name = vault_Json.gpd.provider_resource_name;
+                vault_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                if (vault_status == 'Succeeded' || vault_status == 'Active') {
+                    vault_data.install_status = '1';
+                    vault_data.operational_status = '1';
+                } else {
+                    vault_data.install_status = '2';
+                    vault_data.operational_status = '2';
+                }
+                vault_data.short_description = vault_Json.entity_id;
+                vault_data.correlation_id = vault_Json.gpd.correlation_id;
+                res_rec = vault_data.update();
+            }
+
+            // Create a relationship with the VN and the vault
+            for (var i = 0; i < virtual_net.length; i++) {
+                var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+                virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + virtual_net[i]);
+                virtualN_rel.query();
+                if (!virtualN_rel.next()) {
+                    virtualN_rel.initialize();
+                    virtualN_rel.parent = res_rec;
+                    virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    virtualN_rel.child = virtual_net[i];
+                    virtualN_rel.insert();
+                }
+            }
+            this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure vault update call failed' + ex);
+        }
+    },
+
+    updateAzureRedisCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure  Update Redis payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var redisJson = JSON.parse(strBody);
+            var redis_status = redisJson.gpd.status;
+            var redis_objectid = redisJson.entity_id;
+            var tagSet = redisJson.gpd.tags;
+            state = redisJson.location.state;
+            country = redisJson.location.country;
+            latitude = redisJson.location.latitude;
+            longitude = redisJson.location.longitude;
+            location = redisJson.location.location;
+            config_id = redisJson.u_ci_id;
+
+            var redis_data = new GlideRecord('cmdb_ci_cloud_database');
+            redis_data.addEncodedQuery('sys_id=' + config_id);
+            redis_data.query();
+            if (redis_data.next()) {
+                redis_data.name = redisJson.gpd.provider_resource_name;
+                redis_data.version = redisJson.gpd.raw_config_data.properties.redisVersion;
+                if (redis_status == 'Active') {
+                    redis_data.operational_status = '1';
+                    redis_data.install_status = '1';
+                } else {
+                    redis_data.operational_status = '2';
+                    redis_data.install_status = '2';
+                }
+                redis_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                redis_data.fqdn = redisJson.gpd.raw_config_data.properties.hostName;
+                redis_data.object_id = redisJson.entity_id;
+                redis_data.type = redisJson.gpd.raw_config_data.type;
+                redis_data.correlation_id = redisJson.gpd.correlation_id;
+                redis_data.tcp_port = redisJson.gpd.raw_config_data.properties.port;
+                res_rec = redis_data.update();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure Redis Update Call failed ' + ex);
+        }
+    },
+
+    updateAzureServerCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for the  Azure Update Micorsoft SQL Servers payload ' + strBody);
+            var sername, serVersion, providerStatus, serverCorrelationID, serverObjectID, fully_qualifed_sername, serLocation, serverType, attributesVal, server_operational_status, server_res_rec, state, country, latitude, longitude, location, config_id;
+            var serverJson = JSON.parse(strBody);
+            sername = serverJson.gpd.provider_resource_name;
+            serVersion = serverJson.gpd.raw_config_data.properties.version;
+            providerStatus = serverJson.gpd.provider_status;
+            serverCorrelationID = serverJson.gpd.correlation_id;
+            serverObjectID = serverJson.entity_id;
+            state = serverJson.location.state;
+            country = serverJson.location.country;
+            latitude = serverJson.location.latitude;
+            longitude = serverJson.location.longitude;
+            location = serverJson.location.location;
+            fully_qualifed_sername = serverJson.gpd.raw_config_data.properties.fullyQualifiedDomainName;
+            serLocation = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            serverType = serverJson.gpd.raw_config_data.type;
+            attributesVal = serverJson.gpd.raw_config_data;
+            config_id = serverJson.u_ci_id;
+            var tagSet = serverJson.gpd.tags;
+            var serverState = serverJson.gpd.raw_config_data.properties.userVisibleState;
+            if (serverState == 'Ready')
+                server_operational_status = '1';
+            if (serverState == 'Stopped')
+                server_operational_status = '2';
+
+            var server_data_rec = new GlideRecord('cmdb_ci_cloud_database');
+            server_data_rec.addEncodedQuery('sys_id=' + config_id);
+            server_data_rec.query();
+            if (server_data_rec.next()) {
+                server_data_rec.name = sername;
+                server_data_rec.version = serVersion;
+                server_data_rec.correlation_id = serverCorrelationID;
+                server_data_rec.object_id = serverObjectID;
+                server_data_rec.fqdn = fully_qualifed_sername;
+                server_data_rec.location = serLocation;
+                server_data_rec.type = serverType;
+                server_data_rec.attributes = attributesVal;
+                server_data_rec.operational_status = server_operational_status;
+                server_res_rec = server_data_rec.update();
+            }
+            
+			this.updateTagSoiciLink(tagSet, server_res_rec); //Create tags if exist and soici link with record
+			
+            return server_res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', 'Update Azure SQL Failed' + ex);
+        }
+    },
+
+
+    updateAzureTrafficManagerCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for Azure Update Traffic Manager payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var trafficManager_Json = JSON.parse(strBody);
+            var tf_status = trafficManager_Json.gpd.status;
+            state = trafficManager_Json.location.state;
+            country = trafficManager_Json.location.country;
+            latitude = trafficManager_Json.location.latitude;
+            longitude = trafficManager_Json.location.longitude;
+            location = trafficManager_Json.location.location;
+            config_id = trafficManager_Json.u_ci_id;
+            var tf_opstatus = trafficManager_Json.gpd.provider_status;
+            var tagSet = trafficManager_Json.gpd.tags;
+
+            //adding relations to traffic resource
+            var ip_public = [];
+            var appl_ids = [];
+            var endpoints = trafficManager_Json.gpd.raw_config_data.properties.endpoints;
+
+            if (endpoints) {
+                for (var i = 0; i < endpoints.length; i++) {
+                    var target_resource = endpoints[i].properties.targetResourceId;
+                    if (target_resource) {
+                        if (target_resource.contains("/publicIPAddresses")) {
+                            ip_public.push(this.getPublicIpAddress(target_resource));
+                        } else if (target_resource.contains("/sites")) {
+                            appl_ids.push(this.getApplicationSites(target_resource));
+                        }
+                    }
+                }
+            }
+
+            var tf_data = new GlideRecord('cmdb_ci_cloud_load_balancer');
+            tf_data.addEncodedQuery('sys_id=' + config_id);
+            tf_data.query();
+            if (tf_data.next()) {
+                tf_data.name = trafficManager_Json.gpd.provider_resource_name;
+                if (tf_opstatus == 'Enabled')
+                    tf_opstatus = '1';
+                else
+                    tf_opstatus = '2';
+                if (tf_status == 'Active') {
+                    tf_data.state = 'available';
+                } else {
+                    tf_data.install_status = 'terminated';
+                }
+                tf_data.operational_status = tf_opstatus;
+                tf_data.object_id = trafficManager_Json.entity_id;
+                tf_data.correlation_id = trafficManager_Json.gpd.correlation_id;
+                tf_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                tf_data.attributes = trafficManager_Json.gpd.raw_config_data;
+                res_rec = tf_data.update();
+            }
+
+            // Create a relationship with the traffic and the publicIP
+            for (var m = 0; m < ip_public.length; m++) {
+                var public_rel = new GlideRecord('cmdb_rel_ci');
+                public_rel.initialize();
+                public_rel.parent = res_rec;
+                public_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                public_rel.child = ip_public[m];
+                public_rel.insert();
+            }
+
+            // Create a relationship with the VN and the cosmoDB
+            for (var n = 0; n < appl_ids.length; n++) {
+                var appSite_rel = new GlideRecord('cmdb_rel_ci');
+                appSite_rel.initialize();
+                appSite_rel.parent = res_rec;
+                appSite_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                appSite_rel.child = appl_ids[n];
+                appSite_rel.insert();
+            }
+           
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', 'Update Call for Traffic Manager Failed ' + ex);
+        }
+    },
+
+
+    updateAzureServerDatabaseCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for Azure Update Server Database payload ' + strBody);
+            var server_database_name, server_database_type, server_database_version, server_database_status, server_database_opstatus, server_database_serial_id, server_database_correlation_id, server_location, server_attributes, server_rec_id, state, country, latitude, longitude, location, config_id;
+            var serverDatabaseJson = JSON.parse(strBody);
+            server_database_name = serverDatabaseJson.gpd.provider_resource_name;
+            server_database_type = 'Microsoft SQL Server';
+            server_database_version = serverDatabaseJson.gpd.version;
+            server_database_status = serverDatabaseJson.gpd.status;
+            server_database_opstatus = serverDatabaseJson.gpd.provider_status;
+            server_database_serial_id = serverDatabaseJson.gpd.databaseId;
+            server_database_correlation_id = serverDatabaseJson.gpd.correlation_id;
+            state = serverDatabaseJson.location.state;
+            country = serverDatabaseJson.location.country;
+            latitude = serverDatabaseJson.location.latitude;
+            longitude = serverDatabaseJson.location.longitude;
+            location = serverDatabaseJson.location.location;
+            config_id = serverDatabaseJson.u_ci_id;
+            server_location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            server_attributes = serverDatabaseJson.gpd.raw_config_data;
+            var tagSet = serverDatabaseJson.gpd.tags;
+
+            var server_rec = new GlideRecord('cmdb_ci_database');
+            server_rec.addEncodedQuery('sys_id=' + config_id);
+            server_rec.query();
+            if (server_rec.next()) {
+                server_rec.name = server_database_name;
+                server_rec.type = server_database_type;
+                server_rec.version = server_database_version;
+                server_rec.install_status = server_database_status;
+                server_rec.operational_status = server_database_opstatus;
+                server_rec.correlation_id = server_database_correlation_id;
+                server_rec.location = server_location;
+                server_rec.attributes = server_attributes;
+                server_rec_id = server_rec.update();
+            }
+			
+            this.updateTagSoiciLink(tagSet, server_rec_id); //Create tags if exist and soici link with record
+			
+            return server_rec_id;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', 'Update Call for Server Database failed ' + ex);
+        }
+    },
+
+
+    updatepublicIpAddressCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for Azure Update public Ip Address payload ' + strBody);
+
+            var publicIpJson = JSON.parse(strBody);
+            var ip_name, ip_address, ip_address_object_id, ip_status, ip_attributes, ip_correlation_id, ip_location, ip_rec_id, state, country, latitude, longitude, location, config_id;
+
+            ip_name = publicIpJson.gpd.provider_resource_name;
+            ip_address = publicIpJson.gpd.raw_config_data.properties.ipAddress;
+            ip_address_object_id = publicIpJson.entity_id;
+            ip_status = publicIpJson.gpd.provider_status;
+            ip_correlation_id = publicIpJson.gpd.correlation_id;
+            state = publicIpJson.location.state;
+            country = publicIpJson.location.country;
+            latitude = publicIpJson.location.latitude;
+            longitude = publicIpJson.location.longitude;
+            location = publicIpJson.location.location;
+            config_id = publicIpJson.u_ci_id;
+            ip_location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            var tagSet = publicIpJson.gpd.tags;
+            if (ip_status == 'Succeeded')
+                ip_status = 'installed';
+
+            var ip_rec = new GlideRecord('cmdb_ci_cloud_public_ipaddress');
+            ip_rec.addEncodedQuery('sys_id=' + config_id);
+            ip_rec.query();
+            if (ip_rec.next()) {
+                ip_rec.name = ip_name;
+                ip_rec.public_ip_address = ip_address;
+                ip_rec.object_id = ip_address_object_id;
+                ip_rec.correlation_id = ip_correlation_id;
+                ip_rec.location = ip_location;
+                // ip_rec.attributes = ip_attributes;
+                ip_rec.install_status = ip_status;
+                ip_rec_id = ip_rec.update();
+            }
+            
+			
+			this.updateTagSoiciLink(tagSet, ip_rec_id); //Create tags if exist and soici link with record
+			
+            return ip_rec_id;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', 'Update Call for Public Ip Address failed ' + ex);
+        }
+    },
+
+    updateAzureNetworkInterfaceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for Azure Update Network Interface payload ' + strBody);
+            var networkJson = JSON.parse(strBody);
+            var networkName, network_ipaddress, network_macaddress, network_opstatus, network_objectID, network_correlationID, network_location, network_privateIpAddress, network_attributes, network_interface_rec_id, state, country, latitude, longitude, location, config_id;
+
+            networkName = networkJson.gpd.provider_resource_name;
+            network_macaddress = networkJson.gpd.raw_config_data.properties.macAddress;
+            network_opstatus = networkJson.gpd.provider_status.toString();
+            network_objectID = networkJson.entity_id;
+            network_correlationID = networkJson.gpd.correlation_id;
+            state = networkJson.location.state;
+            country = networkJson.location.country;
+            latitude = networkJson.location.latitude;
+            longitude = networkJson.location.longitude;
+            location = networkJson.location.location;
+            config_id = networkJson.u_ci_id;
+            network_location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            network_privateIpAddress = networkJson.gpd.raw_config_data.properties.ipConfigurations[0].properties.privateIPAddress;
+            network_attributes = networkJson.gpd.raw_config_data;
+            network_ipaddress = networkJson.gpd.raw_config_data.properties.ipConfigurations[0].name;
+
+            var network_ip_id = networkJson.gpd.raw_config_data.properties.ipConfigurations[0].properties.publicIPAddress;
+            if (network_ip_id)
+                network_public_ip = this.getPublicIpAddress(network_ip_id.id);
+            var virtual_network_id = networkJson.gpd.raw_config_data.properties.ipConfigurations[0].properties.subnet;
+            if (virtual_network_id)
+                var virtual_net = this.getVirtualNetwork(virtual_network_id.id);
+            var nsg_id = networkJson.gpd.raw_config_data.properties.networkSecurityGroup;
+            if (nsg_id)
+                var nsg_id_rec = this.getNetworkSecurityGroup(nsg_id.id);
+
+            //network_ipaddress = this.getPublicIpAddress(network_ipaddress);
+            if (network_ipaddress == 'NotAvailable') network_ipaddress = networkJson.gpd.raw_config_data.properties.ipConfigurations[0].name;
+            if (network_opstatus == 'Succeeded') network_opstatus = '1';
+            var tagSet = networkJson.gpd.tags;
+            if (network_objectID) {
+                var resource_grp_details = new Emp_CI_Creation_Validation_Script().getResourceGrpDetails(network_objectID);
+            }
+            var network_Interface_rec = new GlideRecord('cmdb_ci_nic');
+            network_Interface_rec.addEncodedQuery('sys_id=' + config_id);
+            network_Interface_rec.query();
+            if (network_Interface_rec.next()) {
+                network_Interface_rec.name = networkName;
+                network_Interface_rec.ip_address = network_ipaddress;
+                network_Interface_rec.mac_address = network_macaddress;
+                network_Interface_rec.operational_status = network_opstatus;
+                network_Interface_rec.object_id = network_objectID;
+                network_Interface_rec.correlation_id = network_correlationID;
+                network_Interface_rec.location = network_location;
+                network_Interface_rec.private_ip = network_privateIpAddress;
+                network_Interface_rec.attributes = network_attributes;
+                network_interface_rec_id = network_Interface_rec.update();
+            }
+
+            // Create a relationship with the NI and the PublicIPaddress
+            var pIA_rel = new GlideRecord('cmdb_rel_ci');
+            pIA_rel.addEncodedQuery('parent=' + network_interface_rec_id + '^child=' + network_public_ip);
+            pIA_rel.query();
+            if (!pIA_rel.next()) {
+                pIA_rel.initialize();
+                pIA_rel.parent = network_interface_rec_id;
+                pIA_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                pIA_rel.child = network_public_ip;
+                pIA_rel.insert();
+            }
+
+            // Create a relationship with the VN and the NI
+            var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+            virtualN_rel.addEncodedQuery('parent=' + network_interface_rec_id + '^child=' + virtual_net);
+            virtualN_rel.query();
+            if (!virtualN_rel.next()) {
+                virtualN_rel.initialize();
+                virtualN_rel.parent = network_interface_rec_id;
+                virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                virtualN_rel.child = virtual_net;
+                virtualN_rel.insert();
+            }
+
+            // Create a relationship with the NSG and the NI
+            var nsg_rel = new GlideRecord('cmdb_rel_ci');
+            nsg_rel.addEncodedQuery('parent=' + network_interface_rec_id + '^child=' + nsg_id_rec);
+            nsg_rel.query();
+            if (!nsg_rel.next()) {
+                nsg_rel.initialize();
+                nsg_rel.parent = network_interface_rec_id;
+                nsg_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                nsg_rel.child = nsg_id_rec;
+                nsg_rel.insert();
+            }
+           
+			this.updateTagSoiciLink(tagSet, network_interface_rec_id); //Create tags if exist and soici link with record
+			
+            return network_interface_rec_id;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for Network failed ' + ex);
+        }
+    },
+
+    getPublicIpAddress: function(ip_id) {
+        var public_ip = new GlideRecord('cmdb_ci_cloud_public_ipaddress');
+        public_ip.addEncodedQuery('object_idSTARTSWITH' + ip_id);
+        public_ip.query();
+        if (public_ip.next()) {
+            return public_ip.sys_id;
+        }
+        return 'NotAvailable';
+    },
+
+    getApplicationSites: function(site_id) {
+        var app_id = new GlideRecord('cmdb_ci_appl');
+        app_id.addEncodedQuery('correlation_idLIKE' + site_id);
+        app_id.query();
+        if (app_id.next()) {
+            return app_id.sys_id;
+        }
+        return 'NotAvailable';
+    },
+
+    getVirtualNetwork: function(virtual_id) {
+        // var vN = virtual_id.split('/subnets');
+        var virtual_address = new GlideRecord('cmdb_ci_cloud_subnet');
+        virtual_address.addEncodedQuery('object_idSTARTSWITH' + virtual_id);
+        virtual_address.query();
+        if (virtual_address.next()) {
+            return virtual_address.sys_id;
+        }
+        return 'NotAvailable';
+    },
+
+    getNetworkSecurityGroup: function(nsg_id) {
+        var nsg_rec = new GlideRecord('cmdb_ci_compute_security_group');
+        nsg_rec.addEncodedQuery('object_idSTARTSWITH' + nsg_id);
+        nsg_rec.query();
+        if (nsg_rec.next()) {
+            return nsg_rec.sys_id;
+        }
+        return 'NotAvailable';
+    },
+
+
+    updateAzureCosmosdbCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update Cosmos DB payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var cosmosJson = JSON.parse(strBody);
+            var cosmos_status = cosmosJson.gpd.status;
+            var tagSet = cosmosJson.gpd.tags;
+            location = cosmosJson.location.location;
+            state = cosmosJson.location.state;
+            country = cosmosJson.location.country;
+            latitude = cosmosJson.location.latitude;
+            longitude = cosmosJson.location.longitude;
+            config_id = cosmosJson.u_ci_id;
+            var virtual_net = [];
+            var virtual_network_id = cosmosJson.gpd.raw_config_data.properties.virtualNetworkRules;
+            if (virtual_network_id) {
+                for (var j = 0; j < virtual_network_id.length; j++) {
+                    virtual_net.push(this.getVirtualNetwork(virtual_network_id[j].id));
+                }
+            }
+            var cosmosExt = cosmosJson.gpd.raw_config_data.properties.documentEndpoint;
+            var myArr = cosmosExt.split("//");
+            var reqArr = myArr[1].split(":");
+            var reqPort = reqArr[1].split("/");
+            var cosmosdb_data = new GlideRecord('cmdb_ci_cloud_database');
+            cosmosdb_data.addEncodedQuery('sys_id=' + config_id);
+            cosmosdb_data.query();
+            if (cosmosdb_data.next()) {
+                cosmosdb_data.name = cosmosJson.gpd.provider_resource_name;
+                cosmosdb_data.version = cosmosJson.gpd.raw_config_data.properties.version;
+                if (cosmos_status == 'Active') {
+                    cosmosdb_data.operational_status = '1';
+                    cosmosdb_data.install_status = '1';
+                } else {
+                    cosmosdb_data.operational_status = '2';
+                    cosmosdb_data.install_status = '2';
+                }
+                cosmosdb_data.fqdn = reqArr[0];
+                cosmosdb_data.object_id = cosmosJson.entity_id;
+                cosmosdb_data.type = cosmosJson.gpd.raw_config_data.type;
+                cosmosdb_data.correlation_id = cosmosJson.gpd.correlation_id;
+                cosmosdb_data.tcp_port = reqPort[0]; //'443';
+                cosmosdb_data.dns_domain = cosmosJson.gpd.raw_config_data.properties.documentEndpoint;
+                cosmosdb_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                res_rec = cosmosdb_data.update();
+            }
+
+            // Create a relationship with the VN and the NI
+            for (var i = 0; i < virtual_net.length; i++) {
+                var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+                virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + virtual_net[i]);
+                virtualN_rel.query();
+                if (!virtualN_rel.next()) {
+                    virtualN_rel.initialize();
+                    virtualN_rel.parent = res_rec;
+                    virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    virtualN_rel.child = virtual_net[i];
+                    virtualN_rel.insert();
+                }
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for CosmosDB Failed' + ex);
+        }
+    },
+
+    // Map the Azure Virtual Network data with common discovery data 
+    updateVirtualNetwork: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure update Virtual Network payload ' + strBody);
+            var vpn_region, vpn_resource_region, vpn_datacenter, vpn_region_val_id, vpn_resource_grp, vpn_tagSet, resourceGroup, vpn_resource_grp_rec, vpn_cloud_subnet_rec, state, country, latitude, longitude, location, config_id;
+            var inputJSON = JSON.parse(strBody);
+            var tagSet = inputJSON.gpd.tags;
+            var status = inputJSON.gpd.provider_status.toString();
+            var vNCorrelation_id = inputJSON.gpd.correlation_id;
+            state = inputJSON.location.state;
+            country = inputJSON.location.country;
+            latitude = inputJSON.location.coordinates.latitude;
+            longitude = inputJSON.location.coordinates.longitude;
+            location = inputJSON.location.location;
+            config_id = inputJSON.u_ci_id;
+            if (status == 'Succeeded') status = 'available';
+            var operational_status = inputJSON.gpd.status.toString();
+            if (operational_status == 'Active') operational_status = '1';
+            if (inputJSON.entity_id) {
+                var resource_grp_details = new Emp_CI_Creation_Validation_Script().getResourceGrpDetails(inputJSON.entity_id);
+            }
+            vpn_datacenter = inputJSON.location.data_center.toString();
+            vpn_region = inputJSON.location.location.toString();
+            vpn_tagSet = inputJSON.gpd.tags;
+
+            var vpn_data = new GlideRecord('cmdb_ci_network');
+            vpn_data.addEncodedQuery('sys_id=' + config_id);
+            vpn_data.query();
+            if (vpn_data.next()) {
+                vpn_data.name = inputJSON.gpd.provider_resource_name;
+                vpn_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                vpn_data.state = status;
+                vpn_data.cidr = inputJSON.gpd.raw_config_data.properties.addressSpace.addressPrefixes.toString();
+                vpn_data.object_id = inputJSON.entity_id;
+                vpn_data.operational_status = operational_status;
+                vpn_data.correlation_id = inputJSON.gpd.correlation_id;
+                res_rec = vpn_data.update();
+            }
+
+            // update a record in the subnet 			
+            var pLoadSubnetArr = [];
+            for (j = 0; j < inputJSON.gpd.raw_config_data.properties.subnets.length; j++) {
+                pLoadSubnetArr.push(inputJSON.gpd.raw_config_data.properties.subnets[j].id.trim()); //put all the subnets ids in an array				
+                var vpn_cloud_subnet = new GlideRecord('cmdb_ci_cloud_subnet');
+                vpn_cloud_subnet.addEncodedQuery('object_id=' + inputJSON.gpd.raw_config_data.properties.subnets[j].id + '^name=' + inputJSON.gpd.raw_config_data.properties.subnets[j].name);
+                vpn_cloud_subnet.query();
+                if (vpn_cloud_subnet.next()) {
+                    vpn_cloud_subnet.operational_status = operational_status;
+                    vpn_cloud_subnet_rec = vpn_cloud_subnet.update();
+                } else {
+                    vpn_cloud_subnet.initialize();
+                    vpn_cloud_subnet.name = inputJSON.gpd.raw_config_data.properties.subnets[j].name;
+                    vpn_cloud_subnet.object_id = inputJSON.gpd.raw_config_data.properties.subnets[j].id;
+                    vpn_cloud_subnet.correlation_id = inputJSON.gpd.correlation_id;
+                    vpn_cloud_subnet.operational_status = operational_status;
+                    vpn_cloud_subnet_rec = vpn_cloud_subnet.insert();
+
+                    // Create a relationship between the cloud subnets and the virtual private networks
+                    var vpn_subnet_rel = new GlideRecord('cmdb_rel_ci');
+                    vpn_subnet_rel.addEncodedQuery('parent.name=' + res_rec + '^child.name=' + vpn_cloud_subnet_rec);
+                    vpn_subnet_rel.query();
+                    if (!vpn_subnet_rel.next()) {
+                        vpn_subnet_rel.parent = res_rec;
+                        vpn_subnet_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                        vpn_subnet_rel.child = vpn_cloud_subnet_rec;
+                        vpn_subnet_rel.insert();
+                    }
+                }
+            }
+
+            //Retire the subnets			
+            var retireSub = new GlideRecord('cmdb_ci_cloud_subnet');
+            retireSub.addQuery('correlation_id', vNCorrelation_id);
+            retireSub.query();
+            while (retireSub.next()) {
+                if (pLoadSubnetArr.indexOf(retireSub.object_id.trim()) == -1) {
+                    retireSub.install_status = '7'; //retire
+                    var cc = retireSub.update();
+                    this.removeRelationSubnets(res_rec, cc); //remove relationship
+                }
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update call for Virtual Network failed ' + ex);
+        }
+    },
+
+    //func to remove relations
+    removeRelationSubnets: function(res_rec, cc) {
+        var subnet_rel = new GlideRecord('cmdb_rel_ci');
+        subnet_rel.addEncodedQuery('parent=' + res_rec + '^child=' + cc);
+        subnet_rel.query();
+        while (subnet_rel.next()) {
+            subnet_rel.deleteRecord();
+            new HCMSLogLevel().LogMsg('info', 'deleted the relation between virtualNetwork parent record ' + res_rec + '  with child subnet record   ' + cc);
+        }
+    },
+
+
+    updateAzureDnsZonerCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update DNS Zone & Private DNS Zone payload ' + strBody);
+            var res_rec, state, country, latitude, longitude, location, config_id;
+            var dns_json = JSON.parse(strBody);
+            var tagSet = dns_json.gpd.tags;
+            state = dns_json.location.state;
+            country = dns_json.location.country;
+            latitude = dns_json.location.latitude;
+            longitude = dns_json.location.longitude;
+            location = dns_json.location.location;
+            config_id = dns_json.u_ci_id;
+
+            var dns_rec = new GlideRecord('cmdb_ci_dns_name');
+            dns_rec.addEncodedQuery('sys_id=' + config_id);
+            dns_rec.query();
+            if (dns_rec.next()) {
+                dns_rec.name = dns_json.gpd.provider_resource_name;
+                dns_rec.correlation_id = dns_json.gpd.correlation_id;
+                dns_rec.short_description = dns_json.entity_id;
+                dns_rec.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                var operational_status = dns_json.gpd.status.toString();
+                if (operational_status == 'Active') {
+                    dns_rec.operational_status = '1';
+                } else {
+                    dns_rec.operational_status = '2';
+                }
+                dns_rec.discovery_source = 'MCMP';
+                res_rec = dns_rec.update();
+            }
+           
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure Update DNS Zone Call failed ' + ex);
+        }
+    },
+
+
+    updateAzureVirtualMachinesScaleCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update virtual Machines payload ' + strBody);
+            var vms_name, vms_object_id, vms_correlation_id, vms_discovery_source, vms_location, vms_operational_status, vms_attributes, vms_rec_id, state, country, latitude, longitude, location, config_id;
+            var vms_json = JSON.parse(strBody);
+            var tagSet = vms_json.gpd.tags;
+            vms_name = vms_json.gpd.provider_resource_name;
+            vms_object_id = vms_json.entity_id;
+            vms_correlation_id = vms_json.gpd.correlation_id;
+            vms_discovery_source = 'MCMP';
+            state = vms_json.location.state;
+            country = vms_json.location.country;
+            latitude = vms_json.location.latitude;
+            longitude = vms_json.location.longitude;
+            location = vms_json.location.location;
+            config_id = vms_json.u_ci_id;
+            vms_location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+            vms_operational_status = vms_json.gpd.provider_status.toString();
+            vms_attributes = vms_json.gpd.raw_config_data;
+
+            if (vms_operational_status == 'Succeeded') vms_operational_status = '1';
+
+            var vms_rec = new GlideRecord('cmdb_ci_sa_server_array');
+            vms_rec.addEncodedQuery('sys_id=' + config_id);
+            vms_rec.query();
+            if (vms_rec.next()) {
+                vms_rec.name = vms_name;
+                vms_rec.object_id = vms_object_id;
+                vms_rec.correlation_id = vms_correlation_id;
+                vms_rec.discovery_source = vms_discovery_source;
+                vms_rec.location = vms_location;
+                vms_rec.operational_status = vms_operational_status;
+                vms_rec.attributes = vms_attributes;
+                vms_rec_id = vms_rec.update();
+            }
+            var virtual_network_id = vms_json.gpd.raw_config_data.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.ipConfigurations[0].properties.subnet;
+            if (virtual_network_id)
+                var virtual_net = this.getVirtualNetwork(virtual_network_id.id);
+            var nsg = vms_json.gpd.raw_config_data.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].properties.networkSecurityGroup;
+            if (nsg)
+                var nsg_id = this.getNetworkSecurityGroup(nsg.id);
+
+            // Create a relationship with the VN and the NI
+            var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+            virtualN_rel.addEncodedQuery('parent=' + vms_rec_id + '^child=' + virtual_net);
+            virtualN_rel.query();
+            if (!virtualN_rel.next()) {
+                virtualN_rel.initialize();
+                virtualN_rel.parent = vms_rec_id;
+                virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                virtualN_rel.child = virtual_net;
+                virtualN_rel.insert();
+            }
+
+            // Create a relationship with the NSG and the NI
+            var nsg_rel = new GlideRecord('cmdb_rel_ci');
+            nsg_rel.addEncodedQuery('parent=' + vms_rec_id + '^child=' + nsg_id);
+            nsg_rel.query();
+            if (!nsg_rel.next()) {
+                nsg_rel.initialize();
+                nsg_rel.parent = vms_rec_id;
+                nsg_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                nsg_rel.child = nsg_id;
+                nsg_rel.insert();
+            }
+           
+			this.updateTagSoiciLink(tagSet, vms_rec_id); //Create tags if exist and soici link with record
+			
+            return vms_rec_id;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for Virtual Machine Scale failed ' + ex);
+        }
+    },
+
+    updateAzureManagedClustersCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update ManagedClusters payload ' + strBody);
+            var res_rec, state, country, latitude, longitude, location, config_id;
+            var mCluster_json = JSON.parse(strBody);
+            var tagSet = mCluster_json.gpd.tags;
+            state = mCluster_json.location.state;
+            country = mCluster_json.location.country;
+            latitude = mCluster_json.location.latitude;
+            longitude = mCluster_json.location.longitude;
+            location = mCluster_json.location.location;
+            config_id = mCluster_json.u_ci_id;
+
+            var mCluster_rec = new GlideRecord('cmdb_ci_kubernetes_service');
+            // mCluster_rec.initialize();
+            mCluster_rec.addEncodedQuery('sys_id=' + config_id);
+            mCluster_rec.query();
+            if (mCluster_rec.next()) {
+                mCluster_rec.name = mCluster_json.gpd.provider_resource_name;
+                mCluster_rec.k8s_uid = mCluster_json.entity_id;
+                mCluster_rec.correlation_id = mCluster_json.gpd.correlation_id;
+                mCluster_rec.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                var operational_status = mCluster_json.gpd.provider_status.toString();
+                if (operational_status == 'Succeeded') {
+                    mCluster_rec.operational_status = '1';
+                } else {
+                    mCluster_rec.operational_status = '2';
+                }
+                mCluster_rec.attributes = mCluster_json.gpd.raw_config_data;
+                mCluster_rec.discovery_source = 'MCMP';
+                mCluster_rec.fqdn = mCluster_json.gpd.raw_config_data.properties.fqdn;
+                res_rec = mCluster_rec.update();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+            
+			return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for Manage Cluster failed' + ex);
+        }
+    },
+
+    updateAzureAppServiceCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update App Service Plan payload ' + strBody);
+            var res_rec, state, country, latitude, longitude, location, config_id;
+            var appService_json = JSON.parse(strBody);
+            var tagSet = appService_json.gpd.tags;
+            state = appService_json.location.state;
+            country = appService_json.location.country;
+            latitude = appService_json.location.latitude;
+            longitude = appService_json.location.longitude;
+            location = appService_json.location.location;
+            config_id = appService_json.u_ci_id;
+
+            var appService_rec = new GlideRecord('cmdb_ci_appl');
+            appService_rec.addEncodedQuery('sys_id=' + config_id);
+            appService_rec.query();
+            if (appService_rec.next()) {
+                appService_rec.name = appService_json.gpd.provider_resource_name;
+                appService_rec.short_description = appService_json.entity_id;
+                appService_rec.correlation_id = appService_json.gpd.correlation_id;
+                appService_rec.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                var operational_status = appService_json.gpd.provider_status.toString();
+                if (operational_status == 'Running') {
+                    appService_rec.operational_status = '1';
+                } else {
+                    appService_rec.operational_status = '2';
+                }
+                appService_rec.discovery_source = 'MCMP';
+                res_rec = appService_rec.update();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+            
+			return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for Azure App Services faield ' + ex);
+        }
+    },
+
+    updateAzureVNGatewayCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update Virtual Network Gateway payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var vnGway_json = JSON.parse(strBody);
+            state = vnGway_json.location.state;
+            country = vnGway_json.location.country;
+            latitude = vnGway_json.location.latitude;
+            longitude = vnGway_json.location.longitude;
+            location = vnGway_json.location.location;
+            config_id = vnGway_json.u_ci_id;
+            var vnGway_status = vnGway_json.gpd.provider_status;
+            var tagSet = vnGway_json.gpd.tags;
+            var pip = vnGway_json.gpd.raw_config_data.properties.ipConfigurations[0].properties.publicIPAddress;
+            if (pip)
+                var pip_id = this.getPublicIpAddress(pip.id);
+            var virtual_network_id = vnGway_json.gpd.raw_config_data.properties.ipConfigurations[0].properties.subnet;
+            if (virtual_network_id)
+                var virtual_net = this.getVirtualNetwork(virtual_network_id.id);
+
+            var vnGway_data = new GlideRecord('cmdb_ci_endpoint_vpg');
+            vnGway_data.addEncodedQuery('sys_id=' + config_id);
+            vnGway_data.query();
+            if (vnGway_data.next()) {
+                vnGway_data.name = vnGway_json.gpd.provider_resource_name;
+                if (vnGway_status == 'Succeeded') {
+                    vnGway_data.operational_status = '1';
+                } else {
+                    vnGway_data.operational_status = '2';
+                }
+                vnGway_data.object_id = vnGway_json.entity_id;
+                vnGway_data.correlation_id = vnGway_json.gpd.correlation_id;
+                vnGway_data.attributes = vnGway_json.gpd.raw_config_data;
+                vnGway_data.type = vnGway_json.gpd.provider_resource_type;
+                vnGway_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                vnGway_data.virtual_pvt_gateway_id = vnGway_json.gpd.raw_config_data.id;
+                res_rec = vnGway_data.update();
+            }
+
+            // Create a relationship with the NI and the PublicIPaddress
+            var pIA_rel = new GlideRecord('cmdb_rel_ci');
+            pIA_rel.addEncodedQuery('parent=' + res_rec + '^child=' + network_public_ip);
+            pIA_rel.query();
+            if (!pIA_rel.next()) {
+                pIA_rel.initialize();
+                pIA_rel.parent = res_rec;
+                pIA_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                pIA_rel.child = network_public_ip;
+                pIA_rel.insert();
+            }
+
+            // Create a relationship with the VN and the NI
+            var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+            virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + virtual_net);
+            virtualN_rel.query();
+            if (!virtualN_rel.next()) {
+                virtualN_rel.initialize();
+                virtualN_rel.parent = res_rec;
+                virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                virtualN_rel.child = virtual_net;
+                virtualN_rel.insert();
+            }
+
+            this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Update Call for Virtual Network Gateway failed' + ex);
+        }
+    },
+
+
+    updateAzureApplicationGatewayCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure  Update Virtual Application Gateway payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var vnAppGway_json = JSON.parse(strBody);
+            state = vnAppGway_json.location.state;
+            country = vnAppGway_json.location.country;
+            latitude = vnAppGway_json.location.latitude;
+            longitude = vnAppGway_json.location.longitude;
+            location = vnAppGway_json.location.location;
+            config_id = vnAppGway_json.u_ci_id;
+            var tagSet = vnAppGway_json.gpd.tags;
+            var vnGway_status = vnAppGway_json.gpd.provider_status;
+            var vnAppGway_data = new GlideRecord('cmdb_ci_cloud_gateway');
+            // vnAppGway_data.initialize();
+            vnAppGway_data.addEncodedQuery('sys_id=' + config_id);
+            vnAppGway_data.query();
+            if (vnAppGway_data.next()) {
+                vnAppGway_data.name = vnAppGway_json.gpd.provider_resource_name;
+                if (vnGway_status == 'Succeeded') {
+                    vnAppGway_data.operational_status = '1';
+                } else {
+                    vnAppGway_data.operational_status = '2';
+                }
+                vnAppGway_data.correlation_id = vnAppGway_json.gpd.correlation_id;
+                vnAppGway_data.attributes = vnAppGway_json.gpd.raw_config_data;
+                vnAppGway_data.version = vnAppGway_json.gpd.version;
+                vnAppGway_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                vnAppGway_data.object_id = vnAppGway_json.entity_id;
+                res_rec = vnAppGway_data.update();
+            }
+
+            var virtual_network_id = vnAppGway_json.gpd.raw_config_data.properties.gatewayIPConfigurations[0].properties.subnet;
+            if (virtual_network_id)
+                var virtual_net = this.getVirtualNetwork(virtual_network_id.id);
+            var network_ip_id = vnAppGway_json.gpd.raw_config_data.properties.frontendIPConfigurations[0].properties.publicIPAddress;
+            if (network_ip_id)
+                var network_public_ip = this.getPublicIpAddress(network_ip_id.id);
+
+            // Create a relationship with the AG and the PublicIPaddress
+            var pIA_rel = new GlideRecord('cmdb_rel_ci');
+            pIA_rel.addEncodedQuery('parent=' + res_rec + '^child=' + network_public_ip);
+            pIA_rel.query();
+            if (!pIA_rel.next()) {
+                pIA_rel.initialize();
+                pIA_rel.parent = res_rec;
+                pIA_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                pIA_rel.child = network_public_ip;
+                pIA_rel.insert();
+            }
+
+            // Create a relationship with the VN and the AG
+            var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+            virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + virtual_net);
+            virtualN_rel.query();
+            if (!virtualN_rel.next()) {
+                virtualN_rel.initialize();
+                virtualN_rel.parent = res_rec;
+                virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                virtualN_rel.child = virtual_net;
+                virtualN_rel.insert();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Virtual Application Gateway Update  call  failed' + ex);
+        }
+    },
+
+    updateBatchAccountsCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update BatchAccounts payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var batchAcc_json = JSON.parse(strBody);
+            state = batchAcc_json.location.state;
+            country = batchAcc_json.location.country;
+            latitude = batchAcc_json.location.latitude;
+            longitude = batchAcc_json.location.longitude;
+            location = batchAcc_json.location.location;
+            config_id = batchAcc_json.u_ci_id;
+            var tagSet = batchAcc_json.gpd.tags;
+            var batchAcc_status = batchAcc_json.gpd.provider_status;
+            var batchAcc_data = new GlideRecord('cmdb_ci_batch_job');
+            batchAcc_data.addEncodedQuery('sys_id=' + config_id);
+            batchAcc_data.query();
+            if (batchAcc_data.next()) {
+                batchAcc_data.name = batchAcc_json.gpd.provider_resource_name;
+                if (batchAcc_status == 'Succeeded') {
+                    batchAcc_data.operational_status = '1';
+                } else {
+                    batchAcc_data.operational_status = '2';
+                }
+                batchAcc_data.category = batchAcc_json.gpd.service_category;
+                batchAcc_data.short_description = batchAcc_json.entity_id;
+                batchAcc_data.correlation_id = batchAcc_json.gpd.correlation_id;
+                batchAcc_data.attributes = JSON.stringify(batchAcc_json.gpd.raw_config_data);
+                batchAcc_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                batchAcc_data.discovery_source = 'MCMP';
+                res_rec = batchAcc_data.update();
+            }
+           
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' BatchAccounts Update  call  failed' + ex);
+        }
+    },
+
+    updateAzureStorageCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update StorageAccounts payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var storage_JSON = JSON.parse(strBody);
+            var tagSet = storage_JSON.gpd.tags;
+            var storageAcc_status = storage_JSON.gpd.provider_status;
+            state = storage_JSON.location.state;
+            country = storage_JSON.location.country;
+            latitude = storage_JSON.location.latitude;
+            longitude = storage_JSON.location.longitude;
+            location = storage_JSON.location.location;
+            config_id = storage_JSON.u_ci_id;
+            var virtual_net = [];
+            var virtual_network_id = storage_JSON.gpd.raw_config_data.properties.networkAcls.virtualNetworkRules;
+            if (virtual_network_id) {
+                for (var j = 0; j < virtual_network_id.length; j++) {
+                    virtual_net.push(this.getVirtualNetwork(virtual_network_id[j].id));
+                }
+            }
+            var storageAcc_data = new GlideRecord('cmdb_ci_cloud_storage_account');
+            storageAcc_data.addEncodedQuery('sys_id=' + config_id);
+            storageAcc_data.query();
+            if (storageAcc_data.next()) {
+                storageAcc_data.name = storage_JSON.gpd.provider_resource_name;
+                if (storageAcc_status == 'Succeeded') {
+                    storageAcc_status.operational_status = '1';
+                } else {
+                    storageAcc_data.operational_status = '2';
+                }
+                storageAcc_data.object_id = storage_JSON.entity_id;
+                storageAcc_data.category = storage_JSON.gpd.service_category;
+                storageAcc_data.correlation_id = storage_JSON.gpd.correlation_id;
+                storageAcc_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                storageAcc_data.discovery_source = 'MCMP';
+                res_rec = storageAcc_data.update();
+            }
+
+            // Create a relationship with the VN and the cosmoDB
+            for (var i = 0; i < virtual_net.length; i++) {
+                var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+                virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + virtual_net[i]);
+                virtualN_rel.query();
+                if (!virtualN_rel.next()) {
+                    virtualN_rel.initialize();
+                    virtualN_rel.parent = res_rec;
+                    virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    virtualN_rel.child = virtual_net[i];
+                    virtualN_rel.insert();
+                }
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' StorageAccounts Update  call  failed' + ex);
+        }
+    },
+
+    updateBackupItemCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update backupProtectedItems payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var backupItem_json = JSON.parse(strBody);
+            var tagSet = backupItem_json.gpd.tags;
+            state = backupItem_json.location.state;
+            country = backupItem_json.location.country;
+            latitude = backupItem_json.location.latitude;
+            longitude = backupItem_json.location.longitude;
+            location = backupItem_json.location.location;
+            config_id = backupItem_json.u_ci_id;
+            var backupItem_status = backupItem_json.gpd.provider_status;
+            var backupItem_data = new GlideRecord('cmdb_ci_remote_backup_template');
+            backupItem_data.addEncodedQuery('sys_id=' + config_id);
+            backupItem_data.query();
+            if (backupItem_data.next()) {
+                backupItem_data.name = backupItem_json.gpd.provider_resource_name;
+                if (backupItem_status == 'Protected') { //succedded
+                    backupItem_data.operational_status = '1';
+                } else {
+                    backupItem_data.operational_status = '2';
+                }
+                backupItem_data.object_id = backupItem_json.entity_id;
+                backupItem_data.correlation_id = backupItem_json.gpd.correlation_id;
+                backupItem_data.attributes = backupItem_json.gpd.raw_config_data;
+                backupItem_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                backupItem_data.discovery_source = 'MCMP';
+                res_rec = backupItem_data.update();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure update backupProtectedItems call failed' + ex);
+        }
+    },
+
+    updateManagedInstancesCI: function(strBody) {
+        try {
+            var state, country, latitude, longitude, location, config_id;
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update SQL ManagedInstances payload ' + strBody);
+            var mi_json = JSON.parse(strBody);
+            var tagSet = mi_json.gpd.tags;
+            state = mi_json.location.state;
+            country = mi_json.location.country;
+            latitude = mi_json.location.latitude;
+            longitude = mi_json.location.longitude;
+            location = mi_json.location.location;
+            config_id = mi_json.u_ci_id;
+            virtual_network_id = mi_json.gpd.raw_config_data.properties.subnetId;
+            if (virtual_network_id)
+                var virtual_net = this.getVirtualNetwork(virtual_network_id);
+            var mi_status = mi_json.gpd.provider_status;
+            var mi_data = new GlideRecord('cmdb_ci_cloud_database');
+            mi_data.addEncodedQuery('sys_id=' + config_id);
+            mi_data.query();
+            if (mi_data.next()) {
+                mi_data.name = mi_json.gpd.provider_resource_name;
+                if (mi_status == 'Succeeded' || mi_status == 'Ready') {
+                    mi_data.operational_status = '1';
+                } else {
+                    mi_data.operational_status = '2';
+                }
+                mi_data.object_id = mi_json.entity_id;
+                mi_data.version = mi_json.gpd.version; // mi_json.gpd.raw_config_data.properties.version;
+                mi_data.correlation_id = mi_json.gpd.correlation_id;
+                mi_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                mi_data.type = mi_json.gpd.raw_config_data.type;
+                res_rec = mi_data.update();
+            }
+
+            // Create a relationship with the VN and the NI
+            var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+            virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + virtual_net);
+            virtualN_rel.query();
+            if (!virtualN_rel.next()) {
+                virtualN_rel.initialize();
+                virtualN_rel.parent = res_rec;
+                virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                virtualN_rel.child = virtual_net;
+                virtualN_rel.insert();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure update SQL ManagedInstances call failed' + ex);
+        }
+    },
+
+    updateAzureExpressRouteCI: function(strBody) {
+        try {
+            var state, country, latitude, longitude, location, config_id;
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update Express Route Circuits payload ' + strBody);
+            var expC_json = JSON.parse(strBody);
+            var tagSet = expC_json.gpd.tags;
+            state = expC_json.location.state;
+            country = expC_json.location.country;
+            latitude = expC_json.location.latitude;
+            longitude = expC_json.location.longitude;
+            location = expC_json.location.location;
+            config_id = expC_json.u_ci_id;
+            var expC_status = expC_json.gpd.provider_status;
+            if (expC_json.entity_id) {
+                var resource_grp_details = new Emp_CI_Creation_Validation_Script().getResourceGrpDetails(expC_json.entity_id);
+            }
+            var expC_data = new GlideRecord('cmdb_ci_endpoint_vpg');
+            expC_data.addEncodedQuery('sys_id=' + config_id);
+            expC_data.query();
+            if (expC_data.next()) {
+                expC_data.name = expC_json.gpd.provider_resource_name;
+                expC_data.correlation_id = expC_json.gpd.correlation_id;
+                expC_data.discovery_source = 'MCMP';
+                expC_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                if (expC_status == 'Succeeded') {
+                    expC_data.operational_status = '1';
+                } else {
+                    expC_data.operational_status = '2';
+                }
+                expC_data.attributes = expC_json.gpd.raw_config_data;
+                expC_data.object_id = expC_json.entity_id;
+                res_rec = expC_data.update();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure update Express Route Circuits call failed' + ex);
+        }
+    },
+
+    updateContainerStorageCI: function(strBody) {
+        try {
+            new HCMSLogLevel().LogMsg('info', ' Incoming discovery asset for Azure Update ContainerStorage payload ' + strBody);
+            var state, country, latitude, longitude, location, config_id;
+            var cStorage_json = JSON.parse(strBody);
+            var tagSet = cStorage_json.gpd.tags;
+            state = cStorage_json.location.state;
+            country = cStorage_json.location.country;
+            latitude = cStorage_json.location.latitude;
+            longitude = cStorage_json.location.longitude;
+            location = cStorage_json.location.location;
+            config_id = cStorage_json.u_ci_id;
+            var cStorage_status = cStorage_json.gpd.provider_status;
+            var sAccount = cStorage_json.gpd.raw_config_data.id;
+            if (sAccount)
+                var sA_id = this.getstorageAccount(sAccount);
+            var cStorage_data = new GlideRecord('cmdb_ci_storage_container');
+            cStorage_data.addEncodedQuery('sys_id=' + config_id);
+            cStorage_data.query();
+            if (cStorage_data.next()) {
+                cStorage_data.name = cStorage_json.gpd.provider_resource_name;
+                if (cStorage_status == 'Available') {
+                    cStorage_data.operational_status = '1';
+                } else {
+                    cStorage_data.operational_status = '2';
+                }
+                cStorage_data.object_id = cStorage_json.entity_id;
+                cStorage_data.category = cStorage_json.gpd.service_category;
+                cStorage_data.correlation_id = cStorage_json.gpd.correlation_id;
+                cStorage_data.location = new Emp_CIWizMapper().updateResourceLocation(location, state, country, latitude, longitude);
+                cStorage_data.type = cStorage_json.gpd.raw_config_data.type;
+                cStorage_data.discovery_source = 'MCMP';
+                res_rec = cStorage_data.update();
+            }
+
+            // Create a relationship with the VN and the NI
+            var virtualN_rel = new GlideRecord('cmdb_rel_ci');
+            virtualN_rel.addEncodedQuery('parent=' + res_rec + '^child=' + sA_id);
+            virtualN_rel.query();
+            if (!virtualN_rel.next()) {
+                virtualN_rel.initialize();
+                virtualN_rel.parent = res_rec;
+                virtualN_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                virtualN_rel.child = sA_id;
+                virtualN_rel.insert();
+            }
+            
+			this.updateTagSoiciLink(tagSet, res_rec); //Create tags if exist and soici link with record
+			
+            return res_rec;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('info', ' Azure update ContainerStorage call failed' + ex);
+        }
+    },
+
+    getstorageAccount: function(sAccount) {
+        var v = sAccount.split('/blobServices');
+        var sAcc = new GlideRecord('cmdb_ci_cloud_storage_account');
+        sAcc.addEncodedQuery('object_idSTARTSWITH' + v[0]);
+        sAcc.query();
+        if (sAcc.next()) {
+            return sAcc.sys_id;
+        }
+        return 'NotAvailable';
+    },
+	
+	updateTagSoiciLink: function(tagSet, vm_azure_parent_rec) {
+        if (tagSet.length > 0) {
+            var serviceInstance_ID = new Emp_CI_Creation_Validation_Script().updateTagResources(tagSet, vm_azure_parent_rec);
+
+            // Check if the SOI CI exists  with the corresponding serviceInstanceName
+            if (serviceInstance_ID) {
+                var soi_ci_exists = new Emp_CI_Creation_Validation_Script().validateSOICIExists(serviceInstance_ID);
+
+                if (soi_ci_exists) {
+                    var soi_ci_rel = new GlideRecord('cmdb_rel_ci');
+                    soi_ci_rel.addEncodedQuery('parent=' + soi_ci_exists + '^child=' + vm_azure_parent_rec);
+					soi_ci_rel.query();
+            if (!soi_ci_rel.next()) {
+                    soi_ci_rel.parent = soi_ci_exists;
+                    soi_ci_rel.type = new Emp_CI_Creation_Validation_Script().getRelationTypeName('Contains', 'Contained by');
+                    soi_ci_rel.child = vm_azure_parent_rec;
+                    soi_ci_rel.insert();
+                }
+				}
+            }
+        }
+ },
+	
+    type: 'Emp_CIWizMapper_Azure_CI_Configurations_Update'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-09-28 10:23:34</sys_created_on>
+        <sys_id>4193c9ba1bbab450da788403604bcb30</sys_id>
+        <sys_mod_count>121</sys_mod_count>
+        <sys_name>Emp_CIWizMapper_Azure_CI_Configurations_Update</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_4193c9ba1bbab450da788403604bcb30</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 07:50:30</sys_updated_on>
+    </sys_script_include>
+</record_update>

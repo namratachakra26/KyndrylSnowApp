@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>true</action_insert>
+        <action_query>false</action_query>
+        <action_update>false</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_request</collection>
+        <condition>gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true"</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="change_request">u_qs_requested_itemISNOTEMPTY^EQ<item endquery="false" field="u_qs_requested_item" goto="false" newquery="false" operator="ISNOTEMPTY" or="false" value=""/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>QSNotify Marketplace for change creation</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+* Schedule Contract with Kyndryl Corp.  
+* @author Asha Bagade 
+* @Business Rule triggers Pre provisioning for QS catalogs
+**/
+
+(function executeRule(current, previous /*null when async*/ ) {
+    try {
+
+        // retrieve the related mcmplocation Attached to the change request
+        var mcmplocation = current.u_qs_requested_item.request.x_ibmg3_hcms_cloud_broker_location;
+		var req_domain = current.sys_domain.toString();
+        var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
+        if (mappingTable.get('u_catalog_item', current.u_qs_requested_item.cat_item)) {
+            var rm = new sn_ws.RESTMessageV2();
+            rm.setHttpMethod("post");
+            rm.setRequestHeader("Content-Type", "application/json");
+            rm.setRequestHeader("Accept", "Application/json");
+            //fetch the Qs integration property to set the Endpoint
+            var propertyValueString = gs.getProperty('QS_MCMP_Integration');
+            var objProperty = JSON.parse(propertyValueString);
+            //fetch username and apikey based on store location
+            var Customer_details = new HCMSGetTenatDetails().get_tenant_details(mcmplocation, req_domain);
+            if (Customer_details) {
+                rm.setRequestHeader("username", Customer_details.UserName);
+                rm.setRequestHeader("apikey", Customer_details.ApiKey);
+            } else {
+                new HCMSLogLevel().LogMsg("info", "* ApiKey and UserName are invalid *" + mcmplocation);
+            }
+            var restEndpoint = objProperty.preprovisionRestEndpoint;
+			var brokerUrl = current.u_qs_requested_item.request.correlation_display;
+			restEndpoint = brokerUrl+restEndpoint;
+            rm.setEndpoint(restEndpoint);
+            //Fetch correlation id serviceofferingins id
+            var ritm = new GlideRecord('sc_req_item');
+            ritm.get(current.u_qs_requested_item);
+            var correlationId = ritm.correlation_id.toString();
+            var arCorrelation = correlationId.split('::', 3);
+            var orderNumber = arCorrelation[0];
+            var serviceOfferingInstanceId = arCorrelation[1];
+            //Fetch cloud group and user of the grp
+            var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
+            var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
+            var message, changeRequestStatus = ""; //Variable to hold change values
+            //Fetch Change task related to provisioning
+            for (var i = 0; i < 3000; i++) { //loops until 3000times if chng is not found at the insert of change, as change task is created after change is inserted
+                var provTsk = new GlideRecord('change_task');
+                provTsk.addQuery('change_request', current.sys_id);
+                provTsk.addQuery('assignment_group.name', assgnGrp);
+                provTsk.addQuery('assigned_to.name', assgnTo);
+                provTsk.query();
+                if (provTsk.next()) {
+                    changeRequestStatus = "OPENED";
+                    message = "The change task " + provTsk.number + " is opened for fulfillment";
+                    break; // change task found hence break
+                } else {
+                    gs.info("c : " + i);
+                    i++;
+                }
+            }
+            //build the payload
+            var reqbody = {};
+            reqbody.changeTaskId = provTsk.number.toString();
+            reqbody.orderNumber = orderNumber;
+            reqbody.serviceInstanceId = serviceOfferingInstanceId;
+            reqbody.requestItemId = ritm.number.toString();
+            reqbody.catalogTaskId = "NONE";
+            reqbody.changeRequestStatus = changeRequestStatus;
+            reqbody.message = message;
+            var str = JSON.stringify(reqbody);
+            new HCMSLogLevel().LogMsg("info", "*QS Outbound Change Task Provisioning Status to EnterPrise Marketplace for order " + orderNumber + " : * " + str);
+            rm.setRequestBody(str);
+            rm.setLogLevel('all');
+            //In milliseconds. Wait at most 30 seconds for response from http request.
+            rm.setHttpTimeout(30000);
+            var response = rm.execute();
+            var responseBody = response.getBody();
+            var httpStatus = response.getStatusCode();
+            new HCMSLogLevel().LogMsg("info", "*QS Change Task Provisioning Status Response from EM for order " + orderNumber + " " + changeRequestStatus + " : * " + responseBody + "httpStatus " + httpStatus);
+        }
+    } catch (e) {
+        new HCMSLogLevel().LogMsg("error", "Sending QS Change Task Status to EnterPrise Marketplace error " + e);
+    }
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-06-15 11:14:04</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>e170fc231bdd981058cddbd3cc4bcb9e</sys_id>
+        <sys_mod_count>38</sys_mod_count>
+        <sys_name>QSNotify Marketplace for change creation</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_e170fc231bdd981058cddbd3cc4bcb9e</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-27 07:28:05</sys_updated_on>
+        <template/>
+        <when>async_always</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=e170fc231bdd981058cddbd3cc4bcb9e"/>
+</record_update>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>false</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_request</collection>
+        <condition>current.active.changesTo(false) &amp;&amp; new CheckIfEmpCatalogItems().checkCatalogItem(current.sys_id)</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Set Catalog Task State to Completed</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp.  
+ * @author Asha Bagade 
+ * @Business Rule sets catalog to closed complete/incomplete based on change task status
+**/
+(function executeRule(current, previous /*null when async*/ ) {
+    //set catalog task to complete/incomplete based on change close code
+    try {
+        new HCMSLogLevel().LogMsg("info", "Change Request " + current.number + " Closed ");
+        var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
+        var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
+        //set catalog task state based on provisioning change task state
+        var provTsk = new GlideRecord('change_task');
+        provTsk.addQuery('change_request', current.sys_id);
+        provTsk.addQuery('assignment_group.name', assgnGrp);
+        provTsk.addQuery('assigned_to.name', assgnTo);
+        provTsk.addQuery('short_description', 'Provisioning Task');
+        provTsk.query();
+        if (provTsk.next()) {
+            var ritm = new GlideRecord('sc_req_item');
+            ritm.addQuery('x_ibmg3_hcms_related_change_request', current.sys_id); //related ritm
+            ritm.addActiveQuery();
+            ritm.query();
+            if (ritm.next()) {
+                var sctask = new GlideRecord('sc_task');
+                sctask.addQuery('request_item', ritm.sys_id); //related catalog task
+                sctask.addActiveQuery();
+                sctask.query();
+                if (sctask.next()) {
+                    if (provTsk.state == 3) { //change task state value for closure
+                        sctask.state = 3; //closed complete if provisioning task is successful
+
+                        new HCMSLogLevel().LogMsg("info", "Catalog task " + sctask.number + " Closed Complete");
+                    } else {
+                        sctask.state = 4; //closed incomplete if provisioning task is cancelled/unsuccessful
+                        new HCMSLogLevel().LogMsg("info", "Catalog task " + sctask.number + " Closed Incomplete");
+                    }
+                    sctask.update();
+                }
+            }
+        }
+    } catch (e) {
+        new HCMSLogLevel().LogMsg("error", " Error updating catalog task to complete/incomplete " + e);
+    }
+
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-03-11 11:28:59</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>a8b42d7adbcc7b80b446de06f496195c</sys_id>
+        <sys_mod_count>20</sys_mod_count>
+        <sys_name>Set Catalog Task State to Completed</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_a8b42d7adbcc7b80b446de06f496195c</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 05:14:59</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=a8b42d7adbcc7b80b446de06f496195c"/>
+</record_update>

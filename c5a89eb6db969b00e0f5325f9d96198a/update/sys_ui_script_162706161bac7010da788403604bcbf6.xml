@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_script">
+    <sys_ui_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <description>Client side Script for EMP UI.</description>
+        <global>false</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
+        <name>x_ibmg3_hcms.EMP_Enterprise_UI</name>
+        <script><![CDATA[var app = angular.module('angularapp', []);
+// adding credential as part of INT-15724.
+app.factory('mcmpCredential', function($http, $q) {
+    return {
+        getmcmpCredential: function() {  
+            return $http({
+                method: 'GET',
+                url: 'api/now/table/api_key_credentials',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json,charset=utf-8',
+                    'X-UserToken': window.g_ck
+                }
+            }).then(
+                function(response) {
+                    return response.data
+                },
+                function(response) {
+                    return $q.reject(response.data);
+                }
+            );
+        }
+    };
+});
+app.factory('approvalWorkflow', function($http, $q) {
+    return {
+        getapprovalWorkflow: function() {  
+            return $http({
+                method: 'GET',
+                url: 'api/now/table/wf_workflow',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json,charset=utf-8',
+                    'X-UserToken': window.g_ck
+                }
+            }).then(
+                function(response) {
+                    return response.data
+                },
+                function(response) {
+                    return $q.reject(response.data);
+                }
+            );
+        }
+    };
+});
+app.factory('authProfile', function($http, $q) {
+    return {
+        getAuthProfile: function() {
+            return $http({
+                method: 'GET',
+                url: 'api/now/table/sys_auth_profile_basic',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json,charset=utf-8',
+                    'X-UserToken': window.g_ck
+                }
+            }).then(
+                function(response) {
+                    return response.data
+                },
+                function(response) {
+                    return $q.reject(response.data);
+                }
+            );
+        }
+    };
+});
+app.factory('sysUserGroup', function($http, $q) {
+    return {
+        getSysUserGroup: function() {
+            return $http({
+                method: 'GET',
+                url: 'api/now/table/sys_user_group',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json,charset=utf-8',
+                    'X-UserToken': window.g_ck
+                }
+            }).then(
+                function(response) {
+                    return response.data
+                },
+                function(response) {
+                    return $q.reject(response.data);
+                }
+            );
+        }
+    };
+});
+app.factory('sysUser', function($http, $q) {
+    return {
+        getSysUser: function() {
+            return $http({
+                method: 'GET',
+                url: 'api/now/table/sys_user',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json,charset=utf-8',
+                    'X-UserToken': window.g_ck
+                }
+            }).then(
+                function(response) {
+                    return response.data
+                },
+                function(response) {
+                    return $q.reject(response.data);
+                }
+            );
+        }
+    };
+});
+app.controller('AngularAppCtrl', function($scope, $http, $q, authProfile, approvalWorkflow, sysUserGroup, sysUser, mcmpCredential,$rootScope) {
+    var appctrl = this;
+	 $rootScope.$on('$viewContentLoaded', function () {
+        $templateCache.removeAll();
+    });
+    var init = function() {
+		appctrl.validRole = g_user.hasRole('admin');
+        appctrl.showLoader = true;
+        appctrl.errorMessage = '';	
+        $scope.myVar = '';
+        $scope.i = 0;
+        $scope.sliderValue = 1;
+        $scope.approvalWorkflow = [];
+		$scope.mcmpCredential = [];
+        $scope.enableDiscovery = "false";
+		$scope.enableAnonymous = "false";
+        $scope.enableQuickstart = "false";
+		$scope.enableOutboundCall = "false";
+        appctrl.showConfirmation = false;
+        appctrl.validForm = true;
+        $scope.approvalWorkflowSelected = '';
+		$scope.mcmpCredentialSelected ='';
+		appctrl.cloudAssignmentGroupSelected = '';
+		appctrl.cloudAssignedToSelected = '';
+		appctrl.itemAssignmentGroupSelected = '';
+		$q.all([$scope.retrieveApprovalWorkflow(),$scope.retrieveAuthProfile(),
+				$scope.retrieveSysUserGroup(),
+				$scope.retrieveSysUser(),$scope.retrieveMcmpCredential()]).then(function(responses) {
+			appctrl.showLoader = false;
+			}, function(errorValue) {
+			 appctrl.showLoader = false;
+		});
+        $scope.validCred = false;
+        appctrl.qsAuthProfile = ''; 
+        document.getElementById("slider_value").innerHTML = $scope.sliderValue;
+        $scope.fetchProperties();
+    };
+
+
+    $scope.clearTxt = function() {
+        $scope.myVar = '';
+        $scope.i++;
+    };
+    $scope.fetchProperties = function() {
+		appctrl.showLoaderFetch = true;
+        var ga = new GlideAjax('Emp_Auth_Profile_Configuration');
+        ga.addParam('sysparm_name', 'fetch_properties');
+        ga.getXML(setConfigurationValues);
+    }
+
+    function setConfigurationValues(response) {
+        var answer = response.responseXML.documentElement.getAttribute("answer");
+        var concat = '';
+        var configProperties;
+        //check if the get is not coming as 200 it should not be JSON object
+        try {
+            configProperties = JSON.parse(answer);
+        } catch (error) {
+			appctrl.showLoader = false;
+            $scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.errorMessage = "Could not fetch data";
+                appctrl.showLoaderFetch = false;
+            });
+            return;
+        }
+        $scope.$apply(() => {
+            $scope.approvalWorkflowSelected = configProperties.appWfl;
+			$scope.mcmpCredentialSelected = configProperties.apiKeyCred;
+            appctrl.qsAuthProfile = configProperties.authName;
+            $scope.enableDiscovery = configProperties.discE;
+			$scope.enableAnonymous = configProperties.anonymousUsr;
+            $scope.enableQuickstart = configProperties.quickE;
+            if (configProperties.retryC !== '') {
+                $scope.sliderValue = Number(configProperties.retryC);
+            }
+            $scope.sliderConfigurations(configProperties.retryC, "10", "1");
+			$scope.enableOutboundCall = configProperties.outMid;
+			appctrl.midServerDetails = configProperties.midDet;
+			appctrl.cloudAssignmentGroupSelected = configProperties.cloudAG;
+			appctrl.cloudAssignedToSelected = configProperties.cloudAssign;
+			appctrl.itemAssignmentGroupSelected = configProperties.cloudCIAG;
+			$scope.mcmpUrl = configProperties.mcmpUrl;
+			appctrl.showLoaderFetch = false;
+        });
+    }
+
+    $scope.sliderConfigurations = function(currentValue, maxvalue, minValue) {
+        var rangeClass = document.getElementById("myRange");
+        rangeClass.dataset.title = $scope.sliderValue;
+        var value = ($scope.sliderValue - rangeClass.min) / (rangeClass.max - rangeClass.min) * 100;
+        rangeClass.style.background = 'linear-gradient(to right, #161616 0%, #161616 ' + value + '%, #d3d3d3 ' + value + '%, #d3d3d3 100%)';
+        document.getElementById("slider_value").innerHTML = $scope.sliderValue;
+    }
+
+    document.getElementById("myRange").oninput = function() {
+        var value = (this.value - this.min) / (this.max - this.min) * 100;
+        this.style.background = 'linear-gradient(to right, #161616 0%, #161616 ' + value + '%, #d3d3d3 ' + value + '%, #d3d3d3 100%)';
+        var rangeClass = document.getElementById("myRange");
+        rangeClass.dataset.title = this.value;
+        var newVal = Number(((this.value - this.min) * 100) / (this.max - this.min));
+        var newPosition = 10 - (newVal * 0.2);
+        rangeClass.dataset.style = 'left:' + newVal + '%';
+        document.getElementById("slider_value").innerHTML = this.value;
+    };
+
+
+	 $scope.retrieveMcmpCredential = function() {
+        mcmpCredential.getmcmpCredential().then(
+                function(data) {
+                    $scope.mcmpCredential = data.result;
+                }),
+            function(error) {
+			  $scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.errorMessage = 'Unable to fetch mcmp credentials';
+			  });
+            }
+    };
+	
+    $scope.retrieveApprovalWorkflow = function() {
+        approvalWorkflow.getapprovalWorkflow().then(
+                function(data) {
+                    $scope.approvalWorkflow = data.result;
+                }),
+            function(error) {
+			  $scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.errorMessage = 'Unable to fetch Approval Workflow';
+			  });
+            }
+    };
+	
+	
+    $scope.retrieveAuthProfile = function() {
+        authProfile.getAuthProfile().then(
+                function(data) {
+                    $scope.authProfile = data.result;
+                }),
+            function(error) {
+				$scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.showLoader = false;
+                appctrl.errorMessage = 'Unable to fetch Auth Profile';
+				});
+            }
+    };
+
+    $scope.retrieveSysUserGroup = function() {
+        sysUserGroup.getSysUserGroup().then(
+                function(data) {
+                    $scope.cloudAssignmentGroup = data.result;
+                }),
+            function(error) {
+			  $scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.showLoader = false;
+                appctrl.errorMessage = 'Unable to fetch Sys User Group';
+			  });
+            }
+    };
+	    $scope.retrieveSysUser = function() {
+        sysUser.getSysUser().then(
+                function(data) {
+                    $scope.cloudAssignedTo = data.result;
+                }),
+            function(error) {
+			  $scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.showLoader = false;
+                appctrl.errorMessage = 'Unable to fetch Sys User';
+			  });
+            }
+    };
+	
+    $scope.checkFormParams = function() {
+        if ($scope.approvalWorkflowSelected !== "" && appctrl.qsAuthProfile !== "" && $scope.mcmpCredentialSelected !== "") {
+            appctrl.validForm = true;
+        } else {
+            appctrl.validForm = false;
+        }
+    };
+
+    $scope.submit = function() {
+        appctrl.showLoader = true;
+        var ga = new GlideAjax('Emp_Auth_Profile_Configuration');
+        ga.addParam('sysparm_name', 'update_properties');
+        ga.addParam('auth_name', appctrl.qsAuthProfile);
+        ga.addParam('approval_wf_name', $scope.approvalWorkflowSelected);
+	    ga.addParam('api_credential', $scope.mcmpCredentialSelected);
+        ga.addParam('discovery_enabled', $scope.enableDiscovery);
+		ga.addParam('anonymous_user', $scope.enableAnonymous);
+        ga.addParam('qkstart_enabled', $scope.enableQuickstart);
+        ga.addParam('retry_count', $scope.sliderValue);
+		ga.addParam('out_midserver', $scope.enableOutboundCall);
+		ga.addParam('mid_details', appctrl.midServerDetails);
+		ga.addParam('cloud_ag', appctrl.cloudAssignmentGroupSelected);
+		ga.addParam('cloud_at', appctrl.cloudAssignedToSelected);
+		ga.addParam('cloud_ci_ag', appctrl.itemAssignmentGroupSelected);
+        ga.addParam('adapterVersion', 'v4');
+		ga.addParam('mcmp_url', $scope.mcmpUrl);
+        ga.getXML(UpdateResponse);
+    };
+
+    function UpdateResponse(response) {
+        try {
+            var answer = response.responseXML.documentElement.getAttribute("answer");
+            if (answer != undefined && answer != '')
+                appctrl.showConfirmation = true;
+            $("#confirmModal").modal();
+            $scope.$apply(() => {
+                appctrl.showLoader = false;
+                $scope.reset();
+            });
+
+        } catch (e) {
+            $scope.$apply(() => {
+				appctrl.validForm = false;
+                appctrl.errorMessage = "Could not persist data";
+                appctrl.showLoader = false;
+            });
+
+        }
+
+    }
+	
+    $scope.reset = function() {
+        $scope.fetchProperties();
+    };
+
+    init();
+});]]></script>
+        <script_name>EMP_Enterprise_UI</script_name>
+        <sys_class_name>sys_ui_script</sys_class_name>
+        <sys_created_by>Shweta.Banerjee@ibm.com</sys_created_by>
+        <sys_created_on>2021-06-07 05:44:17</sys_created_on>
+        <sys_id>162706161bac7010da788403604bcbf6</sys_id>
+        <sys_mod_count>321</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.EMP_Enterprise_UI</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ui_script_162706161bac7010da788403604bcbf6</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 09:15:50</sys_updated_on>
+        <ui_type>0</ui_type>
+        <use_scoped_format>false</use_scoped_format>
+    </sys_ui_script>
+</record_update>

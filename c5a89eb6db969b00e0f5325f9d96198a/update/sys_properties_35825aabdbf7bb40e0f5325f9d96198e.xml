@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description>List of Catalog items used for EMP integration</description>
+        <ignore_cache>false</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_ibmg3_hcms.EMP_catalog_items</name>
+        <read_roles/>
+        <suffix>EMP_catalog_items</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>ashabagade</sys_created_by>
+        <sys_created_on>2019-09-16 10:29:39</sys_created_on>
+        <sys_id>35825aabdbf7bb40e0f5325f9d96198e</sys_id>
+        <sys_mod_count>6</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.EMP_catalog_items</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_properties_35825aabdbf7bb40e0f5325f9d96198e</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-24 11:18:34</sys_updated_on>
+        <type>string</type>
+        <value>Kyndryl Marketplace Provisioning Request;Kyndryl Marketplace Start/Stop/Restart Request;Kyndryl Marketplace Decommission CI Request</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=35825aabdbf7bb40e0f5325f9d96198e"/>
+</record_update>

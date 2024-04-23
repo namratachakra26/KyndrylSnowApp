@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>false</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>change_task</collection>
+        <condition>current.active.changesTo(false)</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Emp Close Chg/Set Closure Code</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+	try {
+		//set change to closed and update closure code to successful when change task is closed else to unsuccessful when cancelled
+		var chg = new GlideRecord('change_request');
+		if(chg.get('sys_id',current.change_request)) {
+			chg.state = 3;//change closed
+			if(current.state == 3) {//change task closed
+				chg.close_code = 'successful';//close code set to successful
+			}
+			else
+				chg.close_code = 'unsuccessful';//when change task is cancelled
+			chg.close_notes = 'Change closed';
+			chg.update();
+		}
+	}
+	catch(ex) {
+		new HCMSLogLevel().LogMsg("error"," Error updating the last worknotes "+ex);
+	}
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-04-02 15:06:00</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>089d2f79db6c770037ad349f9d96191a</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Emp Close Chg/Set Closure Code</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_089d2f79db6c770037ad349f9d96191a</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 05:19:22</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=089d2f79db6c770037ad349f9d96191a"/>
+</record_update>

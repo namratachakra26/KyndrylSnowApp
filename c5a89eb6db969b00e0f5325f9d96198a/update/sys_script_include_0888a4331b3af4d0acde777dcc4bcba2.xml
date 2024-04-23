@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.Emp_CIWizMapper_Azure_CI_Configurations_Delete</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Shalini S &#13;
+* @Script Include is used for Azure_CI_Configurations_Delete&#13;
+**/</description>
+        <name>Emp_CIWizMapper_Azure_CI_Configurations_Delete</name>
+        <script><![CDATA[var Emp_CIWizMapper_Azure_CI_Configurations_Delete = Class.create();
+Emp_CIWizMapper_Azure_CI_Configurations_Delete.prototype = {
+    initialize: function() {},
+
+    deleteAzureVMCI: function(strBody) {
+
+        var correl_id, res_rec;
+        var inputJSON = JSON.parse(strBody);
+        var del_ci_id = inputJSON.u_ci_id;        
+
+        new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for VRA resource Delete payload' + strBody);
+
+        var ga = new GlideRecord('cmdb_ci_win_server');
+        ga.get(del_ci_id);
+        ga.query();
+        if (ga.next()) {
+            ga.install_status = '7';
+            ga.operational_status = '6';
+            correl_id = ga.correlation_id;
+            res_rec = ga.update();
+            var gad = new GlideRecord('cmdb_ci_vm_instance');
+            gad.addEncodedQuery('correlation_id=' + correl_id);
+            gad.query();
+            if (gad.next()) {
+                gad.state = 'retired';
+                gad.install_status = '7';
+                gad.operational_status = '6';
+                gad.update();
+            }
+        } else {
+
+            var galinux = new GlideRecord('cmdb_ci_linux_server');
+            galinux.get(del_ci_id);
+            galinux.query();
+            if (galinux.next()) {
+                galinux.install_status = '7';
+                galinux.operational_status = '6';
+                correl_id = galinux.correlation_id;
+                res_rec = galinux.update();
+                var galinux_parent = new GlideRecord('cmdb_ci_vm_instance');
+                galinux_parent.addEncodedQuery('correlation_id=' + correl_id);
+                galinux_parent.query();
+                if (galinux_parent.next()) {
+                    galinux_parent.state = 'retired';
+                    galinux_parent.install_status = '7';
+                    galinux_parent.operational_status = '6';
+                    galinux_parent.update();
+                }
+            } else {
+                var gaVmware = new GlideRecord('cmdb_ci_vmware_instance');
+                gaVmware.get(del_ci_id);
+                gaVmware.query();
+                if (gaVmware.next()) {
+
+                    gaVmware.state = 'retired';
+                    gaVmware.install_status = '7';
+                    gaVmware.operational_status = '6';
+                    res_rec = gaVmware.update();
+                }
+
+            }
+
+        }
+
+        return res_rec;
+    },
+    type: 'Emp_CIWizMapper_Azure_CI_Configurations_Delete'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-10-01 10:58:57</sys_created_on>
+        <sys_id>0888a4331b3af4d0acde777dcc4bcba2</sys_id>
+        <sys_mod_count>18</sys_mod_count>
+        <sys_name>Emp_CIWizMapper_Azure_CI_Configurations_Delete</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_0888a4331b3af4d0acde777dcc4bcba2</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-28 06:16:39</sys_updated_on>
+    </sys_script_include>
+</record_update>
