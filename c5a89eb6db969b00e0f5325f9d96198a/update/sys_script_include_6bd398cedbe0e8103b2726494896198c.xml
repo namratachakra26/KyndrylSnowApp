@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.EmpFetchConfiguration</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from client script "Fetch Configurations from Emp" to fetch default/existing configuration from EM&#13;
+**/</description>
+        <name>EmpFetchConfiguration</name>
+        <script><![CDATA[var EmpFetchConfiguration = Class.create();
+EmpFetchConfiguration.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+
+    fetchConfigValues: function() {
+        try {
+            //Fetch the url/endpoint of the instance
+            var url = this.getParameter('sysparm_epoint');
+			var version = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration');
+            //Define variables to hold response body and status code
+            var responseBody, statusCode = '';
+
+
+            //Fetch the Rest method name
+            var restMethodName;
+            if (version == 'v3')
+                restMethodName = gs.getProperty('x_ibmg3_hcms.fetchv3_default_configuration');
+            else
+                restMethodName = gs.getProperty('x_ibmg3_hcms.fetch_default_configuration');
+            //Fetch the credentials
+            var credential = this.getParameter('sysparm_cred');
+            var req_domain = new HCMSGetTenatDetails().getRequesUItDomain(credential);
+            var payloadbody = ''; //Not Payload body for GET API hence passing emppty string
+            //Invoke the below function to make outbound call to mcmp to fetch default configuration
+            var getConfig = new EmpConfigurationOutboundCall().outBoundRestCallToEmpInstance(restMethodName, credential, url, payloadbody, req_domain);
+            if (getConfig) {
+                responseBody = getConfig.responseBody;
+                statusCode = getConfig.statusCode;
+            } else {
+                new HCMSLogLevel().LogMsg("info", "* Invalid response from MCMP for  *" + credential);
+            }
+            return responseBody;
+        } catch (err) {
+            new HCMSLogLevel().LogMsg("info", "Fetch default Configurations from Kyndryl Marketplace error " + err);
+        }
+    },
+
+    type: 'EmpFetchConfiguration'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-11-19 08:16:15</sys_created_on>
+        <sys_id>6bd398cedbe0e8103b2726494896198c</sys_id>
+        <sys_mod_count>42</sys_mod_count>
+        <sys_name>EmpFetchConfiguration</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_6bd398cedbe0e8103b2726494896198c</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-03-11 10:23:32</sys_updated_on>
+    </sys_script_include>
+</record_update>
