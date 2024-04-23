@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description>Rest Message for all outbound calls to EMP</description>
+        <ignore_cache>false</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_ibmg3_hcms.outbound_calls.restmsg</name>
+        <read_roles/>
+        <suffix>outbound_calls.restmsg</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-08-02 07:02:00</sys_created_on>
+        <sys_id>1b509e89dbcb33402019d90d68961967</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.outbound_calls.restmsg</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_properties_1b509e89dbcb33402019d90d68961967</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-11-21 05:37:02</sys_updated_on>
+        <type>string</type>
+        <value>EmpOutboundStatusCalls</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=1b509e89dbcb33402019d90d68961967"/>
+</record_update>
