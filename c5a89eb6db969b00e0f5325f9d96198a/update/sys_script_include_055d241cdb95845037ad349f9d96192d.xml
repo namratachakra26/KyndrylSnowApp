@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.RetryOutboundcalltoBroker</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from Schedule job "Emp Auto Retry Mechanism" - This Script include passes the response status to scheduled Job which runs every 10 minutes&#13;
+**/</description>
+        <name>RetryOutboundcalltoBroker</name>
+        <script><![CDATA[var RetryOutboundcalltoBroker = Class.create();
+RetryOutboundcalltoBroker.prototype = {
+    initialize: function() {},
+    outBoundResponseCallStatus: function(obj) {
+        try {
+            //This function is used to retry failed outbound calls
+            var statusCode, endPoint, requestBody, number, response, responseBody, rm, ritm, ordernumber, req_for, brokerLoc, midserver_details, out_bound_flag, tenant, restMethodName, req_orderNumber;
+
+            ordernumber = obj.topic.split('-');
+			req_orderNumber = ordernumber[0];
+            var req = new GlideRecord('sc_request');
+            req.addQuery('x_ibmg3_hcms_order_number', req_orderNumber);
+            req.query();
+            if (req.next()) {
+                // fetch requested for to update Incident caller field
+                req_for = req.requested_for;
+                //Fetch the source url and credential details from SR create payload
+                var requestPayload = req.x_ibmg3_hcms_broker_approval_request_json;
+				var jsonPayload = JSON.parse(requestPayload);
+                var url = jsonPayload.source;
+                var credential = jsonPayload.credential;
+            }
+            //Fetch the payload
+            requestBody = obj.payload;
+            
+            if (obj.topic.endsWith("Approval")) {
+                new HCMSLogLevel().LogMsg("info", "Retrying Outbound Approval Call for :" + obj.topic);
+                restMethodName = gs.getProperty('x_ibmg3_hcms.approval_response.rest.method');
+            } else if (obj.topic.endsWith("PreProvisioning")) {
+                new HCMSLogLevel().LogMsg("info", "Retrying Outbound PreProvisioning Call for :" + obj.topic);
+                restMethodName = gs.getProperty('x_ibmg3_hcms.pre_provisioning.rest.method');
+            } else if (obj.topic.endsWith("Provisioning")) {
+                new HCMSLogLevel().LogMsg("info", "Retrying Outbound Provisioning Call for :" + obj.topic);
+                restMethodName = gs.getProperty('x_ibmg3_hcms.provisioning.rest.method');
+            } else if (obj.topic.endsWith("PostProvisioningCall")) {
+                new HCMSLogLevel().LogMsg("info", "Retrying Outbound PostProvisioning Call for :" + obj.topic);
+                restMethodName = gs.getProperty('x_ibmg3_hcms.post_provisioning.rest.method');
+            }
+
+            //Invoke the below function to make an outbound call to emp to send approval reponse
+			var req_domain = new HCMSGetTenatDetails().getRequestDomain(req_orderNumber);
+            response = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, requestBody, req_domain);
+            if (response) {
+                responseBody = response.responseBody;
+                statusCode = response.statusCode;
+                endPoint = response.endPoint;
+            } else {
+                new HCMSLogLevel().LogMsg("info", "* Invalid response from Kyndryl Marketplace for *" + ordernumber[0]);
+            }
+            new HCMSLogLevel().LogMsg("info", "HttpStatus code on retry for :" + obj.topic + " is : " + statusCode +"\nEndPoint:"+endPoint+"\nResponse Body:"+responseBody);
+
+            var sysIdAssignmentGroup = '';
+            if (statusCode > 201 || statusCode == 0) {
+                //Capture the number of retires
+                obj.sequence = parseInt(obj.sequence) + 1;
+                obj.from_host = "Response received from broker : " + responseBody + " \nResponse status code : " + statusCode;
+                //check if retry count exceeds the number of retry mentioned in property to create an incident
+                if (parseInt(obj.sequence) >= gs.getProperty('x_ibmg3_hcms.Outbound_Retry_Count')) {
+                    //Fetch the assignment group(Service Desk) sysid to assign the incident
+                    var asgr = new GlideRecord('sys_user_group');
+                    asgr.addQuery('name', 'Service Desk');
+                    asgr.query();
+                    if (asgr.next()) {
+                        sysIdAssignmentGroup = asgr.getUniqueValue();
+                    }
+                    //call the  Incident creation script
+                    var inc_retry = new HCMS_Generic_Incident_Creation().incident_retry(requestBody, endPoint, obj.source, req_for);
+                    number = inc_retry; //incident number
+                    //update RITM with the incident details
+                    var reqtm = new GlideRecord('sc_req_item');
+                    if (obj.topic.endsWith("Approval"))
+                        reqtm.addQuery('request.number', obj.source);
+                    else
+                        reqtm.addQuery('number', obj.source);
+                    reqtm.query();
+                    while (reqtm.next()) {
+                        reqtm.comments = "Outbound call to api " + endPoint + " failed after" + gs.getProperty('x_ibmg3_hcms.Outbound_Retry_Count') + " retry, Incident created : " + number;
+                        reqtm.update();
+                    }
+                    obj.state = 'error'; //set ecc record state to error
+                    obj.error_string = "Incident " + number + " created for failed outbound after" + gs.getProperty('x_ibmg3_hcms.Outbound_Retry_Count') + " retry";
+                }
+            } else {
+                obj.state = 'processed'; //set to proessed after successful outbound call
+                var processedTime = new GlideDateTime();
+                obj.processed = processedTime;
+                obj.from_host = "Response received from broker : " + responseBody + " \nResponse status code : " + statusCode;
+                new HCMSLogLevel().LogMsg("info", "*Retry successful for Outbound Call :*" + obj.topic);
+            }
+            obj.update();
+        } catch (e) {
+            new HCMSLogLevel().LogMsg("error", "No Entry found in the ecc_queue table in ready status " + e);
+        }
+    },
+
+    eccQueueRetryRecord: function(topic, source, payload, responsefromHost) {
+        try {
+            //initialize and insert record in ecc queue to retry the failed outbound call
+            var gr = new GlideRecord('ecc_queue');
+            gr.initialize();
+            gr.agent = "EMP Integrations";
+            gr.topic = topic;
+            gr.name = "ServiceNow EMP";
+            gr.source = source;
+            gr.state = 'ready'; //set state to ready
+            gr.queue = 'output';
+            gr.sequence = 0;
+            gr.payload = payload;
+            gr.from_host = responsefromHost;
+            gr.insert();
+            new HCMSLogLevel().LogMsg("info", "*Retry record created in Ecc Queue for* " + topic);
+        } catch (e) {
+            new HCMSLogLevel().LogMsg("error", "Entry is not created successfully in ecc_queue table " + e);
+        }
+    },
+
+    type: 'RetryOutboundcalltoBroker'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-11-19 12:15:25</sys_created_on>
+        <sys_id>055d241cdb95845037ad349f9d96192d</sys_id>
+        <sys_mod_count>77</sys_mod_count>
+        <sys_name>RetryOutboundcalltoBroker</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_055d241cdb95845037ad349f9d96192d</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-02-15 10:06:51</sys_updated_on>
+    </sys_script_include>
+</record_update>

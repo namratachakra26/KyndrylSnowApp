@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sc_cat_item_category">
+    <sc_cat_item_category action="INSERT_OR_UPDATE">
+        <sc_cat_item display_value="iFrame Cloud Broker Inventory">45ca4268db44805037ad349f9d961940</sc_cat_item>
+        <sc_category display_value="Hybrid Cloud Services">69fbd542db3ad740e0f5325f9d96190f</sc_category>
+        <sys_class_name>sc_cat_item_category</sys_class_name>
+        <sys_created_by>Asha.Bagade@kyndryl.com</sys_created_by>
+        <sys_created_on>2023-12-19 12:34:13</sys_created_on>
+        <sys_id>8a8c874c1bd37910260a10e58d4bcb7b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Hybrid Cloud Services.iFrame Cloud Broker Inventory</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sc_cat_item_category_8a8c874c1bd37910260a10e58d4bcb7b</sys_update_name>
+        <sys_updated_by>Asha.Bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-12-19 12:34:13</sys_updated_on>
+    </sc_cat_item_category>
+</record_update>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysauto_script">
+    <sysauto_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <business_calendar/>
+        <condition/>
+        <conditional>false</conditional>
+        <entered_time/>
+        <max_drift/>
+        <name>Emp Auto Retry Mechanism</name>
+        <offset/>
+        <offset_type>0</offset_type>
+        <run_as display_value="System Administrator">6816f79cc0a8016401c5a33be04be441</run_as>
+        <run_as_tz/>
+        <run_dayofmonth>1</run_dayofmonth>
+        <run_dayofweek>1</run_dayofweek>
+        <run_period>1970-01-01 00:10:00</run_period>
+        <run_start>2019-11-19 12:17:41</run_start>
+        <run_time>1970-01-01 08:01:00</run_time>
+        <run_type>periodically</run_type>
+        <script><![CDATA[//Picks the EMP Integrations records which are in ready state and retries the outbound call
+var gr = new GlideRecord('ecc_queue');
+var qry = 'agentSTARTSWITHEMP^state=ready';
+gr.addEncodedQuery(qry);
+gr.query();
+while (gr.next()) {
+	var seq = parseInt(gr.sequence);
+    if (seq <= gs.getProperty('x_ibmg3_hcms.Outbound_Retry_Count'));
+    var outBoundCall = new RetryOutboundcalltoBroker().outBoundResponseCallStatus(gr);
+}]]></script>
+        <sys_class_name>sysauto_script</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-11-19 12:19:11</sys_created_on>
+        <sys_id>be4ee85cdb95845037ad349f9d961997</sys_id>
+        <sys_mod_count>30</sys_mod_count>
+        <sys_name>Emp Auto Retry Mechanism</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sysauto_script_be4ee85cdb95845037ad349f9d961997</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-02-15 10:07:04</sys_updated_on>
+        <time_zone/>
+        <upgrade_safe>false</upgrade_safe>
+    </sysauto_script>
+</record_update>

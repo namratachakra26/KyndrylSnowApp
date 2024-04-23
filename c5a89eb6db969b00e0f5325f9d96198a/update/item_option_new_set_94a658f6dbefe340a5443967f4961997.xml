@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="item_option_new_set">
+    <item_option_new_set action="INSERT_OR_UPDATE">
+        <create_roles/>
+        <description>Used by Provisioning catalog items(snow and non snow)</description>
+        <display_title>false</display_title>
+        <internal_name>u_vs_item_variables_set</internal_name>
+        <layout>normal</layout>
+        <name>vs_item_variables_set</name>
+        <order>100</order>
+        <read_roles/>
+        <set_attributes/>
+        <sys_class_name>item_option_new_set</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-02-14 09:00:01</sys_created_on>
+        <sys_id>94a658f6dbefe340a5443967f4961997</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>vs_item_variables_set</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>item_option_new_set_94a658f6dbefe340a5443967f4961997</sys_update_name>
+        <sys_updated_by>system</sys_updated_by>
+        <sys_updated_on>2024-02-15 10:14:13</sys_updated_on>
+        <title>vs_item_variables_set</title>
+        <type>one_to_one</type>
+        <write_roles/>
+    </item_option_new_set>
+</record_update>
