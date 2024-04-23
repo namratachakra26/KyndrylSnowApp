@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.generateSingleCart</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Generate Request item(s) using scoped Cart API for V1 version&#13;
+/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from Scripted Rest API , to process Request and RITMcreation&#13;
+**/</description>
+        <name>generateSingleCart</name>
+        <script><![CDATA[/*Scoped Cart API to create catalog item(s) and set variables and fields in catalog item*/
+var generateSingleCart = Class.create();
+generateSingleCart.prototype = {
+    initialize: function() {},
+
+    processRequest: function(str, location, requestedFor) {
+        try {
+            var parser = JSON.parse(str);
+            var ritms = parser.requestedItems;
+            //Log Requested items count from the incoming payload
+            var ritmCount = ritms.length;
+            new HCMSLogLevel().LogMsg('info', 'No of Requested items for Order ' + parser.orderNumber + ' is : ' + ritmCount);
+            //Variable to hold Requested For
+            var requested_For = requestedFor;
+            //Variable to hold purpose of order mapped to ritm short desc
+            var strShortDescription = parser.orderPurpose;
+            var strDescription = parser.detailedComments;
+            // to fetch the approval workflow which is optional
+            var approvalExtWorkFlow = parser.approvalWorkflow;
+            ////Obtaining broker location Information
+            var brokerLocation = location;
+            //OrderNumber
+            var broker_order_number = parser.orderNumber;
+            //variable to hold the Request type(new/edit/terminate/operations)
+            var broker_request_type = parser.requestType;
+            //variable to hold the catalogitem name sent in payload
+            var catalogItemName = parser.catalog_item_name;
+            var changeApprovalRequired = parser.changeApprovalRequired;
+            if (changeApprovalRequired == "true")
+                changeApprovalRequired = "normal"; //Has change Approval
+            else
+                changeApprovalRequired = "standard"; //No Approval
+
+            if (broker_request_type == 'New') {
+                broker_request_type = '1';
+            }
+            if (broker_request_type == 'Terminate') {
+                broker_request_type = '2';
+            }
+            if (broker_request_type == 'Edit') {
+                broker_request_type = '3';
+            }
+            if (broker_request_type == 'operation') {
+                broker_request_type = '4';
+            }
+            //variable to hold the entire incoming json payload
+            var broker_json = str;
+            var brokerOrderSubmittedDate = parser.orderSubmittedTime;
+            //Variable to hold the sys_id of catalog item
+            var grSys_id;
+            //initialze variable for cart api
+            var cart;
+            //function to add multiple items into the cart
+            cart = new sn_sc.CartJS();
+            cart.empty();
+            //Fetch the sys_id of the catalog item
+            var gr = new GlideRecord('sc_cat_item');
+            gr.addQuery('sys_name', catalogItemName);
+            gr.query();
+            if (gr.next()) {
+                grSys_id = (gr.sys_id).toString();
+            }
+
+            /* Create one or more RITM based on payload */
+            for (var i = 0; i < ritmCount; i++) {
+                var arr = [];
+                var itemServiceName = parser.requestedItems[i].serviceName;
+                var serviceOfferingId = parser.requestedItems[i].serviceOfferingId;
+                var soiID = parser.requestedItems[i].serviceOfferingInstanceId;
+                var serviceProvider = parser.requestedItems[i].serviceOfferingProvider;
+                var categoryID = parser.requestedItems[i].category;
+                var serviceOfferingName = parser.requestedItems[i].serviceOfferingName;
+                var ServiceOfferingDescription = parser.requestedItems[i].short_description;
+                //initialize the catalog item fields and variables with all data
+                var item = {
+                    'sysparm_id': grSys_id,
+                    'sysparm_quantity': '1',
+                    'variables': {
+                        'var_requested_for': requested_For,
+                        'short_description': ServiceOfferingDescription,
+                        'var_description': strDescription,
+                        'var_broker_location': brokerLocation,
+                        'order_number': broker_order_number,
+                        'var_request_type': broker_request_type,
+                        'var_approval_workflow': approvalExtWorkFlow,
+                        'var_broker_json': str,
+                        'var_order_date': brokerOrderSubmittedDate,
+                        'var_service_offering_id': serviceOfferingId,
+                        'var_service_instance_id': soiID,
+                        'var_service_name': itemServiceName,
+                        'var_offering_provider': serviceProvider,
+                        'var_consume_category': categoryID,
+                        'var_change_type': changeApprovalRequired,
+                        'var_service_offering_name': serviceOfferingName
+                    }
+                };
+                //adding item to cart
+                var cartDetails = cart.addToCart(item);
+            }
+            var CartItems = cart.getCartItems();
+            var str1 = JSON.stringify(CartItems);
+            //placing cart order
+            var rc = cart.submitOrder({});
+            return rc.request_number;
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('error', "generate request using cart api error message " + ex);
+        }
+    },
+
+    //function used to populate the requested for on Request form 
+    getRequestedFor: function(strvar) {
+        var requser_id = new GlideRecord('sys_user');
+        requser_id.addEncodedQuery('email=' + strvar + '^ORuser_name =' + strvar);
+        requser_id.query();
+        if (requser_id.next()) {
+            return requser_id.sys_id.toString(); //return the sysid of user
+        }
+    },
+
+    type: 'generateSingleCart'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2018-07-11 05:38:39</sys_created_on>
+        <sys_id>676d38e8dbd31780e0f5325f9d961904</sys_id>
+        <sys_mod_count>282</sys_mod_count>
+        <sys_name>generateSingleCart</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_676d38e8dbd31780e0f5325f9d961904</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:22:22</sys_updated_on>
+    </sys_script_include>
+</record_update>

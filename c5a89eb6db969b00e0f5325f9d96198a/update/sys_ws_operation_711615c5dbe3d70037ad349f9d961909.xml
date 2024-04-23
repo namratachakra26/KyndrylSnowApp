@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_ibmg3_hcms/broker/request</default_operation_uri>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>POST</http_method>
+        <name>request</name>
+        <operation_script><![CDATA[/** 
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+* Schedule Contract with Kyndryl Corp. 
+* @author Asha Bagade 
+* @Rest Api is invoked from EM for creation of Request**/
+(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+    try {
+        //Defining variables
+        var body = request.body.data;		
+        var str = JSON.stringify(body);
+        //Log incoming request payload from Enterprise marketplace
+        new HCMSLogLevel().LogMsg('info', 'Incoming Request creation Payload: ' + str);
+		var requestType, requestedFor, requestNumber, requestor = '';
+        //Obtaining broker location Information
+        var brokerLocation = body.icb_brokerLocation;
+        //property to hold discovery status(enabled/disabled)
+        var discovery = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');
+        //Track the order number
+        var orderNumber = body.orderNumber;
+        //Setting variable values from the request object
+        requestedFor = body.requested_for;
+        requestType = body.requestType;
+		
+		var authheaders = request.getHeader("Authorization");
+		
+        //Establish a variable to hold the response body
+        var responseBody = {};
+        //Set a variable to establish a baseline for the validation check
+        var validationError = "false";
+		
+        //validation for mandatory paramater
+        validateBaseElements(body);
+		
+		//Validate if requested_for is active in servicenow
+        var gr = new GlideRecord('sys_user');
+        gr.addEncodedQuery('email=' + requestedFor + '^ORuser_name =' + requestedFor + '^active=true');
+        gr.query();
+        if (gr.next()) {
+            // creation of SR begins
+            if (validationError == "false") {
+                //Redirect to QS if Enable_QuickStart is ture and is a valid QS catalog item(vra order)
+                if (gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true" && isQSCatalog(body.catalog_item_name)) {
+                    //redirect to QS endpoint
+                    var qsResponse = new RedirectionToQuickStartUtils().quickStartRequestCreation(body,authheaders);
+                    //return the requestnumber received frm QS
+                    var status = JSON.stringify(qsResponse.statusCode);
+                    if (status == "200") {
+                        responseBody = qsResponse;
+						new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " +JSON.stringify(responseBody.requestNumber));
+                        response.setBody(responseBody);
+                    } else {
+                        var msg = JSON.stringify(qsResponse.message.message);
+                        new HCMSLogLevel().LogMsg('info', '*QS error for Request creation *' + msg);
+                        raiseResponseError(msg);
+                    }
+                }
+                //Call droplet for public providers/generic catalogs
+                else {
+                    switch (requestType) {
+                        case 'New':
+                            requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
+                            //Log response request number from scoped cart API
+                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            //Set the response body
+                            responseBody.requestNumber = requestNumber;
+                            response.setBody(responseBody);
+                            break;
+
+                        case 'Edit':
+                            requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
+                            //Log response request number
+                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            //Set the response body
+                            responseBody.requestNumber = requestNumber;
+                            response.setBody(responseBody);
+                            break;
+
+                        case 'Terminate':
+                            requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
+                            //Log response request number 
+                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            responseBody.requestNumber = requestNumber;
+                            response.setBody(responseBody);
+                            break;
+
+                        case 'operation':
+                            requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
+                            //Log response request number from scoped cart API
+                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            responseBody.requestNumber = requestNumber;
+                            response.setBody(responseBody);
+                            break;
+
+                        default:
+                            raiseResponseError("requestType attribute");
+                    }
+                }
+            } //end if validationError
+            return {
+                //response body already defined and added to the response object
+            };
+        } else {
+            // throw error as there is no User in NOW instance.
+            raiseResponseErrorNoUserPresent("User not found in ServiceNow hence, no Request created.");
+        }
+    } catch (err) {
+        new HCMSLogLevel.LogMsg("error", "Kyndryl Marketplace Approval API: " + this.type + "(" + err.message + ")");
+    }
+
+    //********* VALIDATION FUNCTIONS  ************
+    //Function to validate the base level elements
+    function validateBaseElements(bBody) {
+        //catalog_item_name
+        if (!bBody.catalog_item_name) {
+            validationError = "true";
+            raiseResponseError("catalog_item_sys_id attribute missing or incorrect version of request api used");
+        }
+        if (empty(bBody.catalog_item_name)) {
+            validationError = "true";
+            raiseResponseError("catalog_item_name attribute bad value or incorrect version of request api used");
+        }
+        //requested_for
+        if (!bBody.requested_for) {
+            validationError = "true";
+            raiseResponseError("requested_for attribute missing");
+        }
+        if (empty(bBody.requested_for)) {
+            validationError = "true";
+            raiseResponseError("requested_for attribute bad value");
+        }
+        //orderNumber
+        if (!bBody.orderNumber) {
+            validationError = "true";
+            raiseResponseError("orderNumber attribute missing");
+        }
+        if (empty(bBody.orderNumber)) {
+            validationError = "true";
+            raiseResponseError("orderNumber attribute bad value");
+        }
+        //requestType
+        if (!bBody.requestType) {
+            validationError = "true";
+            raiseResponseError("requestType attribute missing");
+        }
+        if (empty(bBody.requestType)) {
+            validationError = "true";
+            raiseResponseError("requestType attribute bad value");
+        }
+        if (bBody.requestType == "New") {
+            var payloadQuantity = bBody.requestedItems.quantity;
+            var intQuantity = parseInt(payloadQuantity, 10);
+            if (intQuantity < 1) {
+                validationError = "true";
+                raiseResponseError("quantity attribute less than one");
+            }
+        }
+        if (bBody.catalog_item_name != "IBM Cloud Broker Provision" && bBody.catalog_item_name != "Servicenow Provisioning Fulfillment") {
+            //Change Approval Required
+            if (!(bBody.changeApprovalRequired)) {
+                validationError = "true";
+                raiseResponseError("changeApprovalRequired missing");
+            }
+            if (empty(bBody.changeApprovalRequired)) {
+                validationError = "true";
+                raiseResponseError("changeApprovalRequired missing");
+            }
+        }
+		//Validate if incoming resource is available in cmdb, if discovery is enabled for generic catalogs
+        if (bBody.requestType == "operation" && discovery == "true" && (gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true" && !isQSCatalog(bBody.catalog_item_name) || gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "false")) {
+            //resource name validation
+            var resrc = new HCMSOperationsValidations().validateResourceName(bBody);
+            if (!resrc || resrc == "") {
+                validationError = "true";
+                raiseResponseError("ResourceName not available in cmdb");
+            }
+        }
+    }
+	
+    //Function to handle string tests
+    function empty(e) {
+        //Test the string
+        switch (e) {
+            case "":
+                return true;
+            case 0:
+                return true;
+            case "0":
+                return true;
+            case null:
+                return true;
+                //case false:
+            case typeof this == "undefined":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    //Function to handle response error messages
+    function raiseResponseError(message) {
+        //Raises a response error
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(403);
+        theError.setMessage("JSON payload error.");
+        theError.setDetail(message);
+        response.setError(theError);
+
+        //Log the error on processing the request
+        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: JSON payload error.");
+        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: " + message);
+    }
+
+    //Function to handle response error messages for no SR creation
+    function raiseResponseErrorNoUserPresent(message) {
+        //Raises a response error
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(403);
+        theError.setMessage("Service Request creation aborted.");
+        theError.setDetail(message);
+        response.setError(theError);
+
+        //Log the error on processing the request
+        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: Service Request creation aborted.");
+        new HCMSLogLevel().LogMsg('error', 'Request auto rejected. No user found in ServiceNow. Order Num: ' + body.orderNumber);
+        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: " + message);
+    }
+	
+    //Function to validate QS catalog item
+    function isQSCatalog(catalogItemCode) {
+        //check if catalog item is available in mapping table
+        var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
+        if (mappingTable.get('u_applies_to.name', catalogItemCode)) {
+            new HCMSLogLevel().LogMsg("info", "Valid QS Catalog item : " + catalogItemCode);
+            return true;
+        } else {
+            new HCMSLogLevel().LogMsg("info", "Generic Catalog item : " + catalogItemCode);
+            return false;
+        }
+    }
+	
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_ibmg3_hcms/v1/broker/request</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/request</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>false</requires_snc_internal_role>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2018-07-25 06:55:07</sys_created_on>
+        <sys_id>711615c5dbe3d70037ad349f9d961909</sys_id>
+        <sys_mod_count>209</sys_mod_count>
+        <sys_name>request</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ws_operation_711615c5dbe3d70037ad349f9d961909</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 14:57:40</sys_updated_on>
+        <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
+        <web_service_version display_value="v1">e691e14ddbe3d70037ad349f9d961962</web_service_version>
+    </sys_ws_operation>
+</record_update>

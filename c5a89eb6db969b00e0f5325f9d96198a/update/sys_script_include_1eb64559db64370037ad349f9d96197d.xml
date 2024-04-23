@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.HCMSOperationsValidations</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include  contains all the Individual functions from the requested item workflow for Day2 operations (START/STOP/RESTART) invoked from workflow "HCMS Operations Start/Stop/Reboot WF"&#13;
+**/</description>
+        <name>HCMSOperationsValidations</name>
+        <script><![CDATA[var HCMSOperationsValidations = Class.create();
+HCMSOperationsValidations.prototype = {
+	initialize: function() {
+	},
+	
+	validateResourceName : function(reqbody) {
+		try {
+			var resourceId = '';
+			for(var i=0; i < reqbody.requestedItems.length; i++) {
+				var itemServiceName = reqbody.requestedItems[i].serviceName;
+				var itemPropertiesArray = reqbody.requestedItems[i].itemProperties;
+				for(var j=0; j < itemPropertiesArray.length; j++) {
+					var propertyGroupInfo = itemPropertiesArray[j].propertyGroupInfo;
+					if(propertyGroupInfo=="$operation") {
+						var propertiesArray = itemPropertiesArray[j].properties;
+						for(var k=0; k < propertiesArray.length; k++) {
+							var nameFetched = propertiesArray[k].name;
+							if(nameFetched=="resourceId") {
+								resourceId = propertiesArray[k].value;
+								new HCMSLogLevel().LogMsg("info","resourceId for start/stop/reboot: "+resourceId);
+							}
+						}
+					}
+				}
+			}
+			if(resourceId) {//check if ci exists
+				var gr = new GlideRecord('cmdb_ci_vm_object');
+				var qry = 'object_id='+resourceId+'^ORref_cmdb_ci_vmware_instance.vm_instance_uuid='+resourceId;
+				gr.addEncodedQuery(qry);
+                gr.query();
+                if(gr.next()) {
+					new HCMSLogLevel().LogMsg("info","ResourceName for start/stop/reboot: exists in  vmware_instance " + gr.sys_id);
+					return gr.sys_id;
+				}
+				else
+					return "";
+			}
+			else
+				return "";
+		}catch(err) {
+			workflow.error("Kyndryl Marketplace Provision ResourceName: validateResourceName : "  + err);
+		}
+	},
+	type: 'HCMSOperationsValidations'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-03-31 14:27:20</sys_created_on>
+        <sys_id>1eb64559db64370037ad349f9d96197d</sys_id>
+        <sys_mod_count>12</sys_mod_count>
+        <sys_name>HCMSOperationsValidations</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_1eb64559db64370037ad349f9d96197d</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:25:19</sys_updated_on>
+    </sys_script_include>
+</record_update>

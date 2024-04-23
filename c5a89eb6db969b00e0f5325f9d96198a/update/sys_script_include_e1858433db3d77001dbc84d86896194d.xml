@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.HCMS_generate_Sys_id</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from "RedirectionToQuickStartUtils" script include -This Script is used to read the name and return the sys_id of the particular record&#13;
+**/</description>
+        <name>HCMS_generate_Sys_id</name>
+        <script><![CDATA[var HCMS_generate_Sys_id = Class.create();
+HCMS_generate_Sys_id.prototype = {
+    initialize: function() {},
+
+    //Fetch the sys_id of service_collection
+    Populate_ServiceCOLL_sysid: function(service_collection) {
+        var srCOLL = new GlideRecord('u_qs_cmdb_ci_servicecollection');
+        srCOLL.get(service_collection);
+        srCOLL.query();
+        if (srCOLL.next()) {
+            return srCOLL.getUniqueValue();
+        }
+    },
+
+    //Fetch the company sys_id
+    Populate_srCustomer_sysid: function(customer_id) {
+        var srCust_id = new GlideRecord('core_company');
+        srCust_id.get(customer_id);
+        srCust_id.query();
+        if (srCust_id.next()) {
+            return srCust_id.getUniqueValue();
+        }
+    },
+
+    //Fetch the Business app sys_id
+    Populate_srBusinessAPP_sysid: function(Business_ID) {
+        var srBusiness_ID = new GlideRecord('cmdb_ci_business_app');
+        srBusiness_ID.get(Business_ID);
+        srBusiness_ID.query();
+        if (srBusiness_ID.next()) {
+            return srBusiness_ID.getUniqueValue();
+        }
+    },
+
+    //Fetch the Req for user's sys_id
+    populateRequestedFor_sysId: function(reqfor_email) {
+        var usrId = new GlideRecord('sys_user');
+        usrId.addEncodedQuery('email=' + reqfor_email + '^ORuser_name =' + reqfor_email);
+        usrId.query();
+        if (usrId.next()) {
+            return usrId.getUniqueValue();
+        }
+    },
+
+    //Fetch the AD domain's sys_id
+    populateADdomain_sysId: function(adDomain_name) {
+        var adDomain = new GlideRecord('cmdb_ci_appl_active_directory');
+        if (adDomain.get('name', adDomain_name)) {
+            return adDomain.getUniqueValue();
+        }
+    },
+
+    //Fetch the resource's(ci) sys_id stored on day1's RITM as part of ci update call
+    populateCi_sysId: function(serviceOfferingInsID) {
+        try {
+            var query = 'active=false^correlation_idLIKE' + serviceOfferingInsID;
+            var chgReq;
+            var ritm = new GlideRecord('sc_req_item');
+            ritm.addEncodedQuery(query);
+            ritm.query();
+            while (ritm.next()) {
+                if ((ritm.variables.ITDSYSIDSIX))//the variable is available only for Day1 requests
+                    return ritm.variables.ITDSYSIDSIX;
+            }
+        } catch (ex) {
+            new HCMSLogLevel().LogMsg('error', 'populateCi_sysId error ' + ex);
+        }
+    },
+	
+	//Fetch the sys_id of the Authenticaion Profile to re-direct to QS API
+	
+	qs_auth_profile_generate_id : function(authName){
+		
+		var qs_auth_name = authName;
+		var qsr = new GlideRecord('sys_auth_profile_basic');
+		qsr.addQuery('name',qs_auth_name);
+		qsr.query();
+		if(qsr.next()){
+			return qsr.sys_id;
+		}
+		
+	},
+
+    type: 'HCMS_generate_Sys_id'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-06-09 06:40:04</sys_created_on>
+        <sys_id>e1858433db3d77001dbc84d86896194d</sys_id>
+        <sys_mod_count>32</sys_mod_count>
+        <sys_name>HCMS_generate_Sys_id</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_e1858433db3d77001dbc84d86896194d</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:31:47</sys_updated_on>
+    </sys_script_include>
+</record_update>

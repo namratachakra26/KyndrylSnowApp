@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sc_cat_item">
+    <sc_cat_item action="INSERT_OR_UPDATE">
+        <access_type>restricted</access_type>
+        <active>true</active>
+        <availability>on_both</availability>
+        <billable>false</billable>
+        <category/>
+        <checked_out/>
+        <cost>0</cost>
+        <custom_cart/>
+        <delivery_plan/>
+        <delivery_plan_script/>
+        <delivery_time>1970-01-03 00:00:00</delivery_time>
+        <description><![CDATA[<p>This catalog provides a basic version of the Service Offerings in Kyndryl Marketplace via a default catalog item so that our workflows trigger properly with all of the relevant data.</p>
+<p><br /><a href="https://cb-snow.gravitant.net/dashboard" rel="nofollow">Click here to re-direct to Kyndryl Marketplace</a></p>]]></description>
+        <display_price_property>non_zero</display_price_property>
+        <entitlement_script/>
+        <flow_designer_flow/>
+        <fulfillment_automation_level>unspecified</fulfillment_automation_level>
+        <group/>
+        <hide_sp>false</hide_sp>
+        <icon>636391eb1b122150da788403604bcba5</icon>
+        <ignore_price>true</ignore_price>
+        <image/>
+        <list_price>0</list_price>
+        <location/>
+        <mandatory_attachment>false</mandatory_attachment>
+        <meta/>
+        <mobile_hide_price>false</mobile_hide_price>
+        <mobile_picture/>
+        <mobile_picture_type>use_desktop_picture</mobile_picture_type>
+        <model/>
+        <name>Kyndryl Marketplace Provision</name>
+        <no_attachment_v2>false</no_attachment_v2>
+        <no_cart>false</no_cart>
+        <no_cart_v2>false</no_cart_v2>
+        <no_delivery_time_v2>false</no_delivery_time_v2>
+        <no_order>false</no_order>
+        <no_order_now>false</no_order_now>
+        <no_proceed_checkout>false</no_proceed_checkout>
+        <no_quantity>false</no_quantity>
+        <no_quantity_v2>false</no_quantity_v2>
+        <no_search>false</no_search>
+        <no_wishlist_v2>false</no_wishlist_v2>
+        <omit_price>false</omit_price>
+        <order>0</order>
+        <ordered_item_link/>
+        <owner/>
+        <picture>a35391eb1b122150da788403604bcb09</picture>
+        <preview>JavaScript: popupOpenStandard("com.glideapp.servicecatalog_cat_item_view.do?v=1&amp;sysparm_id=b64fe0ecdbe21b0037ad349f9d9619e3&amp;sysparm_preview=true", "summary");</preview>
+        <price>0</price>
+        <published_ref/>
+        <recurring_frequency/>
+        <recurring_price>0</recurring_price>
+        <request_method/>
+        <roles/>
+        <sc_catalogs>e0d08b13c3330100c8b837659bba8fb4</sc_catalogs>
+        <sc_ic_item_staging/>
+        <sc_ic_version/>
+        <sc_template/>
+        <short_description>This catalog item provides a means to request cloud provision</short_description>
+        <show_variable_help_on_load>false</show_variable_help_on_load>
+        <start_closed>false</start_closed>
+        <state/>
+        <sys_class_name>sc_cat_item</sys_class_name>
+        <sys_created_by>vram@us.ibm.com</sys_created_by>
+        <sys_created_on>2018-06-03 21:48:42</sys_created_on>
+        <sys_id>b64fe0ecdbe21b0037ad349f9d9619e3</sys_id>
+        <sys_mod_count>18</sys_mod_count>
+        <sys_name>Kyndryl Marketplace Provision</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sc_cat_item_b64fe0ecdbe21b0037ad349f9d9619e3</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-25 11:33:26</sys_updated_on>
+        <taxonomy_topic/>
+        <template/>
+        <template_manager_roles/>
+        <type>item</type>
+        <u_qs_business_approval_flow/>
+        <u_qs_business_approval_workflow/>
+        <u_qs_business_preapproved_>false</u_qs_business_preapproved_>
+        <u_qs_change_model/>
+        <u_qs_flow_controlled_execution_plan/>
+        <u_qs_item_approval_flow/>
+        <u_qs_item_approval_workflow/>
+        <u_qs_item_code/>
+        <u_qs_item_preapproved_>false</u_qs_item_preapproved_>
+        <u_qs_managed_item>false</u_qs_managed_item>
+        <u_qs_server_side_validation_framework>false</u_qs_server_side_validation_framework>
+        <u_qs_service_offering/>
+        <u_qs_task_flow/>
+        <u_qs_task_workflow/>
+        <u_qs_wait_for_change_to_complete_>false</u_qs_wait_for_change_to_complete_>
+        <use_sc_layout>true</use_sc_layout>
+        <vendor/>
+        <visible_bundle>true</visible_bundle>
+        <visible_guide>true</visible_guide>
+        <visible_standalone>true</visible_standalone>
+        <workflow display_value="HCMS RQF Default Workflow">0f6e7db1db6edf00e0f5325f9d96193a</workflow>
+    </sc_cat_item>
+    <sys_translated_text action="delete_multiple" query="documentkey=b64fe0ecdbe21b0037ad349f9d9619e3"/>
+    <fx_price action="delete_multiple" query="id=b64fe0ecdbe21b0037ad349f9d9619e3"/>
+    <fx_price action="INSERT_OR_UPDATE">
+        <amount>0</amount>
+        <currency display_value="USD">USD</currency>
+        <field>price</field>
+        <id>b64fe0ecdbe21b0037ad349f9d9619e3</id>
+        <parent/>
+        <reference_amount>0</reference_amount>
+        <reference_currency display_value="USD">USD</reference_currency>
+        <sys_created_by>vram@us.ibm.com</sys_created_by>
+        <sys_created_on>2018-06-03 21:48:42</sys_created_on>
+        <sys_id>38003cecdbe21b0037ad349f9d9619b5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>vram@us.ibm.com</sys_updated_by>
+        <sys_updated_on>2018-06-03 21:48:42</sys_updated_on>
+        <table>sc_cat_item</table>
+        <type>calculated</type>
+    </fx_price>
+    <fx_price action="INSERT_OR_UPDATE">
+        <amount>0</amount>
+        <currency display_value="USD">USD</currency>
+        <field>recurring_price</field>
+        <id>b64fe0ecdbe21b0037ad349f9d9619e3</id>
+        <parent/>
+        <reference_amount>0</reference_amount>
+        <reference_currency display_value="USD">USD</reference_currency>
+        <sys_created_by>vram@us.ibm.com</sys_created_by>
+        <sys_created_on>2018-06-03 21:48:42</sys_created_on>
+        <sys_id>7c003cecdbe21b0037ad349f9d9619b6</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>vram@us.ibm.com</sys_updated_by>
+        <sys_updated_on>2018-06-03 21:48:42</sys_updated_on>
+        <table>sc_cat_item</table>
+        <type>calculated</type>
+    </fx_price>
+    <sys_attachment action="INSERT_OR_UPDATE">
+        <average_image_color>#ff4b39</average_image_color>
+        <chunk_size_bytes>700000</chunk_size_bytes>
+        <compressed>true</compressed>
+        <content_type>image/png</content_type>
+        <file_name>icon</file_name>
+        <hash>33e9c94d631f04a079024448c54d7c8896100b6c3c3dd65cd10a3659118857eb</hash>
+        <image_height>38</image_height>
+        <image_width>112</image_width>
+        <size_bytes>6536</size_bytes>
+        <size_compressed>6261</size_compressed>
+        <state>available</state>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-25 11:29:54</sys_created_on>
+        <sys_id>636391eb1b122150da788403604bcba5</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-25 11:29:54</sys_updated_on>
+        <table_name>ZZ_YYsc_cat_item</table_name>
+        <table_sys_id>b64fe0ecdbe21b0037ad349f9d9619e3</table_sys_id>
+    </sys_attachment>
+    <sys_attachment_doc action="INSERT_OR_UPDATE">
+        <data>H4sIAAAAAAAAAA==</data>
+        <length>16</length>
+        <position>0</position>
+        <sys_attachment display_value="icon" sys_id="636391eb1b122150da788403604bcba5">636391eb1b122150da788403604bcba5</sys_attachment>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-25 11:29:54</sys_created_on>
+        <sys_id>a36391eb1b122150da788403604bcba5</sys_id>
+    </sys_attachment_doc>
+    <sys_attachment_doc action="INSERT_OR_UPDATE">
+        <data>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</data>
+        <length>8336</length>
+        <position>1</position>
+        <sys_attachment display_value="icon" sys_id="636391eb1b122150da788403604bcba5">636391eb1b122150da788403604bcba5</sys_attachment>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-25 11:29:54</sys_created_on>
+        <sys_id>276391eb1b122150da788403604bcba5</sys_id>
+    </sys_attachment_doc>
+    <sys_attachment action="INSERT_OR_UPDATE">
+        <average_image_color>#ff4b39</average_image_color>
+        <chunk_size_bytes>700000</chunk_size_bytes>
+        <compressed>true</compressed>
+        <content_type>image/png</content_type>
+        <file_name>picture</file_name>
+        <hash>33e9c94d631f04a079024448c54d7c8896100b6c3c3dd65cd10a3659118857eb</hash>
+        <image_height>38</image_height>
+        <image_width>112</image_width>
+        <size_bytes>6536</size_bytes>
+        <size_compressed>6261</size_compressed>
+        <state>available</state>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-25 11:29:38</sys_created_on>
+        <sys_id>a35391eb1b122150da788403604bcb09</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-25 11:29:38</sys_updated_on>
+        <table_name>ZZ_YYsc_cat_item</table_name>
+        <table_sys_id>b64fe0ecdbe21b0037ad349f9d9619e3</table_sys_id>
+    </sys_attachment>
+    <sys_attachment_doc action="INSERT_OR_UPDATE">
+        <data>H4sIAAAAAAAAAA==</data>
+        <length>16</length>
+        <position>0</position>
+        <sys_attachment display_value="picture" sys_id="a35391eb1b122150da788403604bcb09">a35391eb1b122150da788403604bcb09</sys_attachment>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-25 11:29:38</sys_created_on>
+        <sys_id>e35391eb1b122150da788403604bcb09</sys_id>
+    </sys_attachment_doc>
+    <sys_attachment_doc action="INSERT_OR_UPDATE">
+        <data>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</data>
+        <length>8336</length>
+        <position>1</position>
+        <sys_attachment display_value="picture" sys_id="a35391eb1b122150da788403604bcb09">a35391eb1b122150da788403604bcb09</sys_attachment>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-25 11:29:38</sys_created_on>
+        <sys_id>675391eb1b122150da788403604bcb09</sys_id>
+    </sys_attachment_doc>
+</record_update>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description>Mandatory roles to authenticate the test connection api call&#13;
+&#13;
+</description>
+        <ignore_cache>true</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_ibmg3_hcms.em.integration.roles</name>
+        <read_roles/>
+        <suffix>em.integration.roles</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>shalini.s11@kyndryl.com</sys_created_by>
+        <sys_created_on>2022-11-23 08:42:33</sys_created_on>
+        <sys_id>2241b0de1b5f1510acde777dcc4bcb04</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.em.integration.roles</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_properties_2241b0de1b5f1510acde777dcc4bcb04</sys_update_name>
+        <sys_updated_by>Asha.Bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 06:51:43</sys_updated_on>
+        <type>string</type>
+        <value>x_ibmg3_hcms.hcms_user,itil,import_admin,web_service_admin</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=2241b0de1b5f1510acde777dcc4bcb04"/>
+</record_update>

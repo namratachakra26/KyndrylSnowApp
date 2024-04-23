@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sc_cat_item_content">
+    <sc_cat_item_content action="INSERT_OR_UPDATE">
+        <access_type>restricted</access_type>
+        <active>true</active>
+        <availability>on_desktop</availability>
+        <billable>false</billable>
+        <category display_value="Hybrid Cloud Services">69fbd542db3ad740e0f5325f9d96190f</category>
+        <checked_out/>
+        <content_type>external</content_type>
+        <cost>0</cost>
+        <custom_cart/>
+        <delivery_plan display_value="DEFAULT">523da512c611228900811a37c97c2014</delivery_plan>
+        <delivery_plan_script/>
+        <delivery_time>1970-01-03 00:00:00</delivery_time>
+        <description/>
+        <display_price_property>non_zero</display_price_property>
+        <entitlement_script/>
+        <flow_designer_flow/>
+        <fulfillment_automation_level>unspecified</fulfillment_automation_level>
+        <group/>
+        <hide_sp>false</hide_sp>
+        <icon/>
+        <ignore_price>true</ignore_price>
+        <image/>
+        <kb_article display_value="KB0000029">24d9243187032100deddb882a2e3ec33</kb_article>
+        <list_price>0</list_price>
+        <location/>
+        <mandatory_attachment>false</mandatory_attachment>
+        <meta/>
+        <mobile_hide_price>false</mobile_hide_price>
+        <mobile_picture/>
+        <mobile_picture_type>use_desktop_picture</mobile_picture_type>
+        <model/>
+        <module/>
+        <name>iFrame Cloud Broker Inventory</name>
+        <no_attachment_v2>false</no_attachment_v2>
+        <no_cart>false</no_cart>
+        <no_cart_v2>false</no_cart_v2>
+        <no_delivery_time_v2>false</no_delivery_time_v2>
+        <no_order>false</no_order>
+        <no_order_now>false</no_order_now>
+        <no_proceed_checkout>false</no_proceed_checkout>
+        <no_quantity>false</no_quantity>
+        <no_quantity_v2>false</no_quantity_v2>
+        <no_search>false</no_search>
+        <no_wishlist_v2>false</no_wishlist_v2>
+        <omit_price>false</omit_price>
+        <order>0</order>
+        <ordered_item_link/>
+        <owner/>
+        <picture/>
+        <preview>JavaScript: popupOpenStandard("?id=hcms_broker_inventory&amp;sysparm_preview=true", "summary");</preview>
+        <price>0</price>
+        <published_ref/>
+        <recurring_frequency/>
+        <recurring_price>0</recurring_price>
+        <request_method/>
+        <roles/>
+        <sc_catalogs>e0d08b13c3330100c8b837659bba8fb4</sc_catalogs>
+        <sc_ic_item_staging/>
+        <sc_ic_version/>
+        <sc_template/>
+        <short_description>Click here for Kyndryl Marketplace Inventory</short_description>
+        <show_variable_help_on_load>false</show_variable_help_on_load>
+        <start_closed>false</start_closed>
+        <state/>
+        <sys_class_name>sc_cat_item_content</sys_class_name>
+        <sys_created_by>ashabagade</sys_created_by>
+        <sys_created_on>2019-09-19 10:21:42</sys_created_on>
+        <sys_id>45ca4268db44805037ad349f9d961940</sys_id>
+        <sys_mod_count>20</sys_mod_count>
+        <sys_name>iFrame Cloud Broker Inventory</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sc_cat_item_content_45ca4268db44805037ad349f9d961940</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-25 12:26:11</sys_updated_on>
+        <target>_blank</target>
+        <taxonomy_topic/>
+        <template/>
+        <template_manager_roles/>
+        <type>item</type>
+        <u_qs_business_approval_flow/>
+        <u_qs_business_approval_workflow/>
+        <u_qs_business_preapproved_>false</u_qs_business_preapproved_>
+        <u_qs_change_model/>
+        <u_qs_flow_controlled_execution_plan/>
+        <u_qs_item_approval_flow/>
+        <u_qs_item_approval_workflow/>
+        <u_qs_item_code/>
+        <u_qs_item_preapproved_>false</u_qs_item_preapproved_>
+        <u_qs_managed_item>false</u_qs_managed_item>
+        <u_qs_server_side_validation_framework>false</u_qs_server_side_validation_framework>
+        <u_qs_service_offering/>
+        <u_qs_task_flow/>
+        <u_qs_task_workflow/>
+        <u_qs_wait_for_change_to_complete_>false</u_qs_wait_for_change_to_complete_>
+        <url>?id=hcms_broker_inventory</url>
+        <use_sc_layout>true</use_sc_layout>
+        <vendor/>
+        <visible_bundle>true</visible_bundle>
+        <visible_guide>true</visible_guide>
+        <visible_standalone>true</visible_standalone>
+        <workflow/>
+    </sc_cat_item_content>
+    <sys_translated_text action="delete_multiple" query="documentkey=45ca4268db44805037ad349f9d961940"/>
+    <fx_price action="delete_multiple" query="id=45ca4268db44805037ad349f9d961940"/>
+    <fx_price action="INSERT_OR_UPDATE">
+        <amount>0</amount>
+        <currency display_value="USD">USD</currency>
+        <field>price</field>
+        <id>45ca4268db44805037ad349f9d961940</id>
+        <parent/>
+        <reference_amount>0</reference_amount>
+        <reference_currency display_value="USD">USD</reference_currency>
+        <sys_created_by>ashabagade</sys_created_by>
+        <sys_created_on>2019-09-19 10:21:42</sys_created_on>
+        <sys_id>41cac2a8db44805037ad349f9d96192f</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>ashabagade</sys_updated_by>
+        <sys_updated_on>2019-09-19 10:21:44</sys_updated_on>
+        <table>sc_cat_item_content</table>
+        <type>calculated</type>
+    </fx_price>
+    <fx_price action="INSERT_OR_UPDATE">
+        <amount>0</amount>
+        <currency display_value="USD">USD</currency>
+        <field>recurring_price</field>
+        <id>45ca4268db44805037ad349f9d961940</id>
+        <parent/>
+        <reference_amount>0</reference_amount>
+        <reference_currency display_value="USD">USD</reference_currency>
+        <sys_created_by>ashabagade</sys_created_by>
+        <sys_created_on>2019-09-19 10:21:43</sys_created_on>
+        <sys_id>01cac2a8db44805037ad349f9d961930</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>ashabagade</sys_updated_by>
+        <sys_updated_on>2019-09-19 10:21:44</sys_updated_on>
+        <table>sc_cat_item_content</table>
+        <type>calculated</type>
+    </fx_price>
+</record_update>

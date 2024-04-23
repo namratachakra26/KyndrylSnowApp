@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.fetchResourcesIds</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Shalini S &#13;
+* @Script Include is used to fetch all sysids of resource types&#13;
+**/&#13;
+</description>
+        <name>fetchResourcesIds</name>
+        <script><![CDATA[var fetchResourcesIds = Class.create();
+fetchResourcesIds.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+//pass all the sysids of resource types
+    getResourceIds: function() {
+     
+        var res = this.getParameter('sysparm_res').toString();
+        var sysIdss = [];
+
+        var arrayval = (res.split(","));
+
+        var cl = new GlideRecord('sys_choice');
+		cl.addEncodedQuery('hint=azure^valueIN'+arrayval);
+        cl.query();
+        while (cl.next()) {
+            sysIdss.push(cl.sys_id.split(","));
+        }
+        return sysIdss.toString();
+    },
+	
+	getResourceIdsGcp: function() {
+     
+        var res = this.getParameter('sysparm_res').toString();
+        var sysIdss = [];
+
+        var arrayval = (res.split(","));
+
+        var cl = new GlideRecord('sys_choice');
+		cl.addEncodedQuery('hint=gcp^valueIN'+arrayval);
+        cl.query();
+        while (cl.next()) {
+            sysIdss.push(cl.sys_id.split(","));
+        }
+        return sysIdss.toString();
+    },
+	
+	getResourceIdsAws: function() {
+     
+        var res = this.getParameter('sysparm_res').toString();
+        var sysIdss = [];
+
+        var arrayval = (res.split(","));
+
+        var cl = new GlideRecord('sys_choice');
+		cl.addEncodedQuery('hint=aws^valueIN'+arrayval);
+        cl.query();
+        while (cl.next()) {
+            sysIdss.push(cl.sys_id.split(","));
+        }
+        return sysIdss.toString();
+    },
+	
+	getResourceIdsVra: function() {
+     
+        var res = this.getParameter('sysparm_res').toString();
+        var sysIdss = [];
+
+        var arrayval = (res.split(","));
+
+        var cl = new GlideRecord('sys_choice');
+		cl.addEncodedQuery('hint=vra^valueIN'+arrayval);
+        cl.query();
+        while (cl.next()) {
+            sysIdss.push(cl.sys_id.split(","));
+        }
+        return sysIdss.toString();
+    },
+	
+
+    type: 'fetchResourcesIds'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>shalini.s11@kyndryl.com</sys_created_by>
+        <sys_created_on>2021-10-06 11:19:17</sys_created_on>
+        <sys_id>8ff7d2d51b4b7010da788403604bcbfd</sys_id>
+        <sys_mod_count>39</sys_mod_count>
+        <sys_name>fetchResourcesIds</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_8ff7d2d51b4b7010da788403604bcbfd</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:16:28</sys_updated_on>
+    </sys_script_include>
+</record_update>

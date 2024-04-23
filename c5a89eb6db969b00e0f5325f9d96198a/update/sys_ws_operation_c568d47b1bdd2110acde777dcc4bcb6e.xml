@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_ibmg3_hcms/broker/requestDetails/{orderId}</default_operation_uri>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>GET</http_method>
+        <name>requestDetails</name>
+        <operation_script><![CDATA[/** 
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+* Schedule Contract with Kyndryl Corp. 
+* @author Supromit Roy
+* @Rest Api is invoked from EM for fetching Request Details**/
+
+(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    var orderID = request.pathParams.orderId;
+    var srNumber = fetchSR(orderID);
+    var isIncompletedData = false;
+    if (!srNumber) {
+        raiseResponseError("No Request found related to the OrderId :" + orderID);
+    } else {
+        var reqRitms = fetchRITMS(srNumber);
+        var responsePayload = createResPayload(reqRitms, srNumber, orderID);
+        response.setBody(responsePayload);
+    }
+    new HCMSLogLevel().LogMsg("info", orderID + " " + "Request Number " + srNumber);
+
+    function createResPayload(reqRitms, srNumber, orderID) {
+        var finalResponse = {
+            reasons: [],
+            tags: {}
+        };
+        finalResponse.reasons.push({
+            "status": "success",
+            "messages": "itsm_servicerequest list fetched successfully"
+        });
+        finalResponse.tags.orderNumber = orderID;
+        finalResponse.tags.itsm_servicerequest = srNumber;
+        finalResponse.tags.itemDetails = reqRitms;
+        if (isIncompletedData == true) {
+            finalResponse.statusCode = 206;
+        } else {
+            finalResponse.statusCode = 200;
+        }
+        return finalResponse;
+    }
+
+    function raiseResponseError(message) {
+        //Raises a response error
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(404);
+        theError.setMessage("failed");
+        theError.setDetail(message);
+        response.setError(theError);
+
+        //Log the error
+
+        new HCMSLogLevel().LogMsg("info", orderID + " " + "Request Details : ERROR: " + message);
+
+    }
+
+    //Function to fetch ritm from request
+    function fetchRITMS(reqSrID) {
+        var arr = [];
+        var reqItem = new GlideRecord('sc_req_item');
+        reqItem.addQuery('request.number', reqSrID);
+        reqItem.query();
+        while (reqItem.next()) {
+            isIncompletedData = false;
+            var tempData = {
+                "itsm_ritm": "",
+                "itsm_changerequest": "",
+                "itsm_changetask": "",
+                "serviceInventoryId": ""
+            };
+            tempData.itsm_ritm = reqItem.number.toString();
+            tempData.serviceInventoryId = reqItem.variables.var_service_instance_id;
+            tempData.itsm_changerequest = reqItem.x_ibmg3_hcms_related_change_request.number;
+            if (tempData.itsm_changerequest != "") {
+                var chgTsk = new GlideRecord('change_task');
+                var query = 'change_request=' + reqItem.x_ibmg3_hcms_related_change_request + '^short_description=Provisioning Task';
+                chgTsk.addEncodedQuery(query);
+                chgTsk.query();
+                if (chgTsk.next()) {
+                    tempData.itsm_changetask = chgTsk.number;
+                }
+                arr.push(tempData);
+            } else {
+                isIncompletedData = true;
+                arr.push(tempData);
+            }
+
+        }
+        new HCMSLogLevel().LogMsg("info", orderID + " " + "Item Details3 : " + JSON.stringify(arr));
+        return arr;
+    }
+    //Function to fetch request from order
+    function fetchSR(orderId) {
+        var reqSR = "";
+        var reqObj = new GlideRecord('sc_request');
+        reqObj.addQuery('x_ibmg3_hcms_order_number', orderId);
+        reqObj.query();
+        if (reqObj.next()) {
+            reqSR = reqObj.number;
+        }
+        return reqSR;
+    }
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_ibmg3_hcms/v1/broker/requestDetails/{orderId}</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/requestDetails/{orderId}</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>Supromit.Roy@kyndryl.com</sys_created_by>
+        <sys_created_on>2023-03-07 08:52:01</sys_created_on>
+        <sys_id>c568d47b1bdd2110acde777dcc4bcb6e</sys_id>
+        <sys_mod_count>32</sys_mod_count>
+        <sys_name>requestDetails</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ws_operation_c568d47b1bdd2110acde777dcc4bcb6e</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 14:52:17</sys_updated_on>
+        <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
+        <web_service_version display_value="v1">e691e14ddbe3d70037ad349f9d961962</web_service_version>
+    </sys_ws_operation>
+</record_update>

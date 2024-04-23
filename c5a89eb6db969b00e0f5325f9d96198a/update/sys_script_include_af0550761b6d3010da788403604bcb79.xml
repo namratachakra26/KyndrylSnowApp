@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.getCommonDiscoveryResourceTypes</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Rajesh Annepaka &#13;
+* @Script Include is used to fetch CD Resource type&#13;
+**/&#13;
+</description>
+        <name>getCommonDiscoveryResourceTypes</name>
+        <script><![CDATA[var getCommonDiscoveryResourceTypes = Class.create();
+getCommonDiscoveryResourceTypes.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+
+
+    getResourceTypes: function() {
+        var listGroup = [];
+
+        var requester = this.getParameter('sysparm_provider_value');
+        var parm = this.getParameter('sysparm_view');
+        var jsonArr = [];
+        var recGrp = new GlideRecord('sys_choice');
+        recGrp.addQuery('hint', requester);
+        recGrp.query();
+        while (recGrp.next()) {
+            if (parm == 'portal') {
+                listGroup.push(recGrp.sys_id.toString());
+            } else if (parm == 'native') {
+                var obj = {};
+                //  obj.name = recGrp.label.toString();
+                obj.sys_id = recGrp.sys_id.toString();
+                jsonArr.push(obj);
+            }
+        }
+
+        if (parm == 'portal')
+            return listGroup.toString();
+        else
+            return JSON.stringify(jsonArr);
+    },
+
+    type: 'getCommonDiscoveryResourceTypes'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-07-28 03:41:37</sys_created_on>
+        <sys_id>af0550761b6d3010da788403604bcb79</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>getCommonDiscoveryResourceTypes</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_af0550761b6d3010da788403604bcb79</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:18:25</sys_updated_on>
+    </sys_script_include>
+</record_update>

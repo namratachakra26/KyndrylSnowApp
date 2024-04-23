@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.cancelBeforeChangeApproval</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include used to cancel the change if order is cancelled before change approval, invoked from scripted rest api&#13;
+**/</description>
+        <name>cancelBeforeChangeApproval</name>
+        <script><![CDATA[var cancelBeforeChangeApproval = Class.create();
+cancelBeforeChangeApproval.prototype = {
+	initialize: function() {
+	},
+	
+	normalChangeCancellation : function(requestsys_id) {
+		new HCMSLogLevel().LogMsg('info','Cancel Change Request before change appoval');
+		var chg_id = '';
+		var ritm = new GlideRecord('sc_req_item');
+		ritm.addQuery('request',requestsys_id);
+		ritm.query();
+		if(ritm.next()){
+			chg_id= ritm.x_ibmg3_hcms_related_change_request;//related change sysId
+		}
+		var chg = new GlideRecord('change_request');
+		chg.addQuery('sys_id',chg_id);
+		chg.query();
+		if(chg.next()) {
+			chg.state = 4;// cancel change 
+			chg.update();
+		}
+	},
+	type: 'cancelBeforeChangeApproval'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-08-28 07:48:50</sys_created_on>
+        <sys_id>11f09061dbeff30037ad349f9d961979</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>cancelBeforeChangeApproval</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_11f09061dbeff30037ad349f9d961979</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:10:58</sys_updated_on>
+    </sys_script_include>
+</record_update>

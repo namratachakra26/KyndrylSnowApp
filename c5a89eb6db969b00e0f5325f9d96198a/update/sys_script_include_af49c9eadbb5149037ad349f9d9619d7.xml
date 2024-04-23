@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.HCMSGetTenatDetails</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.  &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked to fetch apikey and username (credentails) for outbound call to EM&#13;
+**/</description>
+        <name>HCMSGetTenatDetails</name>
+        <script><![CDATA[var HCMSGetTenatDetails = Class.create();
+HCMSGetTenatDetails.prototype = {
+    initialize: function() {},
+
+    get_tenant_details: function(brokerlocation, broker_domain) {
+        var apiKeyVal;
+        var UserVal;
+        //Fetch the api key and username based on broker location
+        var gr_loc = new GlideRecord('api_key_credentials');
+        gr_loc.addQuery('name', brokerlocation);
+		gr_loc.addQuery('sys_domain',broker_domain);
+        gr_loc.query();
+        if (gr_loc.next()) {
+            var retrieveDetails = new global.MCMPCredentialsStorage();
+            apiKeyVal = retrieveDetails.getCredApiKey_HcmsBroker(gr_loc.api_key);
+            UserVal = gr_loc.user_name;
+        }
+        return {
+            ApiKey: apiKeyVal,
+            UserName: UserVal
+        };
+    },
+
+    get_order_location: function(change_req_sys_id) {
+        var req_loc;
+        var sc_req_loc = new GlideRecord('sc_req_item');
+        sc_req_loc.addQuery('x_ibmg3_hcms_related_change_request', change_req_sys_id);
+        sc_req_loc.query();
+        if (sc_req_loc.next()) {
+            req_loc = sc_req_loc.request.x_ibmg3_hcms_cloud_broker_location;
+        }
+        return req_loc;
+    },
+
+    QSCheckDS: function() {
+        var plg = new GlideRecord('sys_plugins');
+        plg.addQuery('source', 'com.glide.domain');
+        plg.query();
+        plg.next();
+        if (plg.active == true) {
+            return 'true';
+        } else {
+            return 'false';
+        }
+    },
+	
+	getRequestDomain: function(order_number){
+		
+		var req_val = new GlideRecord('sc_request');
+		req_val.addQuery('x_ibmg3_hcms_order_number',order_number);
+		req_val.query();
+		if(req_val.next()){
+			return req_val.sys_domain.toString();
+		}
+		
+	},
+	
+	getRequesUItDomain: function(cred){
+		
+		var req_val = new GlideRecord('api_key_credentials');
+		req_val.addQuery('name',cred);
+		req_val.query();
+		if(req_val.next()){
+			return req_val.sys_domain.toString();
+		}
+		
+	},
+
+    type: 'HCMSGetTenatDetails'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-07-07 06:45:38</sys_created_on>
+        <sys_id>af49c9eadbb5149037ad349f9d9619d7</sys_id>
+        <sys_mod_count>27</sys_mod_count>
+        <sys_name>HCMSGetTenatDetails</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_af49c9eadbb5149037ad349f9d9619d7</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:24:18</sys_updated_on>
+    </sys_script_include>
+</record_update>

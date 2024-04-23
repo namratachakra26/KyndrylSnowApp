@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>GET</http_method>
+        <name>authenticateUser</name>
+        <operation_script><![CDATA[/** 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
+ * @author Asha Bagade 
+ * @Rest Api is invoked from Kyndryl Marketplace for validating user in Snow**/
+
+(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    // implement resource here
+    var usr = request.pathParams.user;
+
+    var query = 'user.user_nameSTARTSWITH' + usr + '^ORuser.emailSTARTSWITH' + usr;
+    var notPresent = [],
+        rolesListFromGlide = [];
+
+
+    var rolesList = new GlideRecord('sys_user_has_role');
+    rolesList.addEncodedQuery(query);
+    rolesList.query();
+
+    while (rolesList.next()) {
+        rolesListFromGlide.push(rolesList.role.name.split(',').toString());
+    }
+
+    var rolesProp = gs.getProperty('x_ibmg3_hcms.em.integration.roles').split(',');
+
+    for (var i = 0; i < rolesProp.length; i++) {
+        if (rolesListFromGlide.indexOf(rolesProp[i]) < 0)
+            notPresent.push(rolesProp[i]);
+
+    }
+
+    if (notPresent.length == 0) {
+        ResponsePayload = {
+            "status": "User Authentication Successful",
+            "statusCode": 200
+        };
+        response.setBody(ResponsePayload);
+    } else {
+        raiseResponseError('User Authentication Failed, Insufficient roles', notPresent);
+    }
+
+    function raiseResponseError(message, nP) {
+
+        //Raises a response error
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(403);
+        theError.setMessage(message);
+        theError.setDetail("User Roles: "+nP+ " are missing");
+        response.setError(theError);
+
+        //Log the error
+
+        new HCMSLogLevel().LogMsg("info", "Test authentication Validation : ERROR: " + message);
+
+    }
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_ibmg3_hcms/v2/broker/{user}/authenticateUser</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/{user}/authenticateUser</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2022-11-18 09:21:59</sys_created_on>
+        <sys_id>67594fa41b171110da788403604bcbd8</sys_id>
+        <sys_mod_count>29</sys_mod_count>
+        <sys_name>authenticateUser</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ws_operation_67594fa41b171110da788403604bcbd8</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 14:56:15</sys_updated_on>
+        <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
+        <web_service_version display_value="v2">3e7332e3db2500d037ad349f9d9619f3</web_service_version>
+    </sys_ws_operation>
+</record_update>

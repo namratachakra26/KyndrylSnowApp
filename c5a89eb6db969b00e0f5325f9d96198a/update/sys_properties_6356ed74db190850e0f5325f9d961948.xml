@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description>Property decides the no. of times the failed outbound needs to be retried</description>
+        <ignore_cache>false</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_ibmg3_hcms.Outbound_Retry_Count</name>
+        <read_roles/>
+        <suffix>Outbound_Retry_Count</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>ashabagade</sys_created_by>
+        <sys_created_on>2019-11-21 05:43:20</sys_created_on>
+        <sys_id>6356ed74db190850e0f5325f9d961948</sys_id>
+        <sys_mod_count>117</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.Outbound_Retry_Count</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_properties_6356ed74db190850e0f5325f9d961948</sys_update_name>
+        <sys_updated_by>Nitin.Mandyal@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2023-02-06 09:59:18</sys_updated_on>
+        <type>integer</type>
+        <value>3</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=6356ed74db190850e0f5325f9d961948"/>
+</record_update>

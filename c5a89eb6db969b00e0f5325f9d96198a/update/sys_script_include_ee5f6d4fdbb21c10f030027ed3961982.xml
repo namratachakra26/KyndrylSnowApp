@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.HCMS_Generic_Incident_Creation</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is a generic script used for creation of Incident&#13;
+**/</description>
+        <name>HCMS_Generic_Incident_Creation</name>
+        <script><![CDATA[var HCMS_Generic_Incident_Creation = Class.create();
+HCMS_Generic_Incident_Creation.prototype = {
+    initialize: function() {},
+
+    incident_create: function(lastWorknote, reqFor, cmdb_ci, sys_id, relatedChange) {
+        try {
+            var inc = new GlideRecord('incident');
+            inc.initialize();
+            inc.work_notes = lastWorknote;
+            inc.caller_id = reqFor;
+            inc.cmdb_ci = cmdb_ci; // Link same CI to Incident, RITM and Catalog Task
+            inc.state = '2'; // In progress incident state
+            inc.opened_by = reqFor;
+            inc.impact = 3; // Low impact
+            inc.urgency = 2; // Medium urgency
+            inc.parent = sys_id; // assign Catalog task sys_id to "Parent" reference field of incident table
+            inc.rfc = relatedChange;
+            inc.short_description = lastWorknote;
+            var inc_num = inc.insert();
+            var getIncidentNum = inc.number;
+
+            return getIncidentNum;
+        } catch (ex) {
+            var message = ex;
+            new HCMSLogLevel().LogMsg("error", " Error during incident creation " + message);
+        }
+    },
+
+
+    incident_retry: function(reqbody, endPoint, source, reqfor) {
+        try {
+            var inc = new GlideRecord('incident');
+            inc.initialize();
+            var assignment_group = gs.getProperty('x_ibmg3_hcms.mcmp_cloud.incident_assignment_group');
+            inc.assignment_group.setDisplayValue(assignment_group);
+            inc.caller_id = reqfor;
+            inc.state = '2'; // In progress incident state
+            inc.opened_by = reqfor;
+            inc.impact = 3; // Low impact
+            inc.urgency = 2; // Medium urgency
+            inc.short_description = "Outbound call to api " + endPoint + " failed after 3 retry for request :" + source;
+            inc.comments = "Outbound Payload details : " + reqbody + "\nApi endpoint :" + endPoint;
+            var inc_num = inc.insert();
+            var getIncidentNumber = inc.number;
+
+            return getIncidentNumber;
+        } catch (ex) {
+            var message = ex;
+            new HCMSLogLevel().LogMsg("error", " Error during incident creation " + message);
+        }
+    },
+
+    type: 'HCMS_Generic_Incident_Creation'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-08-27 15:51:14</sys_created_on>
+        <sys_id>ee5f6d4fdbb21c10f030027ed3961982</sys_id>
+        <sys_mod_count>11</sys_mod_count>
+        <sys_name>HCMS_Generic_Incident_Creation</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_ee5f6d4fdbb21c10f030027ed3961982</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:32:48</sys_updated_on>
+    </sys_script_include>
+</record_update>

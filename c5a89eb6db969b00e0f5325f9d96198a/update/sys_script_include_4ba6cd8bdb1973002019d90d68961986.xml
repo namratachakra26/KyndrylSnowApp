@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.RedirectionToQuickStartUtils</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Payload modification and Redirection to Quick Start&#13;
+/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp.&#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from Scripted Rest API for redirecting the incoming payload to mcmp&#13;
+**/</description>
+        <name>RedirectionToQuickStartUtils</name>
+        <script><![CDATA[var RedirectionToQuickStartUtils = Class.create();
+RedirectionToQuickStartUtils.prototype = {
+    initialize: function() {},
+    //Redirect incoming payload to QS end point
+    quickStartRequestCreation: function(payload, requestedFor) {
+        try {
+            var serviceOfferingInstanceId;
+            var qs_auth_profile_id;
+            //Defining additional payload attribute
+            var newVal1 = '';
+            var newVal2 = "u_quickstart_mvp3_mapping_table";
+
+            //check for catalog_item_name, sent at the root level for non cart payload(v1 version of api)
+            if (payload.catalog_item_name) {
+                var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
+                if (mappingTable.get('u_applies_to.name', payload.catalog_item_name)) {
+                    newVal1 = mappingTable.u_catalog_item.toString();
+                }
+                //modify the payload, add catalog name sys_id 
+                payload.catalog_item_sys_id = newVal1;
+            }
+            //add mapping table name
+            payload.mappingTable = newVal2;
+            //variable to hold requestType
+            var reqType = payload.requestType.toString();
+            new HCMSLogLevel().LogMsg('info', 'Quick Start Request type ' + reqType);
+            //modify the payload, To add the context object variables
+            var srContextMap = payload.context;
+            var srCollection = srContextMap["servicecollection"];
+            var srCustomer = srContextMap["customer"];
+            var srBusinessAPP = srContextMap["business application"];
+            var srInfo = payload.requestorAdditionalInfo;
+
+            var srCollection_sys_id = new HCMS_generate_Sys_id().Populate_ServiceCOLL_sysid(srCollection);
+            var srCustomer_sys_id = new HCMS_generate_Sys_id().Populate_srCustomer_sysid(srCustomer);
+            var srBusinessAPP_sys_id = new HCMS_generate_Sys_id().Populate_srBusinessAPP_sysid(srBusinessAPP);
+            var srNumber;
+            if (srInfo) { // check for SR number in payload
+                srNumber = srInfo["serviceRequest"];
+            }
+            srContextMap["servicecollection"] = srCollection_sys_id;
+            srContextMap["customer"] = srCustomer_sys_id;
+            srContextMap["business application"] = srBusinessAPP_sys_id;
+
+            //loop thru to read the payload attributes and modify the values for Requested For ADdomain service instance
+            for (i = 0; i < payload.requestedItems.length; i++) {
+                //if catalog_item_name is sent within requesteditem for cart (v2 version of api)
+                if (!payload.catalog_item_name) {
+                    var itemId = '';
+                    var catalogItemName = payload.requestedItems[i].catalog_item_name;
+                    var catalogItemId = payload.requestedItems[i].catalogItemId;
+                    if (!catalogItemId) {
+                        var mappingTableCart = new GlideRecord('u_quickstart_mvp3_mapping_table');
+                        if (mappingTableCart.get('u_applies_to.name', catalogItemName)) {
+                            itemId = mappingTableCart.u_catalog_item.toString();
+                        }
+                    } else
+                        itemId = catalogItemId;
+                    //modify the payload, add catalog name sys_id inside the requesteditem
+                    payload.requestedItems[i].catalog_item_sys_id = itemId;
+                }
+                serviceOfferingInstanceId = payload.requestedItems[i].serviceOfferingInstanceId;
+                var itemPropertiesArray = payload.requestedItems[i].itemProperties;
+                var qs_auth_profile = payload.requestedItems[i].authProfile;
+                //append resource sys_id in the payload for all requestType other than new
+                if (reqType != "New") {
+                    var resrc_sysId = new HCMS_generate_Sys_id().populateCi_sysId(serviceOfferingInstanceId);
+                    if (resrc_sysId) {
+                        var ciObj1 = {
+                            "name": "serviceInstance",
+                            "value": resrc_sysId.toString()
+                        };
+                        itemPropertiesArray[0].properties.push(ciObj1);
+                    }
+                }
+                //loop thru itemPropertiesArray parameter
+                for (var j = 0; j < itemPropertiesArray.length; j++) {
+                    var propertiesArray = itemPropertiesArray[j].properties;
+                    // for requesttype other than operation
+                    for (var k = 0; k < propertiesArray.length; k++) {
+                        var nameFetched = propertiesArray[k].name;
+                        var valueFetched = propertiesArray[k].value;
+                        //replace Requested For value with sys_id
+                        if (nameFetched == "Requested For") {
+                            propertiesArray[k].value = new HCMS_generate_Sys_id().populateRequestedFor_sysId(payload.requested_for);
+                        }
+                        if (reqType != "operation") {
+                            if (nameFetched == "Active Directory Domain") {
+                                propertiesArray[k].value = new HCMS_generate_Sys_id().populateADdomain_sysId(propertiesArray[k].value);
+                            }
+                        } else {
+                            if (nameFetched == "operationName" && valueFetched == "reboot") {
+                                //replace reboot value with restrart
+                                propertiesArray[k].value = "RESTART";
+                            }
+                        }
+                    }
+                }
+            }
+            if (srNumber) {
+                //replace the requestTpe as Update if sr number exists in the payload
+                payload.requestType = "update";
+            } else {
+                //replace the requestTpe as New for payload to QS
+                payload.requestType = "New";
+            }
+            //***** Authentication Profile********//
+            var domain_seperation_check_flag = new HCMSGetTenatDetails().QSCheckDS();
+
+            if (domain_seperation_check_flag == 'true') {
+                var user = new GlideRecord('sys_user');
+                user.get('user_name', requestedFor);
+                var domain_id = user.sys_domain.toString();
+                qs_auth_profile_id = GlideApplicationProperty.getValue('x_ibmg3_hcms.API_AuthenticationProfile', domain_id);
+            } else {
+
+                qs_auth_profile_id = gs.getProperty('x_ibmg3_hcms.API_AuthenticationProfile');
+            }
+            var myJSONString = JSON.stringify(payload);
+            var myEscapedJSONString = myJSONString.replace(/\\n/g, "\\n")
+                .replace(/\\'/g, "\\'")
+                .replace(/\\"/g, '\\"')
+                .replace(/\\&/g, "\\&")
+                .replace(/\\r/g, "\\r")
+                .replace(/\\t/g, "\\t")
+                .replace(/\\b/g, "\\b")
+                .replace(/\\f/g, "\\f");
+            new HCMSLogLevel().LogMsg('info', 'Modified payload to Quick Start...>' + myEscapedJSONString);
+            //redirection to QS endpoint
+            var qs = new sn_ws.RESTMessageV2();
+            //fetching end point from property
+            var endPoint = gs.getProperty('x_ibmg3_hcms.quick_start.end_point.request');
+            var instanceURL = gs.getProperty('glide.servlet.uri');
+            //Build the complete URL for the POST message
+            var restEndPoint = instanceURL + endPoint;
+            qs.setEndpoint(restEndPoint);
+            qs.setHttpMethod("post");
+            qs.setRequestHeader("Content-Type", "application/json");
+            qs.setRequestHeader("Accept", "Application/json");
+            qs.setAuthenticationProfile("basic", qs_auth_profile_id);
+            qs.setRequestHeader("api_key", "MVP3");
+            qs.setRequestBody(myEscapedJSONString);
+            var response = qs.execute();
+            var body = JSON.parse(response.getBody());
+            new HCMSLogLevel().LogMsg('info', 'Response from Quick Start for order >' + payload.orderNumber + ' : ' + JSON.stringify(body.result));
+            var responseJSON = body.result;
+            return responseJSON;
+        } catch (e) {
+            new HCMSLogLevel().LogMsg('error', 'Quick Start Request Redirection error ' + e);
+        }
+    },
+
+    quickStartSocDetails: function(payload, chTsk_domain) {
+        try {
+            payload.u_task_status = "CLOSE";
+            var myJSONString = JSON.stringify(payload);
+            var myEscapedJSONStringCI = myJSONString.replace(/\\n/g, "\\n")
+                .replace(/\\'/g, "\\'")
+                .replace(/\\"/g, '\\"')
+                .replace(/\\&/g, "\\&")
+                .replace(/\\r/g, "\\r")
+                .replace(/\\t/g, "\\t")
+                .replace(/\\b/g, "\\b")
+                .replace(/\\f/g, "\\f");
+			
+            //redirection to QS endpoint starts from here
+            var qs_auth_profile_id;
+            var domain_seperation_check_soc = new HCMSGetTenatDetails().QSCheckDS();
+            if (domain_seperation_check_soc == 'true') {
+                qs_auth_profile_id = GlideApplicationProperty.getValue('x_ibmg3_hcms.API_AuthenticationProfile', chTsk_domain);
+            } else {
+                qs_auth_profile_id = gs.getProperty('x_ibmg3_hcms.API_AuthenticationProfile');
+            }
+
+            //initialise rest function
+            var qs = new sn_ws.RESTMessageV2();
+            //Fetch the qs end point from property
+            var end_point = gs.getProperty('x_ibmg3_hcms.quick_start.end_point.ci_update');
+            var instanceURL = gs.getProperty('glide.servlet.uri');
+            //Build the complete URL for the POST message
+            var restEndPoint = instanceURL + end_point;
+            qs.setEndpoint(restEndPoint);
+            qs.setHttpMethod("post");
+            qs.setRequestHeader("Content-Type", "application/json");
+            qs.setRequestHeader("Accept", "Application/json");
+            qs.setAuthenticationProfile("basic", qs_auth_profile_id);
+            qs.setRequestHeader("api_key", "MVP3");
+            qs.setRequestBody(myEscapedJSONStringCI);
+            var response = qs.execute();
+            var parse = JSON.parse(response.getBody());
+            new HCMSLogLevel().LogMsg('info', 'Quick Start Response for SOC' + JSON.stringify(parse) + " statusCode :" + JSON.stringify(parse.result.statusCode));
+
+            if (JSON.stringify(parse.result.statusCode) != "200") {
+                //Notify the error received from QS to Enterprise Marketplace 
+                var rm = new sn_ws.RESTMessageV2();
+                rm.setHttpMethod("post");
+                rm.setRequestHeader("Content-Type", "application/json");
+                rm.setRequestHeader("Accept", "Application/json");
+                //fetch apikey username and end point
+                var propertyValueString = gs.getProperty('QS_MCMP_Integration');
+                var objProperty = JSON.parse(propertyValueString);
+
+                //fetch ordernumber and serviceOfferingInstanceId
+                var chgTsk = new GlideRecord('change_task');
+                chgTsk.get('number', payload.u_taskId);
+                var ritm = new GlideRecord('sc_req_item');
+                ritm.get(chgTsk.change_request.u_qs_requested_item);
+                var mcmplocation = ritm.request.x_ibmg3_hcms_cloud_broker_location;
+                var correlationId = ritm.correlation_id.toString();
+                var arCorrelation = correlationId.split('::', 3);
+                var orderNumber = arCorrelation[0];
+                var serviceOfferingInstanceId = [];
+                serviceOfferingInstanceId.push(arCorrelation[1]);
+                //fetch username and apikey based on store location
+                var Customer_details = new HCMSGetTenatDetails().get_tenant_details(mcmplocation);
+                if (Customer_details) {
+                    rm.setRequestHeader("username", Customer_details.UserName);
+                    rm.setRequestHeader("apikey", Customer_details.ApiKey);
+                } else {
+                    new HCMSLogLevel().LogMsg("info", "* ApiKey and UserName are invalid *" + mcmplocation);
+                }
+                var restEndpoint = objProperty.completionRestEndpoint;
+                var brokerUrl = current.u_qs_requested_item.request.correlation_display;
+                restEndpoint = brokerUrl + restEndpoint;
+                rm.setEndpoint(restEndpoint);
+
+                //construct the payload 
+                var reqbody = {};
+                reqbody.serviceOfferingInstanceId = serviceOfferingInstanceId;
+                reqbody.orderNumber = orderNumber;
+                reqbody.message = parse.result.detail;
+                reqbody.status = "Failed";
+                var JSONString = JSON.stringify(reqbody);
+                new HCMSLogLevel().LogMsg("info", "* QS Ci Update failure outbound to broker:* " + orderNumber + " is : " + JSONString);
+                rm.setRequestBody(JSONString);
+                rm.setLogLevel('all');
+                //In milliseconds. Wait at most 30 seconds for response from http request.
+                rm.setHttpTimeout(30000);
+                var response1 = rm.execute();
+                var responseBody = response1.getBody();
+                var httpStatus = response.getStatusCode();
+                new HCMSLogLevel().LogMsg("info", "*QS Ci Update failure Post prov Response body for order * " + orderNumber + " is :" + responseBody + " statuscode: " + httpStatus);
+            }
+        } catch (e) {
+            new HCMSLogLevel().LogMsg('error', 'Quick Start SOC Redirection error ' + e);
+        }
+    },
+
+    checkReqForAttributeExists: function(body) {
+        for (l = 0; l < body.requestedItems.length; l++) {
+            var itemPropertiesArray = body.requestedItems[l].itemProperties;
+            for (var j = 0; j < itemPropertiesArray.length; j++) {
+                var propertiesArray = itemPropertiesArray[j].properties;
+                for (var k = 0; k < propertiesArray.length; k++) {
+                    var nameFetched = propertiesArray[k].name;
+                    if (nameFetched == "Requested For") {
+                        return 'true';
+                    } else {
+                        return 'false';
+                    }
+                }
+            }
+        }
+    },
+
+    type: 'RedirectionToQuickStartUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-05-13 08:20:16</sys_created_on>
+        <sys_id>4ba6cd8bdb1973002019d90d68961986</sys_id>
+        <sys_mod_count>271</sys_mod_count>
+        <sys_name>RedirectionToQuickStartUtils</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_4ba6cd8bdb1973002019d90d68961986</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 17:58:50</sys_updated_on>
+    </sys_script_include>
+</record_update>

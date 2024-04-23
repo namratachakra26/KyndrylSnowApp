@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_module">
+    <sys_app_module action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <application display_value="Kyndryl ModernOps  App Integration">3a0f0b49dbe7d70037ad349f9d961957</application>
+        <assessment/>
+        <device_type/>
+        <filter/>
+        <hint>Kyndryl Modern Operations Applications  dashboard link</hint>
+        <homepage/>
+        <image/>
+        <link_type>DIRECT</link_type>
+        <map_page/>
+        <mobile_title>MCMP Dashboard View</mobile_title>
+        <mobile_view_name>Mobile</mobile_view_name>
+        <name/>
+        <order>99</order>
+        <override_menu_roles>false</override_menu_roles>
+        <query>/$pa_dashboard.do?sysparm_dashboard=db752411db275cd03b272649489619c3</query>
+        <report/>
+        <roles/>
+        <sys_class_name>sys_app_module</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-09-28 06:52:55</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>cbe56811db275cd03b272649489619e3</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>Kyndryl ModernOps Applications Dashboard View</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_app_module_cbe56811db275cd03b272649489619e3</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-20 07:46:15</sys_updated_on>
+        <timeline_page/>
+        <title>Kyndryl ModernOps Applications Dashboard View</title>
+        <uncancelable>false</uncancelable>
+        <view_name/>
+        <window_name/>
+    </sys_app_module>
+</record_update>
