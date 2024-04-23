@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_filter">
+    <sys_filter action="INSERT_OR_UPDATE">
+        <filter table="syslog">sys_created_onONLast hour@javascript:gs.beginningOfLastHour()@javascript:gs.endOfLastHour()^source=*** Script^EQ<item endquery="false" field="sys_created_on" goto="false" newquery="false" operator="ON" or="false" value="Last hour@javascript:gs.beginningOfLastHour()@javascript:gs.endOfLastHour()"/>
+            <item endquery="false" field="source" goto="false" newquery="false" operator="=" or="false" value="*** Script"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter>
+        <group/>
+        <last_used/>
+        <mobile>false</mobile>
+        <roles/>
+        <sys_class_name>sys_filter</sys_class_name>
+        <sys_created_by>himanshu.sood@in.ibm.com</sys_created_by>
+        <sys_created_on>2018-12-04 07:10:58</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>5dabc9e3db02ab8037ad349f9d9619da</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Last Hour Filter</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_filter_5dabc9e3db02ab8037ad349f9d9619da</sys_update_name>
+        <sys_updated_by>himanshu.sood@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2018-12-04 07:10:58</sys_updated_on>
+        <table>syslog</table>
+        <title>Last Hour Filter</title>
+        <user/>
+    </sys_filter>
+    <sys_translated_text action="delete_multiple" query="documentkey=5dabc9e3db02ab8037ad349f9d9619da"/>
+</record_update>
