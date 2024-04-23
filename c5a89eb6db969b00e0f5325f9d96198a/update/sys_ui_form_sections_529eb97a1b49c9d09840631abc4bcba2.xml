@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_form_sections form_id="529eb97a1b49c9d09840631abc4bcba2" sys_domain="global" table="atf_input_variable" version="3">
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>0</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>169ef97a1b49c9d09840631abc4bcb03</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="atf_input_variable" name="atf_input_variable" sys_domain="global" view="7966be310a0a0b8c00bd504090503227">529eb97a1b49c9d09840631abc4bcba2</sys_ui_form>
+            <sys_ui_section display_value="">169eb97a1b49c9d09840631abc4bcbfd</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>1</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>5e9ef97a1b49c9d09840631abc4bcb08</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="atf_input_variable" name="atf_input_variable" sys_domain="global" view="7966be310a0a0b8c00bd504090503227">529eb97a1b49c9d09840631abc4bcba2</sys_ui_form>
+            <sys_ui_section display_value="">1a9ef97a1b49c9d09840631abc4bcb03</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>2</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>5e9eb97a1b49c9d09840631abc4bcbf5</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="atf_input_variable" name="atf_input_variable" sys_domain="global" view="7966be310a0a0b8c00bd504090503227">529eb97a1b49c9d09840631abc4bcba2</sys_ui_form>
+            <sys_ui_section display_value="">569eb97a1b49c9d09840631abc4bcba6</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>3</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>da9eb97a1b49c9d09840631abc4bcbf9</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="atf_input_variable" name="atf_input_variable" sys_domain="global" view="7966be310a0a0b8c00bd504090503227">529eb97a1b49c9d09840631abc4bcba2</sys_ui_form>
+            <sys_ui_section display_value="">d69eb97a1b49c9d09840631abc4bcbf6</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>4</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>129eb97a1b49c9d09840631abc4bcbfd</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="atf_input_variable" name="atf_input_variable" sys_domain="global" view="7966be310a0a0b8c00bd504090503227">529eb97a1b49c9d09840631abc4bcba2</sys_ui_form>
+            <sys_ui_section display_value="">de9eb97a1b49c9d09840631abc4bcbf9</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>5</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>569ef97a1b49c9d09840631abc4bcb0c</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="atf_input_variable" name="atf_input_variable" sys_domain="global" view="7966be310a0a0b8c00bd504090503227">529eb97a1b49c9d09840631abc4bcba2</sys_ui_form>
+            <sys_ui_section display_value="">529ef97a1b49c9d09840631abc4bcb09</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form action="INSERT_OR_UPDATE">
+            <name>atf_input_variable</name>
+            <roles/>
+            <sys_class_name>sys_ui_form</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2022-01-18 11:02:16</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>529eb97a1b49c9d09840631abc4bcba2</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>atf_input_variable</sys_name>
+            <sys_overrides/>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_ui_form_sections_529eb97a1b49c9d09840631abc4bcba2</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2022-01-18 11:02:16</sys_updated_on>
+            <sys_user/>
+            <view display_value="Advanced" name="advanced">7966be310a0a0b8c00bd504090503227</view>
+            <view_name/>
+        </sys_ui_form>
+    </sys_ui_form_sections>
+</record_update>

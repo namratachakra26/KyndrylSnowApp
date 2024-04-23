@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_transform_script">
+    <sys_transform_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <map display_value="u_imp_saml_user_2cmyodirfj">c8ec69e31b88e01058cddbd3cc4bcbdc</map>
+        <order>100</order>
+        <script><![CDATA[ //Send data to usage analytics.
+ //sso_source is 'sso:' followed by the idp sys id. Hence 'sso:' needs to be removed
+if (action == 'insert')
+    SNC.SecurityEventSender.sendEventData('SAML.User.AutoProvisioning.Create', 
+'user_name=' + target.first_name, 'idp sysid=' + target.sso_source.substring(4));
+else if (action == 'update' && target.changes())
+    SNC.SecurityEventSender.sendEventData('SAML.User.AutoProvisioning.Update', 
+'user_name=' + target.first_name, 'idp sysid=' + target.sso_source.substring(4));
+]]></script>
+        <sys_class_name>sys_transform_script</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-10-30 08:15:13</sys_created_on>
+        <sys_id>2ceca9e31b88e01058cddbd3cc4bcb02</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>onAfter</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_transform_script_2ceca9e31b88e01058cddbd3cc4bcb02</sys_update_name>
+        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2020-10-30 08:15:13</sys_updated_on>
+        <when>onAfter</when>
+    </sys_transform_script>
+</record_update>

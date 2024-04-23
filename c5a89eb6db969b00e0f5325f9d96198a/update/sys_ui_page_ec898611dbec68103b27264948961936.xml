@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script/>
+        <description/>
+        <direct>false</direct>
+        <endpoint>x_ibmg3_hcms_add_button_list2.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+	<div>
+	<button type="button" id="addButton" onclick="addData();" class="btn btn-default">Add Fulfillment</button>
+		</div>	
+	
+<script language="javascript">
+	function addData(){
+	var jsonData = g_form.getValue('fullfilment_policies');
+	g_form.setValue('fullfilment_policies_added',jsonData);
+	}
+	</script>
+	
+</j:jelly>]]></html>
+        <name>add_button_list2</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-11-17 07:12:38</sys_created_on>
+        <sys_id>ec898611dbec68103b27264948961936</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>add_button_list2</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ui_page_ec898611dbec68103b27264948961936</sys_update_name>
+        <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2020-11-17 07:36:20</sys_updated_on>
+    </sys_ui_page>
+</record_update>

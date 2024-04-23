@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_filter">
+    <sys_filter action="INSERT_OR_UPDATE">
+        <filter table="change_request">active=true^requested_byDYNAMIC90d1921e5f510100a9ad2572f2b477fe^ORopened_by=022f6b46dbaf1300e217ff09689619c1^EQ<item endquery="false" field="active" goto="false" newquery="false" operator="=" or="false" value="true"/>
+            <item endquery="false" field="requested_by" goto="false" newquery="false" operator="DYNAMIC" or="false" value="90d1921e5f510100a9ad2572f2b477fe"/>
+            <item display_table="sys_user" display_value="Kyndryl Marketplace Management" endquery="false" field="opened_by" goto="false" newquery="false" operator="=" or="true" value="022f6b46dbaf1300e217ff09689619c1"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter>
+        <group/>
+        <last_used/>
+        <mobile>false</mobile>
+        <roles/>
+        <sys_class_name>sys_filter</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-09-28 07:39:17</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>c181b4d5db275cd03b27264948961953</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>MCMP Change Requests</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_filter_c181b4d5db275cd03b27264948961953</sys_update_name>
+        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2020-09-28 07:39:17</sys_updated_on>
+        <table>change_request</table>
+        <title>MCMP Change Requests</title>
+        <user/>
+    </sys_filter>
+    <sys_translated_text action="delete_multiple" query="documentkey=c181b4d5db275cd03b27264948961953"/>
+</record_update>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>false</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>sc_req_item</collection>
+        <condition/>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition table="sc_req_item">cat_item=b64fe0ecdbe21b0037ad349f9d9619e3^ORcat_item=61ef1c7edbefe340a5443967f49619fe^ORcat_item=4de9b051db64370037ad349f9d96195b^ORcat_item=d863b2b7dbd0730037ad349f9d961914^ORcat_item=c92d681cdb64b300e0f5325f9d9619cf^EQ<item display_table="sc_cat_item" display_value="Kyndryl Marketplace Provision" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="false" value="b64fe0ecdbe21b0037ad349f9d9619e3"/>
+            <item endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="true" value="61ef1c7edbefe340a5443967f49619fe"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Start/Stop/Restart Request" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="true" value="4de9b051db64370037ad349f9d96195b"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Provisioning Request" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="true" value="d863b2b7dbd0730037ad349f9d961914"/>
+            <item display_table="sc_cat_item" display_value="Kyndryl Marketplace Decommission CI Request" endquery="false" field="cat_item" goto="false" newquery="false" operator="=" or="true" value="c92d681cdb64b300e0f5325f9d9619cf"/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </filter_condition>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Update Request flag</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[(function executeRule(current, previous /*null when async*/) {
+	try {
+	var gr = new GlideRecord('sc_req_item');
+	gr.addQuery('request', current.request);
+	gr.query();
+	var totalReqItems = gr.getRowCount();
+	var count = 0;
+	while(gr.next()) {
+		if(gr.configuration_item) {
+			count++;
+		}
+	}
+	new HCMSLogLevel().LogMsg("info", "totalReqItems:" + totalReqItems);
+
+	if(count == totalReqItems) {
+		var rec = new GlideRecord('sc_request');
+		rec.addQuery('number', current.request.number);
+		rec.query();
+		if(rec.next()) {
+			rec.u_req_items_created = true;
+			rec.update();
+		}
+	} else {
+		var rec1 = new GlideRecord('sc_request');
+		rec1.addQuery('number', current.request.getDisplayValue());
+		rec1.query();
+		if(rec1.next()) {
+			rec1.u_req_items_created = false;
+			rec1.update();
+		}
+	}
+	}
+	catch(e) {
+			new HCMSLogLevel().LogMsg("error"," Error updating request flag "+e);
+	}
+	
+	
+})(current, previous);]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>sridharp@us.ibm.com</sys_created_by>
+        <sys_created_on>2018-06-18 03:52:46</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>ba590e0ddb3a134037ad349f9d96190d</sys_id>
+        <sys_mod_count>29</sys_mod_count>
+        <sys_name>Update Request flag</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_ba590e0ddb3a134037ad349f9d96190d</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2020-09-16 08:36:21</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=ba590e0ddb3a134037ad349f9d96190d"/>
+</record_update>

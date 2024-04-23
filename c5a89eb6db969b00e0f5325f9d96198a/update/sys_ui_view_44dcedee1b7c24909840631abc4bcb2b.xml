@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_view">
+    <sys_ui_view action="INSERT_OR_UPDATE">
+        <group/>
+        <hidden>false</hidden>
+        <name>servicedesk_sc_task_assignment_module</name>
+        <roles/>
+        <sys_class_name>sys_ui_view</sys_class_name>
+        <sys_created_by>shwetali.berad1@ibm.com</sys_created_by>
+        <sys_created_on>2020-12-03 12:28:04</sys_created_on>
+        <sys_id>44dcedee1b7c24909840631abc4bcb2b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Servicedesk_sc_task_assignment_module</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ui_view_44dcedee1b7c24909840631abc4bcb2b</sys_update_name>
+        <sys_updated_by>shwetali.berad1@ibm.com</sys_updated_by>
+        <sys_updated_on>2020-12-03 12:28:04</sys_updated_on>
+        <title>Servicedesk_sc_task_assignment_module</title>
+        <user/>
+    </sys_ui_view>
+</record_update>

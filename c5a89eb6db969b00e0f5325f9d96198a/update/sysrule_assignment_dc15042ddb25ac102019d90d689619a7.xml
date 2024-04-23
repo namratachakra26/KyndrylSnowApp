@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sysrule_assignment">
+    <sysrule_assignment action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <condition table="incident">sys_created_by=hcmsuser^assignment_groupISEMPTY^EQ<item endquery="false" field="sys_created_by" goto="false" newquery="false" operator="=" or="false" value="hcmsuser"/>
+            <item endquery="false" field="assignment_group" goto="false" newquery="false" operator="ISEMPTY" or="false" value=""/>
+            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
+        </condition>
+        <description/>
+        <group display_value="CLOUDGROUP" name="CLOUDGROUP">b432caa90f9a2200061b5d78a1050e2b</group>
+        <match_conditions>ALL</match_conditions>
+        <name>IBM_MCMP_Incident_Assignment_Group</name>
+        <order>100</order>
+        <script>/**&#13;
+* Example:&#13;
+* The following script requires personalizing the instance to add the Malware category and the Security assignment group.&#13;
+* if (current.category == "Hardware")&#13;
+*    current.assignment_group.setDisplayValue("Hardware"); &#13;
+* else if (current.category == "Software")&#13;
+*    current.assignment_group.setDisplayValue("Software");&#13;
+* else if (current.category == "Malware")&#13;
+*    current.assignment_group.setDisplayValue("Security");	&#13;
+*&#13;
+* Another Example:&#13;
+* Release Planning Example, which assigns the last person assigned to a release to the current release.&#13;
+* current.release.product.service.assigned_to;&#13;
+*/</script>
+        <sys_class_name>sysrule_assignment</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-01-06 09:08:31</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>dc15042ddb25ac102019d90d689619a7</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>IBM_MCMP_Incident_Assignment_Group</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sysrule_assignment_dc15042ddb25ac102019d90d689619a7</sys_update_name>
+        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-01-18 07:30:46</sys_updated_on>
+        <table>incident</table>
+        <user display_value="CLOUDAUTO ">51485741dbb0e3006b6d5ad3ca9619b6</user>
+    </sysrule_assignment>
+</record_update>

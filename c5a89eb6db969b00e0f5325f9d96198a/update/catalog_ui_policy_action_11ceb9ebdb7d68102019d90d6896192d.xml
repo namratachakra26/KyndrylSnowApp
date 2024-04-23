@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="catalog_ui_policy_action">
+    <catalog_ui_policy_action action="INSERT_OR_UPDATE">
+        <catalog_item/>
+        <catalog_variable>IO:a772feb6dbbc2c102019d90d689619e8</catalog_variable>
+        <cleared>false</cleared>
+        <disabled>ignore</disabled>
+        <field/>
+        <mandatory>true</mandatory>
+        <order>100</order>
+        <sys_class_name>catalog_ui_policy_action</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-01-25 09:23:23</sys_created_on>
+        <sys_id>11ceb9ebdb7d68102019d90d6896192d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>password</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>catalog_ui_policy_action_11ceb9ebdb7d68102019d90d6896192d</sys_update_name>
+        <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-01-25 09:23:23</sys_updated_on>
+        <table/>
+        <u_item_option_new_sys_id>a772feb6dbbc2c102019d90d689619e8</u_item_option_new_sys_id>
+        <ui_policy display_value="Make fields mandatory and ReadOnly onload">01071233db3cac102019d90d689619e2</ui_policy>
+        <variable>password</variable>
+        <variable_set display_value="EMP Configurations">335888ffdb18e0502019d90d68961988</variable_set>
+        <visible>ignore</visible>
+    </catalog_ui_policy_action>
+</record_update>

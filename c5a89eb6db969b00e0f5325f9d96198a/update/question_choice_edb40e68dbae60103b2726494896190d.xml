@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="question_choice">
+    <question_choice action="INSERT_OR_UPDATE">
+        <inactive>false</inactive>
+        <misc>0</misc>
+        <order>200</order>
+        <published_ref/>
+        <question display_value="Adapter Version">95deb164dbae60103b27264948961943</question>
+        <rec_misc>0</rec_misc>
+        <sys_class_name>question_choice</sys_class_name>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-02-22 08:54:56</sys_created_on>
+        <sys_id>edb40e68dbae60103b2726494896190d</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>v2</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>question_choice_edb40e68dbae60103b2726494896190d</sys_update_name>
+        <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-02-22 08:58:49</sys_updated_on>
+        <text>v2</text>
+        <value>v2</value>
+    </question_choice>
+    <fx_price action="delete_multiple" query="id=edb40e68dbae60103b2726494896190d"/>
+    <fx_price action="INSERT_OR_UPDATE">
+        <amount>0</amount>
+        <currency display_value="USD">USD</currency>
+        <field>misc</field>
+        <id>edb40e68dbae60103b2726494896190d</id>
+        <parent/>
+        <reference_amount>0</reference_amount>
+        <reference_currency display_value="USD">USD</reference_currency>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-02-22 08:54:56</sys_created_on>
+        <sys_id>27c40a68dbae60103b272649489619b5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-02-22 08:54:56</sys_updated_on>
+        <table>question_choice</table>
+        <type>calculated</type>
+    </fx_price>
+    <fx_price action="INSERT_OR_UPDATE">
+        <amount>0</amount>
+        <currency display_value="USD">USD</currency>
+        <field>rec_misc</field>
+        <id>edb40e68dbae60103b2726494896190d</id>
+        <parent/>
+        <reference_amount>0</reference_amount>
+        <reference_currency display_value="USD">USD</reference_currency>
+        <sys_created_by>debada54@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-02-22 08:54:56</sys_created_on>
+        <sys_id>ebc40a68dbae60103b272649489619b4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-02-22 08:54:56</sys_updated_on>
+        <table>question_choice</table>
+        <type>calculated</type>
+    </fx_price>
+</record_update>

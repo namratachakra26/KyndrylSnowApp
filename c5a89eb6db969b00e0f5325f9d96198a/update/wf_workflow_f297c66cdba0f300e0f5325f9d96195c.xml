@@ -1,0 +1,1541 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="wf_workflow_version">
+    <wf_workflow_version action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <activity_stages>{"subflows":[],"activities":{"2d9fb0531b1eed10acde777dcc4bcbab":"ed9f70531b1eed10acde777dcc4bcbdf"},"stages":{"ed9f70531b1eed10acde777dcc4bcbdf":{"duration":"1 Day","order":120,"stageId":"ed9f70531b1eed10acde777dcc4bcbdf","name":"Fulfillment","value":"fulfillment"}},"ends":["ed9fb0531b1eed10acde777dcc4bcba9"]}</activity_stages>
+        <after_business_rules>false</after_business_rules>
+        <checked_out/>
+        <checked_out_by/>
+        <column_renderer display_value="Workflow-driven">a56213111b030100adca1e094f0713ac</column_renderer>
+        <condition/>
+        <condition_type/>
+        <description>/** &#13;
+* @copyright (c) Copyright IBM Corporation 2018, 2018. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of IBM * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with IBM Corp. &#13;
+* @author Asha Bagade &#13;
+* @Workflow is the Generic stop/start/restart for Day 2 operations **/</description>
+        <expected_sequences>699fb0531b1eed10acde777dcc4bcba8,e99fb0531b1eed10acde777dcc4bcbaf,699fb0531b1eed10acde777dcc4bcbad,ad9fb0531b1eed10acde777dcc4bcbae,2d9fb0531b1eed10acde777dcc4bcbac,e59fb0531b1eed10acde777dcc4bcbaa,e19fb0531b1eed10acde777dcc4bcba9,2d9fb0531b1eed10acde777dcc4bcbab,299fb0531b1eed10acde777dcc4bcbb1,ed9fb0531b1eed10acde777dcc4bcba9</expected_sequences>
+        <expected_time>1970-01-01 14:00:00</expected_time>
+        <expected_time_type/>
+        <full_sequences>699fb0531b1eed10acde777dcc4bcba8,e99fb0531b1eed10acde777dcc4bcbaf,699fb0531b1eed10acde777dcc4bcbad,ad9fb0531b1eed10acde777dcc4bcbae,299f70531b1eed10acde777dcc4bcbe0,2d9fb0531b1eed10acde777dcc4bcbac,e59fb0531b1eed10acde777dcc4bcbaa,e19fb0531b1eed10acde777dcc4bcba9,e99fb0531b1eed10acde777dcc4bcbb0,2d9fb0531b1eed10acde777dcc4bcbab,299fb0531b1eed10acde777dcc4bcbb1,ed9fb0531b1eed10acde777dcc4bcba9</full_sequences>
+        <journal/>
+        <max_activity_count>100</max_activity_count>
+        <name>HCMS Operations Start/Stop/Reboot WF</name>
+        <not_cacheable>false</not_cacheable>
+        <on_cancel><![CDATA[// This script executes if the workflow is cancelled.// The global variable context_sys_id contains the sys_id of the cancelled workflow context.]]></on_cancel>
+        <order>100</order>
+        <pin_type>set_by_activity</pin_type>
+        <published>true</published>
+        <relative_duration display_value="2 business days by 4pm">3bf802c20a0a0b52008e2859cd8abcf2</relative_duration>
+        <requires_ert>true</requires_ert>
+        <run_multiple>false</run_multiple>
+        <schedule/>
+        <stage_field>stage</stage_field>
+        <stage_order>user_specified</stage_order>
+        <start display_value="Begin">699fb0531b1eed10acde777dcc4bcba8</start>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e59f70531b1eed10acde777dcc4bcbde</sys_id>
+        <sys_mod_count>14</sys_mod_count>
+        <sys_updated_by>hcmsuser</sys_updated_by>
+        <sys_updated_on>2023-05-09 07:59:43</sys_updated_on>
+        <table>sc_req_item</table>
+        <timezone/>
+        <validated>true</validated>
+        <workflow display_value="HCMS Operations Start/Stop/Reboot WF">f297c66cdba0f300e0f5325f9d96195c</workflow>
+    </wf_workflow_version>
+    <wf_workflow action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <description>/** &#13;
+* @copyright (c) Copyright IBM Corporation 2018, 2018. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of IBM * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with IBM Corp. &#13;
+* @author Asha Bagade &#13;
+* @Workflow is the Generic stop/start/restart for Day 2 operations **/</description>
+        <name>HCMS Operations Start/Stop/Reboot WF</name>
+        <preview/>
+        <sys_class_name>wf_workflow</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-03-29 10:28:08</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>f297c66cdba0f300e0f5325f9d96195c</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>HCMS Operations Start/Stop/Reboot WF</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>wf_workflow_f297c66cdba0f300e0f5325f9d96195c</sys_update_name>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-03-09 12:59:45</sys_updated_on>
+        <table>sc_req_item</table>
+        <template>false</template>
+        <vars/>
+    </wf_workflow>
+    <wf_stage action="INSERT_OR_UPDATE">
+        <name>Completed</name>
+        <ola>1970-01-01 00:00:00</ola>
+        <order>1100</order>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e99f70531b1eed10acde777dcc4bcbdf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>complete</value>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_stage>
+    <wf_stage action="INSERT_OR_UPDATE">
+        <name>Delivery</name>
+        <ola>1970-01-03 00:00:00</ola>
+        <order>140</order>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699f70531b1eed10acde777dcc4bcbdf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>delivery</value>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_stage>
+    <wf_stage action="INSERT_OR_UPDATE">
+        <name>Fulfillment</name>
+        <ola>1970-01-02 00:00:00</ola>
+        <order>120</order>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ed9f70531b1eed10acde777dcc4bcbdf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>fulfillment</value>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_stage>
+    <wf_stage action="INSERT_OR_UPDATE">
+        <name>Request Cancelled</name>
+        <ola>1970-01-01 00:00:00</ola>
+        <order>1000</order>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>6d9f70531b1eed10acde777dcc4bcbdf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>Request Cancelled</value>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_stage>
+    <wf_stage action="INSERT_OR_UPDATE">
+        <name>Request Approved</name>
+        <ola>1970-01-01 00:00:00</ola>
+        <order>90</order>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619f70531b1eed10acde777dcc4bcbe0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>request_approved</value>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_stage>
+    <wf_stage action="INSERT_OR_UPDATE">
+        <name>Waiting for Approval</name>
+        <ola>1970-01-02 00:00:00</ola>
+        <order>100</order>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e59f70531b1eed10acde777dcc4bcbdf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>waiting_for_approval</value>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_stage>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Run Script">db8c65aec0a8016501d00259bc7203a4</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>12</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Attach existing CI to requested item</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbae</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:16</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>221</x>
+        <y>2</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=ad9fb0531b1eed10acde777dcc4bcbae"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>ad9fb0531b1eed10acde777dcc4bcbae</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>219fb0531b1eed10acde777dcc4bcbaf</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:16</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().linkBrokerShellCI_ritm(current);&#13;
+} catch(ex){&#13;
+	workflow.error("Operations Workflow: Link Shell : " + this.type + "(" + ex.message + ")");&#13;
+}</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>ad9fb0531b1eed10acde777dcc4bcbae</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>219fb0531b1eed10acde777dcc4bcbaf</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:16</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().linkBrokerShellCI_ritm(current);&#13;
+} catch(ex){&#13;
+	workflow.error("Operations Workflow: Link Shell : " + this.type + "(" + ex.message + ")");&#13;
+}</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Attach existing CI to requested item">ad9fb0531b1eed10acde777dcc4bcbae</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>259fb0531b1eed10acde777dcc4bcbaf</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Begin">c7a5e32c0a0a0b3a002377c24ed8ea76</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>1</databus_lookup_id>
+        <height/>
+        <input/>
+        <is_parent>false</is_parent>
+        <name>Begin</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699fb0531b1eed10acde777dcc4bcba8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width>80</width>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>20</x>
+        <y>10</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=699fb0531b1eed10acde777dcc4bcba8"/>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Begin">699fb0531b1eed10acde777dcc4bcba8</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9fb0531b1eed10acde777dcc4bcba8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="If">98f621ca0a0a0b5900f7c291f5e45a0e</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>4</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Change Type Standard/Normal</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e59fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>496</x>
+        <y>158</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=e59fb0531b1eed10acde777dcc4bcbaa"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e59fb0531b1eed10acde777dcc4bcbaa</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>1</value>
+        <variable display_value="Advanced">493d2c1d0a6a803f3217a75738ea3289</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e59fb0531b1eed10acde777dcc4bcbaa</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">493cba6a0a6a803f07df24b118473551</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e59fb0531b1eed10acde777dcc4bcbaa</document_key>
+        <order>300</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ed9fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>answer = CheckChangeType();&#13;
+&#13;
+  function CheckChangeType() {&#13;
+     if (current.variables.var_change_type == 'standard') {&#13;
+        return 'yes';&#13;
+     }&#13;
+     return 'no';&#13;
+  }&#13;
+</value>
+        <variable display_value="Script">c35e50810a0a0ba96248a709b450fc32</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e59fb0531b1eed10acde777dcc4bcbaa</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">493cba6a0a6a803f07df24b118473551</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e59fb0531b1eed10acde777dcc4bcbaa</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>1</value>
+        <variable display_value="Advanced">493d2c1d0a6a803f3217a75738ea3289</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e59fb0531b1eed10acde777dcc4bcbaa</document_key>
+        <order>300</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ed9fb0531b1eed10acde777dcc4bcbaa</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>answer = CheckChangeType();&#13;
+&#13;
+  function CheckChangeType() {&#13;
+     if (current.variables.var_change_type == 'standard') {&#13;
+        return 'yes';&#13;
+     }&#13;
+     return 'no';&#13;
+  }&#13;
+</value>
+        <variable display_value="Script">c35e50810a0a0ba96248a709b450fc32</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Change Type Standard/Normal">e59fb0531b1eed10acde777dcc4bcbaa</activity>
+        <condition>activity.result == 'no'</condition>
+        <condition_default display_value="No">c1eff6430a0a0b59000f955abe842c94</condition_default>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>false</is_positive>
+        <name>Normal</name>
+        <order>200</order>
+        <short_description/>
+        <skip_during_generate>true</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>659fb0531b1eed10acde777dcc4bcbab</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Change Type Standard/Normal">e59fb0531b1eed10acde777dcc4bcbaa</activity>
+        <condition>activity.result == 'yes'</condition>
+        <condition_default display_value="Yes">c1ef63200a0a0b59005ef89bae78feb7</condition_default>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>false</is_positive>
+        <name>Standard</name>
+        <order>100</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e19fb0531b1eed10acde777dcc4bcbab</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="If">98f621ca0a0a0b5900f7c291f5e45a0e</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>11</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Check if discovery disabled</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699fb0531b1eed10acde777dcc4bcbad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>41</x>
+        <y>214</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=699fb0531b1eed10acde777dcc4bcbad"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>699fb0531b1eed10acde777dcc4bcbad</document_key>
+        <order>300</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619fb0531b1eed10acde777dcc4bcbae</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>answer = ifDiscoveryEnabled();&#13;
+&#13;
+function ifDiscoveryEnabled() {&#13;
+    try {&#13;
+        var discover = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');&#13;
+        if (discover == "false") {&#13;
+            return 'yes';&#13;
+        }&#13;
+        return 'no';&#13;
+    } catch (e) {&#13;
+        workflow.error("HCMS Provision Workflow: Check if discovery is enabled or disabled : " + this.type + " " + e);&#13;
+    }&#13;
+}&#13;
+</value>
+        <variable display_value="Script">c35e50810a0a0ba96248a709b450fc32</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>699fb0531b1eed10acde777dcc4bcbad</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>1</value>
+        <variable display_value="Advanced">493d2c1d0a6a803f3217a75738ea3289</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>699fb0531b1eed10acde777dcc4bcbad</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e99fb0531b1eed10acde777dcc4bcbad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">493cba6a0a6a803f07df24b118473551</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>699fb0531b1eed10acde777dcc4bcbad</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e99fb0531b1eed10acde777dcc4bcbad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">493cba6a0a6a803f07df24b118473551</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>699fb0531b1eed10acde777dcc4bcbad</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>1</value>
+        <variable display_value="Advanced">493d2c1d0a6a803f3217a75738ea3289</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>699fb0531b1eed10acde777dcc4bcbad</document_key>
+        <order>300</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619fb0531b1eed10acde777dcc4bcbae</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>answer = ifDiscoveryEnabled();&#13;
+&#13;
+function ifDiscoveryEnabled() {&#13;
+    try {&#13;
+        var discover = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');&#13;
+        if (discover == "false") {&#13;
+            return 'yes';&#13;
+        }&#13;
+        return 'no';&#13;
+    } catch (e) {&#13;
+        workflow.error("HCMS Provision Workflow: Check if discovery is enabled or disabled : " + this.type + " " + e);&#13;
+    }&#13;
+}&#13;
+</value>
+        <variable display_value="Script">c35e50810a0a0ba96248a709b450fc32</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Check if discovery disabled">699fb0531b1eed10acde777dcc4bcbad</activity>
+        <condition>activity.result == 'no'</condition>
+        <condition_default display_value="No">c1eff6430a0a0b59000f955abe842c94</condition_default>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>false</is_positive>
+        <name>No</name>
+        <order>200</order>
+        <short_description/>
+        <skip_during_generate>true</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>659fb0531b1eed10acde777dcc4bcbae</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Check if discovery disabled">699fb0531b1eed10acde777dcc4bcbad</activity>
+        <condition>activity.result == 'yes'</condition>
+        <condition_default display_value="Yes">c1ef63200a0a0b59005ef89bae78feb7</condition_default>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Yes</name>
+        <order>100</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e59fb0531b1eed10acde777dcc4bcbae</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Run Script">db8c65aec0a8016501d00259bc7203a4</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>6</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Create a Normal Change Request</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e99fb0531b1eed10acde777dcc4bcbb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>470</x>
+        <y>372</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=e99fb0531b1eed10acde777dcc4bcbb0"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e99fb0531b1eed10acde777dcc4bcbb0</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>6d9fb0531b1eed10acde777dcc4bcbb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().CreateNormalChangeRequest(current);&#13;
+} catch(ex){}&#13;
+</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e99fb0531b1eed10acde777dcc4bcbb0</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>6d9fb0531b1eed10acde777dcc4bcbb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().CreateNormalChangeRequest(current);&#13;
+} catch(ex){}&#13;
+</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Create a Normal Change Request">e99fb0531b1eed10acde777dcc4bcbb0</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619fb0531b1eed10acde777dcc4bcbb1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Run Script">db8c65aec0a8016501d00259bc7203a4</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>5</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Create a Standard Change Request</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e19fb0531b1eed10acde777dcc4bcba9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>443</x>
+        <y>3</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=e19fb0531b1eed10acde777dcc4bcba9"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e19fb0531b1eed10acde777dcc4bcba9</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>659fb0531b1eed10acde777dcc4bcba9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().CreateStandardChangeRequest(current);&#13;
+} catch(ex){}&#13;
+&#13;
+</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e19fb0531b1eed10acde777dcc4bcba9</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>659fb0531b1eed10acde777dcc4bcba9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().CreateStandardChangeRequest(current);&#13;
+} catch(ex){}&#13;
+&#13;
+</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Create a Standard Change Request">e19fb0531b1eed10acde777dcc4bcba9</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699fb0531b1eed10acde777dcc4bcba9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="End">c7a66f7d0a0a0b3a004544a6d2f14076</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>2</databus_lookup_id>
+        <height/>
+        <input/>
+        <is_parent>false</is_parent>
+        <name>End</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ed9fb0531b1eed10acde777dcc4bcba9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width>80</width>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>950</x>
+        <y>296</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=ed9fb0531b1eed10acde777dcc4bcba9"/>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Run Script">db8c65aec0a8016501d00259bc7203a4</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>9</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Link Actual CI to Catalog Task</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9fb0531b1eed10acde777dcc4bcbac</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:26:07</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>257</x>
+        <y>433</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=2d9fb0531b1eed10acde777dcc4bcbac"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>2d9fb0531b1eed10acde777dcc4bcbac</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbac</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:26:07</sys_updated_on>
+        <value>try {&#13;
+	new HCMSWorkflowScripts().CreateTaskCIRecord(current);&#13;
+}&#13;
+catch(e){&#13;
+	workflow.error("Day2 Operations Workflow: Link to Actual Ci to Catalog Task: "+ this.type+ " " +e);&#13;
+}</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>2d9fb0531b1eed10acde777dcc4bcbac</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbac</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:26:07</sys_updated_on>
+        <value>try {&#13;
+	new HCMSWorkflowScripts().CreateTaskCIRecord(current);&#13;
+}&#13;
+catch(e){&#13;
+	workflow.error("Day2 Operations Workflow: Link to Actual Ci to Catalog Task: "+ this.type+ " " +e);&#13;
+}</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Link Actual CI to Catalog Task">2d9fb0531b1eed10acde777dcc4bcbac</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a19fb0531b1eed10acde777dcc4bcbad</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Run Script">db8c65aec0a8016501d00259bc7203a4</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>3</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Link To Actual CI</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>299f70531b1eed10acde777dcc4bcbe0</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:48</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>139</x>
+        <y>339</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=299f70531b1eed10acde777dcc4bcbe0"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>299f70531b1eed10acde777dcc4bcbe0</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9f70531b1eed10acde777dcc4bcbe0</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:48</sys_updated_on>
+        <value>//mapping Actual CI to configuration_item in RITM&#13;
+try {&#13;
+	var resourceCI = new HCMSOperationsValidations().validateResourceName(JSON.parse(current.variables.var_broker_json));&#13;
+	current.configuration_item = resourceCI;&#13;
+	workflow.scratchpad.actual_ci = resourceCI;&#13;
+}&#13;
+catch(ex) {&#13;
+	workflow.info("Day2 Operations Workflow: Link to Actual Ci: "+ this.type+ " " +ex);&#13;
+}</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>299f70531b1eed10acde777dcc4bcbe0</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9f70531b1eed10acde777dcc4bcbe0</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:48</sys_updated_on>
+        <value>//mapping Actual CI to configuration_item in RITM&#13;
+try {&#13;
+	var resourceCI = new HCMSOperationsValidations().validateResourceName(JSON.parse(current.variables.var_broker_json));&#13;
+	current.configuration_item = resourceCI;&#13;
+	workflow.scratchpad.actual_ci = resourceCI;&#13;
+}&#13;
+catch(ex) {&#13;
+	workflow.info("Day2 Operations Workflow: Link to Actual Ci: "+ this.type+ " " +ex);&#13;
+}</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Link To Actual CI">299f70531b1eed10acde777dcc4bcbe0</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619f70531b1eed10acde777dcc4bcbe1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Run Script">db8c65aec0a8016501d00259bc7203a4</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>8</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Set RITM as closed complete/closed incomplete</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>299fb0531b1eed10acde777dcc4bcbb1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>795</x>
+        <y>166</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=299fb0531b1eed10acde777dcc4bcbb1"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>299fb0531b1eed10acde777dcc4bcbb1</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a99fb0531b1eed10acde777dcc4bcbb1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().UpdateRequestedItem(current);&#13;
+} catch(ex){}&#13;
+</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>299fb0531b1eed10acde777dcc4bcbb1</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a99fb0531b1eed10acde777dcc4bcbb1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value>try{&#13;
+  new HCMSWorkflowScripts().UpdateRequestedItem(current);&#13;
+} catch(ex){}&#13;
+</value>
+        <variable display_value="Script">c35ddef20a0a0ba96248a7090eccd518</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Set RITM as closed complete/closed incomplete">299fb0531b1eed10acde777dcc4bcbb1</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbb1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Wait for condition">d93a02ae0a0a0aa30077abad3fdac035</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>10</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Wait For Request Approval unhold</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage/>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e99fb0531b1eed10acde777dcc4bcbaf</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:01</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>33</x>
+        <y>103</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=e99fb0531b1eed10acde777dcc4bcbaf"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e99fb0531b1eed10acde777dcc4bcbaf</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>219fb0531b1eed10acde777dcc4bcbb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">c35dc4cd0a0a0ba96248a70990c1ac54</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e99fb0531b1eed10acde777dcc4bcbaf</document_key>
+        <order>2</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>6d9fb0531b1eed10acde777dcc4bcbaf</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:01</sys_updated_on>
+        <value>try {&#13;
+    var gr_task = new GlideRecord("sc_request");&#13;
+    gr_task.addQuery('sys_id', current.request);    &#13;
+    gr_task.query();&#13;
+    if (gr_task.next()) {&#13;
+		if(gr_task.x_ibmg3_hcms_requestapprovalhold == true){&#13;
+		answer = false;&#13;
+		}        &#13;
+		else&#13;
+			answer = true;&#13;
+    } else {&#13;
+        answer = true;&#13;
+    }&#13;
+} catch (err) {&#13;
+    workflow.info("Requested Item Workflow: Wait For Approval to unhold:  " + this.type + "(" + err.message + ")");&#13;
+}</value>
+        <variable display_value="Condition script">c35debce0a0a0ba96248a709440cf31a</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e99fb0531b1eed10acde777dcc4bcbaf</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>219fb0531b1eed10acde777dcc4bcbb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">c35dc4cd0a0a0ba96248a70990c1ac54</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>e99fb0531b1eed10acde777dcc4bcbaf</document_key>
+        <order>2</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>6d9fb0531b1eed10acde777dcc4bcbaf</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:25:01</sys_updated_on>
+        <value>try {&#13;
+    var gr_task = new GlideRecord("sc_request");&#13;
+    gr_task.addQuery('sys_id', current.request);    &#13;
+    gr_task.query();&#13;
+    if (gr_task.next()) {&#13;
+		if(gr_task.x_ibmg3_hcms_requestapprovalhold == true){&#13;
+		answer = false;&#13;
+		}        &#13;
+		else&#13;
+			answer = true;&#13;
+    } else {&#13;
+        answer = true;&#13;
+    }&#13;
+} catch (err) {&#13;
+    workflow.info("Requested Item Workflow: Wait For Approval to unhold:  " + this.type + "(" + err.message + ")");&#13;
+}</value>
+        <variable display_value="Condition script">c35debce0a0a0ba96248a709440cf31a</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Wait For Request Approval unhold">e99fb0531b1eed10acde777dcc4bcbaf</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>259fb0531b1eed10acde777dcc4bcbb0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_activity action="INSERT_OR_UPDATE">
+        <activity_definition display_value="Wait for condition">d93a02ae0a0a0aa30077abad3fdac035</activity_definition>
+        <activity_definition_updated>false</activity_definition_updated>
+        <databus_lookup_id>7</databus_lookup_id>
+        <height/>
+        <input>{}</input>
+        <is_parent>false</is_parent>
+        <name>Wait for Task Completion</name>
+        <new_activity_definition/>
+        <notes/>
+        <out_of_date>false</out_of_date>
+        <parent/>
+        <pinned>false</pinned>
+        <pinned_version/>
+        <stage display_value="Fulfillment">ed9f70531b1eed10acde777dcc4bcbdf</stage>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9fb0531b1eed10acde777dcc4bcbab</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:27:10</sys_updated_on>
+        <timeout>1970-01-01 00:00:00</timeout>
+        <vars/>
+        <width/>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+        <x>694</x>
+        <y>371</y>
+    </wf_activity>
+    <sys_variable_value action="delete_multiple" query="document_key=2d9fb0531b1eed10acde777dcc4bcbab"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>2d9fb0531b1eed10acde777dcc4bcbab</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619fb0531b1eed10acde777dcc4bcbac</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">c35dc4cd0a0a0ba96248a70990c1ac54</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>2d9fb0531b1eed10acde777dcc4bcbab</document_key>
+        <order>2</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbab</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:27:10</sys_updated_on>
+        <value>try {&#13;
+    var gr_task = new GlideRecord("sc_task");&#13;
+    gr_task.addQuery('request_item', current.sys_id);&#13;
+    gr_task.addQuery('state', '!=', '3');&#13;
+    gr_task.addQuery('state', '!=', '4');&#13;
+    gr_task.addQuery('state', '!=', '7');&#13;
+    gr_task.addQuery('wf_activity', '');&#13;
+    gr_task.query();&#13;
+    if (gr_task.next()) {&#13;
+        //tasks found in other states than 'Closed complete', 'Closed incomplete', or 'Closed Skipped'&#13;
+        answer = false;&#13;
+    } else {&#13;
+        //no tasks found in states other than 'Closed complete', 'Closed incomplete', or 'Closed Skipped'&#13;
+        answer = true;&#13;
+    }&#13;
+} catch (err) {&#13;
+    workflow.info("Day2 Operations Workflow: Wait For Task Completion:  " + this.type + "(" + err.message + ")");&#13;
+}</value>
+        <variable display_value="Condition script">c35debce0a0a0ba96248a709440cf31a</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>2d9fb0531b1eed10acde777dcc4bcbab</document_key>
+        <order>1</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>619fb0531b1eed10acde777dcc4bcbac</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <value/>
+        <variable display_value="Condition">c35dc4cd0a0a0ba96248a70990c1ac54</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>wf_activity</document>
+        <document_key>2d9fb0531b1eed10acde777dcc4bcbab</document_key>
+        <order>2</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ad9fb0531b1eed10acde777dcc4bcbab</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:27:10</sys_updated_on>
+        <value>try {&#13;
+    var gr_task = new GlideRecord("sc_task");&#13;
+    gr_task.addQuery('request_item', current.sys_id);&#13;
+    gr_task.addQuery('state', '!=', '3');&#13;
+    gr_task.addQuery('state', '!=', '4');&#13;
+    gr_task.addQuery('state', '!=', '7');&#13;
+    gr_task.addQuery('wf_activity', '');&#13;
+    gr_task.query();&#13;
+    if (gr_task.next()) {&#13;
+        //tasks found in other states than 'Closed complete', 'Closed incomplete', or 'Closed Skipped'&#13;
+        answer = false;&#13;
+    } else {&#13;
+        //no tasks found in states other than 'Closed complete', 'Closed incomplete', or 'Closed Skipped'&#13;
+        answer = true;&#13;
+    }&#13;
+} catch (err) {&#13;
+    workflow.info("Day2 Operations Workflow: Wait For Task Completion:  " + this.type + "(" + err.message + ")");&#13;
+}</value>
+        <variable display_value="Condition script">c35debce0a0a0ba96248a709440cf31a</variable>
+    </sys_variable_value>
+    <wf_condition action="INSERT_OR_UPDATE">
+        <activity display_value="Wait for Task Completion">2d9fb0531b1eed10acde777dcc4bcbab</activity>
+        <condition>true</condition>
+        <condition_default/>
+        <condition_type>standard</condition_type>
+        <else_flag>false</else_flag>
+        <error>false</error>
+        <event>false</event>
+        <event_name/>
+        <is_positive>true</is_positive>
+        <name>Always</name>
+        <order>0</order>
+        <short_description/>
+        <skip_during_generate>false</skip_during_generate>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>659fb0531b1eed10acde777dcc4bcbac</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+    </wf_condition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="No">659fb0531b1eed10acde777dcc4bcbae</condition>
+        <from display_value="Check if discovery disabled">699fb0531b1eed10acde777dcc4bcbad</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>259fb0531b1eed10acde777dcc4bcbb3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Link To Actual CI">299f70531b1eed10acde777dcc4bcbe0</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">259fb0531b1eed10acde777dcc4bcbaf</condition>
+        <from display_value="Attach existing CI to requested item">ad9fb0531b1eed10acde777dcc4bcbae</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>299fb0531b1eed10acde777dcc4bcbb4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Link Actual CI to Catalog Task">2d9fb0531b1eed10acde777dcc4bcbac</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Standard">e19fb0531b1eed10acde777dcc4bcbab</condition>
+        <from display_value="Change Type Standard/Normal">e59fb0531b1eed10acde777dcc4bcbaa</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>2d9fb0531b1eed10acde777dcc4bcbb3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Create a Standard Change Request">e19fb0531b1eed10acde777dcc4bcba9</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">619f70531b1eed10acde777dcc4bcbe1</condition>
+        <from display_value="Link To Actual CI">299f70531b1eed10acde777dcc4bcbe0</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>659fb0531b1eed10acde777dcc4bcbb4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Link Actual CI to Catalog Task">2d9fb0531b1eed10acde777dcc4bcbac</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">619fb0531b1eed10acde777dcc4bcbb1</condition>
+        <from display_value="Create a Normal Change Request">e99fb0531b1eed10acde777dcc4bcbb0</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699fb0531b1eed10acde777dcc4bcbc1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Wait for Task Completion">2d9fb0531b1eed10acde777dcc4bcbab</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Yes">e59fb0531b1eed10acde777dcc4bcbae</condition>
+        <from display_value="Check if discovery disabled">699fb0531b1eed10acde777dcc4bcbad</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a19fb0531b1eed10acde777dcc4bcbb3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Attach existing CI to requested item">ad9fb0531b1eed10acde777dcc4bcbae</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">a19fb0531b1eed10acde777dcc4bcbad</condition>
+        <from display_value="Link Actual CI to Catalog Task">2d9fb0531b1eed10acde777dcc4bcbac</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a19fb0531b1eed10acde777dcc4bcbb4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Change Type Standard/Normal">e59fb0531b1eed10acde777dcc4bcbaa</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">2d9fb0531b1eed10acde777dcc4bcba8</condition>
+        <from display_value="Begin">699fb0531b1eed10acde777dcc4bcba8</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a19fb0531b1eed10acde777dcc4bcbc1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Wait For Request Approval unhold">e99fb0531b1eed10acde777dcc4bcbaf</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">659fb0531b1eed10acde777dcc4bcbac</condition>
+        <from display_value="Wait for Task Completion">2d9fb0531b1eed10acde777dcc4bcbab</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a59fb0531b1eed10acde777dcc4bcbc1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Set RITM as closed complete/closed incomplete">299fb0531b1eed10acde777dcc4bcbb1</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Normal">659fb0531b1eed10acde777dcc4bcbab</condition>
+        <from display_value="Change Type Standard/Normal">e59fb0531b1eed10acde777dcc4bcbaa</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>a99fb0531b1eed10acde777dcc4bcbb3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Create a Normal Change Request">e99fb0531b1eed10acde777dcc4bcbb0</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">ad9fb0531b1eed10acde777dcc4bcbb1</condition>
+        <from display_value="Set RITM as closed complete/closed incomplete">299fb0531b1eed10acde777dcc4bcbb1</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>e59fb0531b1eed10acde777dcc4bcbb3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="End">ed9fb0531b1eed10acde777dcc4bcba9</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">699fb0531b1eed10acde777dcc4bcba9</condition>
+        <from display_value="Create a Standard Change Request">e19fb0531b1eed10acde777dcc4bcba9</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ed9fb0531b1eed10acde777dcc4bcbb2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Wait for Task Completion">2d9fb0531b1eed10acde777dcc4bcbab</to>
+    </wf_transition>
+    <wf_transition action="INSERT_OR_UPDATE">
+        <condition display_value="Always">259fb0531b1eed10acde777dcc4bcbb0</condition>
+        <from display_value="Wait For Request Approval unhold">e99fb0531b1eed10acde777dcc4bcbaf</from>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>ed9fb0531b1eed10acde777dcc4bcbb3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <to display_value="Check if discovery disabled">699fb0531b1eed10acde777dcc4bcbad</to>
+    </wf_transition>
+    <wf_estimated_runtime_config action="INSERT_OR_UPDATE">
+        <estimated_run_time/>
+        <no_of_data_points>1</no_of_data_points>
+        <percentage_threshold_ert>20</percentage_threshold_ert>
+        <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
+        <sys_created_on>2023-04-24 15:24:43</sys_created_on>
+        <sys_id>699f70531b1eed10acde777dcc4bcbde</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2023-04-24 15:24:43</sys_updated_on>
+        <workflow_version display_value="HCMS Operations Start/Stop/Reboot WF">e59f70531b1eed10acde777dcc4bcbde</workflow_version>
+    </wf_estimated_runtime_config>
+    <wf_workflow_version action="update_multiple" query="workflow=f297c66cdba0f300e0f5325f9d96195c^sys_id!=e59f70531b1eed10acde777dcc4bcbde">
+        <published>false</published>
+    </wf_workflow_version>
+</record_update>

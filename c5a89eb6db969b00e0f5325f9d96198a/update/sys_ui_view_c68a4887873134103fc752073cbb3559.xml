@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_view">
+    <sys_ui_view action="INSERT_OR_UPDATE">
+        <group/>
+        <hidden>false</hidden>
+        <name>subscription_overview</name>
+        <roles/>
+        <sys_class_name>sys_ui_view</sys_class_name>
+        <sys_created_by>nmandya1@in.ibm.com</sys_created_by>
+        <sys_created_on>2021-08-10 07:49:35</sys_created_on>
+        <sys_id>c68a4887873134103fc752073cbb3559</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Subscription_overview</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_ui_view_c68a4887873134103fc752073cbb3559</sys_update_name>
+        <sys_updated_by>nmandya1@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2021-08-10 07:49:35</sys_updated_on>
+        <title>Subscription_overview</title>
+        <user/>
+    </sys_ui_view>
+</record_update>

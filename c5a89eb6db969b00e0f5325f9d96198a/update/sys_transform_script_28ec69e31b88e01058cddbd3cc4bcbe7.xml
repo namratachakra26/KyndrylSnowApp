@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_transform_script">
+    <sys_transform_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <map display_value="u_imp_saml_user_2cmyodirfj">c8ec69e31b88e01058cddbd3cc4bcbdc</map>
+        <order>100</order>
+        <script><![CDATA[// create first name if neccessary
+if (source.first_name.nil())
+    target.first_name = source.user_name;
+]]></script>
+        <sys_class_name>sys_transform_script</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2020-10-30 08:15:13</sys_created_on>
+        <sys_id>28ec69e31b88e01058cddbd3cc4bcbe7</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>onBefore</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_transform_script_28ec69e31b88e01058cddbd3cc4bcbe7</sys_update_name>
+        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2020-10-30 08:15:13</sys_updated_on>
+        <when>onBefore</when>
+    </sys_transform_script>
+</record_update>
