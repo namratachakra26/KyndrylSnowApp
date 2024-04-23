@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="catalog_ui_policy_action">
+    <catalog_ui_policy_action action="INSERT_OR_UPDATE">
+        <catalog_item display_value="Kyndryl Marketplace Provision">b64fe0ecdbe21b0037ad349f9d9619e3</catalog_item>
+        <catalog_variable>IO:585c8652db031380e0f5325f9d961974</catalog_variable>
+        <cleared>false</cleared>
+        <disabled>ignore</disabled>
+        <field/>
+        <mandatory>ignore</mandatory>
+        <order/>
+        <sys_class_name>catalog_ui_policy_action</sys_class_name>
+        <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+        <sys_created_on>2018-07-17 09:21:37</sys_created_on>
+        <sys_id>d7eaa822db579300e0f5325f9d96194b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>order_number</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>catalog_ui_policy_action_d7eaa822db579300e0f5325f9d96194b</sys_update_name>
+        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2018-07-17 09:21:37</sys_updated_on>
+        <table/>
+        <u_item_option_new_sys_id>585c8652db031380e0f5325f9d961974</u_item_option_new_sys_id>
+        <ui_policy display_value="Hide Variables on Requested Item">f659e8eedb179300e0f5325f9d961950</ui_policy>
+        <variable>order_number</variable>
+        <variable_set/>
+        <visible>false</visible>
+    </catalog_ui_policy_action>
+</record_update>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_app_module">
+    <sys_app_module action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <application display_value="System Import Sets">import_sets</application>
+        <assessment/>
+        <device_type/>
+        <filter/>
+        <hint/>
+        <homepage/>
+        <image/>
+        <link_type>LIST</link_type>
+        <map_page/>
+        <mobile_title>sc_task_ibmhcms</mobile_title>
+        <mobile_view_name>Mobile</mobile_view_name>
+        <name>x_ibmg3_hcms_sc_task_ibmhcms</name>
+        <order>1100</order>
+        <override_menu_roles>false</override_menu_roles>
+        <query/>
+        <report/>
+        <roles/>
+        <sys_class_name>sys_app_module</sys_class_name>
+        <sys_created_by>rbbrandt@us.ibm.com</sys_created_by>
+        <sys_created_on>2018-06-15 00:12:26</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>e56a39c8dbba9f0037ad349f9d961960</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>sc_task_ibmhcms</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_app_module_e56a39c8dbba9f0037ad349f9d961960</sys_update_name>
+        <sys_updated_by>rbbrandt@us.ibm.com</sys_updated_by>
+        <sys_updated_on>2018-06-15 00:12:26</sys_updated_on>
+        <timeline_page/>
+        <title>sc_task_ibmhcms</title>
+        <uncancelable>false</uncancelable>
+        <view_name/>
+        <window_name/>
+    </sys_app_module>
+</record_update>

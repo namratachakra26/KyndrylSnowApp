@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="x_ibmg3_hcms_broker_approval_request_summary" label="Broker Approval Request Summary" language="en" table="sc_request">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_broker_approval_request_summary</element>
+            <help/>
+            <hint/>
+            <label>Broker Approval Request Summary</label>
+            <language>en</language>
+            <name>sc_request</name>
+            <plural>Broker Approval Request Summaries</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-06-29 13:03:52</sys_created_on>
+            <sys_id>523130bcdb4f1f40e0f5325f9d961940</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Broker Approval Request Summary</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_sc_request_x_ibmg3_hcms_broker_approval_request_summary_en</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-06-29 13:03:52</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

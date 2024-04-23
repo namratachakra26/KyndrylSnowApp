@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="x_ibmg3_hcms_broker_approval_item_summary" label="Bill Of Materials Summary" language="en" table="sc_req_item">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_broker_approval_item_summary</element>
+            <help/>
+            <hint/>
+            <label>Bill Of Materials Summary</label>
+            <language>en</language>
+            <name>sc_req_item</name>
+            <plural>Bill Of Materials Summaries</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-06-29 13:42:51</sys_created_on>
+            <sys_id>dd2afc34db8f1f40e0f5325f9d9619e0</sys_id>
+            <sys_mod_count>2</sys_mod_count>
+            <sys_name>Bill Of Materials Summary</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_sc_req_item_x_ibmg3_hcms_broker_approval_item_summary_en</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-08-20 14:05:08</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>standard</category>
+        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* TOP ICON ---------- */&#13;
+&#13;
+a.top_icon {&#13;
+  display: block;&#13;
+  padding: 20px;&#13;
+  text-align: center;&#13;
+ &#13;
+  &#13;
+}&#13;
+&#13;
+a.top_icon .fa {&#13;
+  display: block;&#13;
+  text-align: center;&#13;
+  &#13;
+}&#13;
+&#13;
+a.top_icon h3 {&#13;
+  font-weight: 300;&#13;
+  padding: 0;&#13;
+  margin: 0 0 10px 0;&#13;
+}&#13;
+a.top_icon .text-muted {&#13;
+  color: white;&#13;
+  &#13;
+}&#13;
+&#13;
+/* CIRCLE ICON ---------- */&#13;
+&#13;
+a.circle_icon {&#13;
+  display: block;&#13;
+  padding: 20px 0px 20px 70px;&#13;
+  position: relative;&#13;
+  background-color: #747678;&#13;
+  color: grey;&#13;
+}&#13;
+&#13;
+a.circle_icon .fa {&#13;
+  position:absolute;&#13;
+  left: 10px;&#13;
+  top: 10px;&#13;
+}&#13;
+&#13;
+a.circle_icon h3 {&#13;
+  font-weight: 300;&#13;
+  padding: 0;&#13;
+  margin: 0 0 10px 0;&#13;
+  color: blue;&#13;
+}&#13;
+&#13;
+/* COLOR BOX ---------- */&#13;
+&#13;
+a.color_box {&#13;
+  display: block;&#13;
+  position: relative;&#13;
+  padding: 20px 20px 20px 82px;&#13;
+  border-radius: 4px;&#13;
+}&#13;
+&#13;
+a.color_box .fa {&#13;
+  position:absolute;&#13;
+  left: 20px;&#13;
+  top: 20px;&#13;
+  width:42px;&#13;
+  text-align: center;&#13;
+}&#13;
+&#13;
+a.color_box h3 {&#13;
+  font-weight: 300;&#13;
+  padding: 0;&#13;
+  margin: 0 0 10px 0;&#13;
+}&#13;
+&#13;
+.icon-link-background-primary {&#13;
+  background-color: $brand-primary;&#13;
+}&#13;
+&#13;
+.icon-link-background-info {&#13;
+  background-color: $brand-info;&#13;
+}&#13;
+&#13;
+.icon-link-background-success {&#13;
+  background-color: $brand-success;&#13;
+}&#13;
+&#13;
+.icon-link-background-warning {&#13;
+  background-color: $brand-warning;&#13;
+}&#13;
+&#13;
+.icon-link-background-danger {&#13;
+  background-color: $brand-danger;&#13;
+}&#13;
+&#13;
+.icon-link-background-default {&#13;
+  background-color: $brand-primary;&#13;
+}&#13;
+&#13;
+.teOverlay {&#13;
+  display:none;&#13;
+  margin:1px 1px 1px 1px;&#13;
+  position:absolute;&#13;
+  top:0px;&#13;
+  left:0px;&#13;
+  text-align: center;&#13;
+  padding-top: 5%;&#13;
+  height: 100%;&#13;
+  width: 100%;&#13;
+}&#13;
+&#13;
+.teUnderlay {&#13;
+  display:block;&#13;
+/*    position:absolute;&#13;
+    top:0px;*/&#13;
+/*    left:0px; */&#13;
+}&#13;
+&#13;
+div:hover .teOverlay, div:focus .teOverlay {&#13;
+    display:block;&#13;
+    position: absolute;&#13;
+    /* background-color:black; */&#13;
+    /*background-color: #899F99;*/&#13;
+    /*background-color: #747611;*/&#13;
+  	background-color: #3DB7E4;&#13;
+    color:#ffffff;&#13;
+    opacity:1.00;&#13;
+}&#13;
+&#13;
+div:hover .teUnderlay, div:focus .teUnderlay {&#13;
+    display:block;&#13;
+    /* background-color:black; */&#13;
+    // color: darken(grey, 90%);&#13;
+    //opacity:1.00;&#13;
+    opacity: 0.50;&#13;
+}&#13;
+&#13;
+.title {&#13;
+  color : white;&#13;
+}</css>
+        <data_table>sp_instance_link</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list>type,url,sc_category,sc_cat_item,kb_topic,kb_article,kb_category,sp_page,title,short_description,color,class_name,glyph</field_list>
+        <has_preview>false</has_preview>
+        <id/>
+        <internal>false</internal>
+        <link/>
+        <name>HCMS Icon Link</name>
+        <option_schema>[{"name":"link_template","section":"Presentation","label":"Template","type":"choice","choices":[{"label":"Top Icon","value":"Top Icon"},{"label":"Circle Icon","value":"Circle Icon"},{"label":"Color Box","value":"Color Box"}]}]</option_schema>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[(function(){
+	var gr = $sp.getInstanceRecord();
+	data.href = $sp.getMenuHREF(gr);
+	data.target = options.target || "";
+	
+	var img = new GlideRecord('db_image');
+	img.addQuery('name', 'cloud_broker.png');
+	img.query();
+	if (img.next()){
+		data.image = img.getValue('name');
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>vram@us.ibm.com</sys_created_by>
+        <sys_created_on>2018-06-01 05:05:27</sys_created_on>
+        <sys_id>5537b2afdb5edb00e0f5325f9d9619ef</sys_id>
+        <sys_mod_count>32</sys_mod_count>
+        <sys_name>HCMS Icon Link</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sp_widget_5537b2afdb5edb00e0f5325f9d9619ef</sys_update_name>
+        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+        <sys_updated_on>2018-06-22 07:59:37</sys_updated_on>
+        <template><![CDATA[<div style="margin-bottom: 5px">
+  
+  <!--// Top Icon -->
+  <a ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" ng-href="{{::data.href}}" class="top_icon {{::options.class_name}}" target="{{::data.target}}">
+    <div class="m-b fa fa-{{::options.glyph}} fa-4x {{::options.class_name}} text-{{::options.color}}"></div>
+    <h3>{{::options.title}}</h3>
+    <span class="text-muted">{{::options.short_description}}</span>
+  </a>
+  
+     <a ng-if="::(options.link_template == 'Image Icon')" ng-href="{{::data.href}}" class="image_icon {{::options.class_name}} text-{{::options.color}}" target="{{::data.target}}">
+       <div><img   src="{{data.image}}"/>
+           <h3 style="font-weight: 300; margin-top: 22px">{{::options.title}}</h3>
+       <span class="text-muted">{{::options.short_description}}</span></div>
+       <p>  </p>
+   </a>
+
+  <!--// Circle Icon -->
+  <a style="min-height: 75px; border-radius: 3px; position: relative" ng-if="::(options.link_template == 'Circle Icon')" 
+     ng-href="{{::data.href}}" class="circle_icon {{::options.class_name}} text-{{::options.color}}" target="{{::data.target}}">
+    <div class="teUnderlay">
+	    <span class="fa fa-stack fa-2x" style="top: 0px; left: 0px">
+  	    <i class="fa fa-circle fa-stack-2x"></i>
+    	  <i class="fa fa-{{::options.glyph}} fa-stack-1x fa-inverse"></i>
+	    </span>
+  	  <h3>{{::options.title}}</h3>
+    </div>
+    
+<!--// Remove Old Overlay  -->
+   <!--  -->
+	   <div class="teOverlay"><span class="">{{::options.short_description}}</span></div>
+<!-- -->
+    
+  </a>
+
+  <!--// Color Box -->
+  <a ng-if="::(options.link_template == 'Color Box')" ng-href="{{::data.href}}" class="color_box {{::options.class_name}} icon-link-background-{{::options.color}} text-white" target="{{::data.target}}">
+    <div class="fa fa-{{::options.glyph}} fa-3x {{::options.class_name}}"></div>
+    <h3>{{::options.title}}</h3>
+    <span>{{::options.short_description}}</span>
+  </a>
+</div>]]></template>
+    </sp_widget>
+</record_update>

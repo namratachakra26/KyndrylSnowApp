@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="u_due_date" label="due_date" language="en" table="x_ibmg3_hcms_sc_task_ibmhcms">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>u_due_date</element>
+            <help/>
+            <hint/>
+            <label>due_date</label>
+            <language>en</language>
+            <name>x_ibmg3_hcms_sc_task_ibmhcms</name>
+            <plural>due_dates</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>rbbrandt@us.ibm.com</sys_created_by>
+            <sys_created_on>2018-06-15 00:12:24</sys_created_on>
+            <sys_id>996af5c8dbba9f0037ad349f9d9619f6</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>due_date</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_x_ibmg3_hcms_sc_task_ibmhcms_u_due_date_en</sys_update_name>
+            <sys_updated_by>rbbrandt@us.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-06-15 00:12:24</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

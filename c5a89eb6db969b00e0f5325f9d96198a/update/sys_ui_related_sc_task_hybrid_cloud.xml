@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_related sys_domain="global" table="sc_task" version="2" view="hybrid_cloud">
+        <sys_ui_related_list_entry action="INSERT_OR_UPDATE">
+            <filter/>
+            <list_id display_value="Catalog Task - HCMS" name="sc_task" related_list="NULL" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">6cafdc6fdb171700e0f5325f9d9619ca</list_id>
+            <order_by/>
+            <position>0</position>
+            <related_list>task_ci.task</related_list>
+            <sys_class_name>sys_ui_related_list_entry</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-20 11:06:00</sys_created_on>
+            <sys_id>2cafdc6fdb171700e0f5325f9d9619cb</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-20 11:06:00</sys_updated_on>
+        </sys_ui_related_list_entry>
+        <sys_ui_related_list_entry action="INSERT_OR_UPDATE">
+            <filter/>
+            <list_id display_value="Catalog Task - HCMS" name="sc_task" related_list="NULL" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">6cafdc6fdb171700e0f5325f9d9619ca</list_id>
+            <order_by/>
+            <position>1</position>
+            <related_list>sysapproval_approver.sysapproval</related_list>
+            <sys_class_name>sys_ui_related_list_entry</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-20 11:06:00</sys_created_on>
+            <sys_id>a4afdc6fdb171700e0f5325f9d9619cc</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-20 11:06:00</sys_updated_on>
+        </sys_ui_related_list_entry>
+        <sys_ui_related_list_entry action="INSERT_OR_UPDATE">
+            <filter/>
+            <list_id display_value="Catalog Task - HCMS" name="sc_task" related_list="NULL" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">6cafdc6fdb171700e0f5325f9d9619ca</list_id>
+            <order_by/>
+            <position>2</position>
+            <related_list>sysapproval_group.parent</related_list>
+            <sys_class_name>sys_ui_related_list_entry</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-20 11:06:00</sys_created_on>
+            <sys_id>a8afdc6fdb171700e0f5325f9d9619cc</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-20 11:06:00</sys_updated_on>
+        </sys_ui_related_list_entry>
+        <sys_ui_related_list_entry action="INSERT_OR_UPDATE">
+            <filter/>
+            <list_id display_value="Catalog Task - HCMS" name="sc_task" related_list="NULL" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">6cafdc6fdb171700e0f5325f9d9619ca</list_id>
+            <order_by/>
+            <position>3</position>
+            <related_list>task_sla.task</related_list>
+            <sys_class_name>sys_ui_related_list_entry</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-20 11:06:00</sys_created_on>
+            <sys_id>acafdc6fdb171700e0f5325f9d9619cc</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-20 11:06:00</sys_updated_on>
+        </sys_ui_related_list_entry>
+        <sys_ui_related_list action="INSERT_OR_UPDATE">
+            <calculated_name>Catalog Task - HCMS</calculated_name>
+            <filter/>
+            <name>sc_task</name>
+            <order_by/>
+            <position/>
+            <related_list/>
+            <sys_class_name>sys_ui_related_list</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-20 11:06:00</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>6cafdc6fdb171700e0f5325f9d9619ca</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Catalog Task - hybrid cloud</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_ui_related_sc_task_hybrid_cloud</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-20 11:06:00</sys_updated_on>
+            <sys_user/>
+            <view display_value="HCMS" name="hybrid_cloud">b30028f0dbc7d74037ad349f9d961934</view>
+            <view_name/>
+        </sys_ui_related_list>
+    </sys_ui_related>
+</record_update>

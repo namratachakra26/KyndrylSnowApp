@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="x_ibmg3_hcms_related_change_request" label="Related Change Request" language="en" table="sc_req_item">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_related_change_request</element>
+            <help/>
+            <hint/>
+            <label>Related Change Request</label>
+            <language>en</language>
+            <name>sc_req_item</name>
+            <plural>Related Change Requests</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-06-29 13:39:51</sys_created_on>
+            <sys_id>59797034db8f1f40e0f5325f9d9619ce</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Related Change Request</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_sc_req_item_x_ibmg3_hcms_related_change_request_en</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-06-29 13:39:51</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

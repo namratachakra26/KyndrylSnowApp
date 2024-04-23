@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="x_ibmg3_hcms_external_approval" label="External Approval" language="en" table="sc_request">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_external_approval</element>
+            <help/>
+            <hint/>
+            <label>External Approval</label>
+            <language>en</language>
+            <name>sc_request</name>
+            <plural>External Approvals</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-09-02 08:50:47</sys_created_on>
+            <sys_id>b8a66a69db982f0037ad349f9d96190c</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>External Approval</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_sc_request_x_ibmg3_hcms_external_approval_en</sys_update_name>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-09-02 08:50:47</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

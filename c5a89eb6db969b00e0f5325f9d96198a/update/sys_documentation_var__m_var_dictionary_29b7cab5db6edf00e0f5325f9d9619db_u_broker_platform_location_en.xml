@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="u_broker_platform_location" label="broker_platform_location" language="en" table="var__m_var_dictionary_29b7cab5db6edf00e0f5325f9d9619db">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>u_broker_platform_location</element>
+            <help/>
+            <hint/>
+            <label>broker_platform_location</label>
+            <language>en</language>
+            <name>var__m_var_dictionary_29b7cab5db6edf00e0f5325f9d9619db</name>
+            <plural>broker_platform_location</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>vram@us.ibm.com</sys_created_by>
+            <sys_created_on>2018-06-10 19:04:28</sys_created_on>
+            <sys_id>ab8dccfadba21f0037ad349f9d961940</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>broker_platform_location</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_var__m_var_dictionary_29b7cab5db6edf00e0f5325f9d9619db_u_broker_platform_location_en</sys_update_name>
+            <sys_updated_by>vram@us.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-06-10 19:04:28</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

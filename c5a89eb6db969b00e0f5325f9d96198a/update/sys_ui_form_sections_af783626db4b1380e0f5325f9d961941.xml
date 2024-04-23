@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_form_sections form_id="af783626db4b1380e0f5325f9d961941" sys_domain="global" table="sc_req_item" version="3">
+        <sys_ui_form_section action="INSERT_OR_UPDATE">
+            <position>0</position>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-05 09:24:14</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>ab783626db4b1380e0f5325f9d961942</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_overrides/>
+            <sys_ui_form display_value="sc_req_item" name="sc_req_item" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">af783626db4b1380e0f5325f9d961941</sys_ui_form>
+            <sys_ui_section caption="NULL" display_value="" name="sc_req_item" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">f98634b0db8f1f40e0f5325f9d961951</sys_ui_section>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-05 09:24:14</sys_updated_on>
+        </sys_ui_form_section>
+        <sys_ui_form action="INSERT_OR_UPDATE">
+            <name>sc_req_item</name>
+            <roles/>
+            <sys_class_name>sys_ui_form</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-05 09:24:14</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>af783626db4b1380e0f5325f9d961941</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>sc_req_item</sys_name>
+            <sys_overrides/>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_ui_form_sections_af783626db4b1380e0f5325f9d961941</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-05 09:24:14</sys_updated_on>
+            <sys_user/>
+            <view display_value="HCMS" name="hybrid_cloud">b30028f0dbc7d74037ad349f9d961934</view>
+            <view_name/>
+        </sys_ui_form>
+    </sys_ui_form_sections>
+</record_update>

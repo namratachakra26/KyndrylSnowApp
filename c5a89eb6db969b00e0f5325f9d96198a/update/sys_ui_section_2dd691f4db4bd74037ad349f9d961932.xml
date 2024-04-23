@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_section caption="" section_id="2dd691f4db4bd74037ad349f9d961932" sys_domain="global" table="cmdb_ci_vm_object" version="3" view="hybrid_cloud">
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>name</element>
+            <position>0</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>71734015dba1a30037ad349f9d961923</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>asset_tag</element>
+            <position>1</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>f5734015dba1a30037ad349f9d961923</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>sys_class_name</element>
+            <position>2</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>79734015dba1a30037ad349f9d961923</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>assigned_to</element>
+            <position>3</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>f9734015dba1a30037ad349f9d961923</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>category</element>
+            <position>4</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>7d734015dba1a30037ad349f9d961923</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>fault_count</element>
+            <position>5</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>fd734015dba1a30037ad349f9d961923</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>install_date</element>
+            <position>6</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>71734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_resource_mapping</element>
+            <position>7</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>f1734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>.split</element>
+            <position>8</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>75734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type>.split</type>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>install_status</element>
+            <position>9</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>f5734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>operational_status</element>
+            <position>10</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>79734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>correlation_id</element>
+            <position>11</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>f9734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>object_id</element>
+            <position>12</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>7d734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_tracking_resource_group_id</element>
+            <position>13</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>fd734015dba1a30037ad349f9d961924</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>.end_split</element>
+            <position>14</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>71734015dba1a30037ad349f9d961925</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type>.end_split</type>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>ui_ng_relation_formatter.xml</element>
+            <position>15</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>f1734015dba1a30037ad349f9d961925</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter display_value="CI Relations">b62309137f32310009fedf92bdfa912b</sys_ui_formatter>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type>formatter</type>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>12M.cmdb_ci_vm_object.incident.cmdb_ci</element>
+            <position>16</position>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-11-02 05:37:52</sys_created_on>
+            <sys_id>b5734015dba1a30037ad349f9d961925</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="cmdb_ci_vm_object" sys_domain="global" view="b30028f0dbc7d74037ad349f9d961934">2dd691f4db4bd74037ad349f9d961932</sys_ui_section>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-11-02 05:37:52</sys_updated_on>
+            <sys_user/>
+            <type>list</type>
+        </sys_ui_element>
+        <sys_ui_section action="INSERT_OR_UPDATE">
+            <caption/>
+            <header>false</header>
+            <name>cmdb_ci_vm_object</name>
+            <roles/>
+            <sys_class_name>sys_ui_section</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-06-29 15:48:11</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_id>2dd691f4db4bd74037ad349f9d961932</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>cmdb_ci_vm_object</sys_name>
+            <sys_overrides/>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_ui_section_2dd691f4db4bd74037ad349f9d961932</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-06-29 15:48:11</sys_updated_on>
+            <sys_user/>
+            <title>false</title>
+            <view display_value="HCMS" name="hybrid_cloud">b30028f0dbc7d74037ad349f9d961934</view>
+            <view_name/>
+        </sys_ui_section>
+    </sys_ui_section>
+</record_update>

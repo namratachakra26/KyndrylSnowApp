@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="x_ibmg3_hcms_service_offering_instance_id" label="Service Offering Instance Id" language="en" table="sc_task">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_service_offering_instance_id</element>
+            <help/>
+            <hint/>
+            <label>Service Offering Instance Id</label>
+            <language>en</language>
+            <name>sc_task</name>
+            <plural>Service Offering Instance Ids</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>rannep12@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-07-20 11:18:34</sys_created_on>
+            <sys_id>7c822cefdb171700e0f5325f9d9619da</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Service Offering Instance Id</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_documentation_sc_task_x_ibmg3_hcms_service_offering_instance_id_en</sys_update_name>
+            <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-07-20 11:18:34</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>
