@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_properties">
+    <sys_properties action="INSERT_OR_UPDATE">
+        <choices/>
+        <description>This property is used for mapping fields for CI Wizard.</description>
+        <ignore_cache>false</ignore_cache>
+        <is_private>false</is_private>
+        <name>x_ibmg3_hcms.Enable_Ci_Wizard</name>
+        <read_roles/>
+        <suffix>Enable_Ci_Wizard</suffix>
+        <sys_class_name>sys_properties</sys_class_name>
+        <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+        <sys_created_on>2019-03-27 05:06:18</sys_created_on>
+        <sys_id>c49a6273dbd0730037ad349f9d9619dc</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>x_ibmg3_hcms.Enable_Ci_Wizard</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_properties_c49a6273dbd0730037ad349f9d9619dc</sys_update_name>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-09 10:26:04</sys_updated_on>
+        <type>string</type>
+        <value>false</value>
+        <write_roles/>
+    </sys_properties>
+    <sys_translated_text action="delete_multiple" query="documentkey=c49a6273dbd0730037ad349f9d9619dc"/>
+</record_update>
