@@ -20,51 +20,49 @@ EmpConfigurationOutboundCall.prototype = {
 
     configJsonFile: function(current) {
         try {
-
             // To configure Service now properties based on user input
-            var gr = new GlideRecord('sys_properties');
-            if (gr.get('suffix', 'Enable_QuickStart')) {
-                if (current.variables.quickstart == 'true') {
-                    gr.value = true;
-                } else {
-                    gr.value = false;
-                }
-                gr.update();
+            var enableQS = new GlideRecord('sys_properties');
+            if (enableQS.get('suffix', 'Enable_QuickStart')) {
+                if (current.variables.quickstart == 'true')
+                    enableQS.value = true;
+                else
+                    enableQS.value = false;
+                
+                enableQS.update();
             }
             //cart set to true all the time for v3 adapter
-            if (gr.get('suffix', 'mvp3.cart.enabled')) {
-                gr.value = true;
-                gr.update();
+            if (enableQS.get('suffix', 'mvp3.cart.enabled')) {
+                enableQS.value = true;
+                enableQS.update();
             }
-            if (gr.get('suffix', 'Outbound_Retry_Count')) {
+            if (enableQS.get('suffix', 'Outbound_Retry_Count')) {
                 if (current.variables.number_retries_to_be_performed != '') {
                     var retryCount = current.variables.number_retries_to_be_performed;
-                    gr.value = retryCount;
-                } else {
-                    gr.value = 3; // by default
-                }
-                gr.update();
+                    enableQS.value = retryCount;
+                } else
+                    enableQS.value = 3; // by default
+
+                enableQS.update();
+            }
+            if (enableQS.get('suffix', 'x_ibmg3_hcms.discovery.enabled')) {
+                if (current.variables.discovery == 'true')
+                    enableQS.value = true;
+                else
+                    enableQS.value = false;
+
+                enableQS.update();
             }
 
-            if (gr.get('suffix', 'x_ibmg3_hcms.discovery.enabled')) {
-                if (current.variables.discovery == 'true') {
-                    gr.value = true;
-                } else {
-                    gr.value = false;
-                }
-                gr.update();
+            if (enableQS.get('suffix', 'allow.anonymous.user')) {
+                if (current.variables.allow_anonymous_user == 'true')
+                    enableQS.value = true;
+                else
+                    enableQS.value = false;
+                
+                enableQS.update();
             }
 
-            if (gr.get('suffix', 'allow.anonymous.user')) {
-                if (current.variables.allow_anonymous_user == 'true') {
-                    gr.value = true;
-                } else {
-                    gr.value = false;
-                }
-                gr.update();
-            }
-
-            var payloadbody = {};
+            var payloadBody = {};
             var featureConfigurationJson = {};
             var accountConfigurationJson = {};
             var policyConfigurationsjson = {};
@@ -102,7 +100,6 @@ EmpConfigurationOutboundCall.prototype = {
             };
 
             featureConfigurationJson._icb_instance_name = current.variables.mcmp_endpoint.toString();
-
             var versionIdentity = current.variables.adapterversion.toString();
 
             if (versionIdentity != 'v3') {
@@ -110,7 +107,6 @@ EmpConfigurationOutboundCall.prototype = {
 
                 if (current.variables.var_select_resource_types.getDisplayValue().toString() != "") {
                     featureConfigurationJson.discovery.push({
-
                         "providerCode": "AWS",
                         "resourceTypes": current.variables.var_select_resource_types.getDisplayValue().toString().replace(/\s*\,\s*/g, ",").trim().split(',')
                     });
@@ -119,7 +115,6 @@ EmpConfigurationOutboundCall.prototype = {
 
                 if (current.variables.var_select_resource_types_azure.getDisplayValue().toString() != "") {
                     featureConfigurationJson.discovery.push({
-
                         "providerCode": "Azure",
                         "resourceTypes": current.variables.var_select_resource_types_azure.getDisplayValue().toString().replace(/\s*\,\s*/g, ",").trim().split(',')
                     });
@@ -127,7 +122,6 @@ EmpConfigurationOutboundCall.prototype = {
 
                 if (current.variables.var_select_resource_types_gcp.getDisplayValue().toString() != "") {
                     featureConfigurationJson.discovery.push({
-
                         "providerCode": "GCP",
                         "resourceTypes": current.variables.var_select_resource_types_gcp.getDisplayValue().toString().replace(/\s*\,\s*/g, ",").trim().split(',')
                     });
@@ -135,7 +129,6 @@ EmpConfigurationOutboundCall.prototype = {
 
                 if (current.variables.var_select_resource_types_vra.getDisplayValue().toString() != "") {
                     featureConfigurationJson.discovery.push({
-
                         "providerCode": "VRA",
                         "resourceTypes": current.variables.var_select_resource_types_vra.getDisplayValue().toString().replace(/\s*\,\s*/g, ",").trim().split(',')
                     });
@@ -151,11 +144,10 @@ EmpConfigurationOutboundCall.prototype = {
                 featureConfigurationJson.mvpVersion = "3";
             }
 
-
             featureConfigurationJson.domainSeparationEnabled = false;
             featureConfigurationJson.qsAuthProfile = current.variables.qs_auth_profile.getDisplayValue().toString();
             featureConfigurationJson.approvalWorkflow = current.variables.approval_workflow.getDisplayValue().toString();
-            payloadbody.featureConfigurations = featureConfigurationJson;
+            payloadBody.featureConfigurations = featureConfigurationJson;
             //fetch the credential details 
             var credential = current.variables.mcmp_api_credential.getDisplayValue().toString();
             featureConfigurationJson.credential = credential;
@@ -174,8 +166,7 @@ EmpConfigurationOutboundCall.prototype = {
             //build account configuration json
             accountConfigurationJson.accountName = current.variables.account_name.toString();
             accountConfigurationJson.username = current.variables.account_user.getDisplayValue().toString();
-            var password = gs.base64Encode(current.variables.password.toString());
-            accountConfigurationJson.password = password;
+            accountConfigurationJson.password = gs.base64Encode(current.variables.password.toString());
             var urlSnow = gs.getProperty("glide.servlet.uri");
             var result = urlSnow.replace(/(^\w+:|^)\/\//, '');
             var newResult = result.replace(/\/$/, "");
@@ -183,18 +174,18 @@ EmpConfigurationOutboundCall.prototype = {
 
             if (versionIdentity != 'v3') {
                 var arrPurpose = [];
-                if ((current.variables.ordertracking.toString()) != 'false') {
+                if ((current.variables.ordertracking.toString()) != 'false')
                     arrPurpose.push('ordertracking');
-                }
-                if ((current.variables.externalapproval.toString()) != 'false') {
+                
+                if ((current.variables.externalapproval.toString()) != 'false')
                     arrPurpose.push('externalapproval');
-                }
-                if ((current.variables.inventory.toString()) != 'false') {
+                
+                if ((current.variables.inventory.toString()) != 'false')
                     arrPurpose.push('Inventory');
-                }
-                if ((current.variables.external_context.toString()) != 'false') {
+                
+                if ((current.variables.external_context.toString()) != 'false')
                     arrPurpose.push('external_context');
-                }
+                
                 accountConfigurationJson.purpose = arrPurpose;
                 accountConfigurationJson.context = [JSON.parse(current.variables.contexts.toString())];
             } else {
@@ -202,60 +193,56 @@ EmpConfigurationOutboundCall.prototype = {
             }
 
             //build policy config json
-            if (current.variables.catalog_mapping_condition.toString() == "") {
+            if (current.variables.catalog_mapping_condition.toString() == "")
                 policyConfigurationsjson.catalogMappingPolicy = [];
-            } else {
+            else {
                 var catalogMappingPolicyjson = current.variables.catalog_mapping_condition;
-                var jsonmap = JSON.parse(catalogMappingPolicyjson);
-                var mappingPolicy = JSON.stringify(jsonmap.configurationvalue.mappingpolicies);
+                var jsonMap = JSON.parse(catalogMappingPolicyjson);
+                var mappingPolicy = JSON.stringify(jsonMap.configurationvalue.mappingpolicies);
                 policyConfigurationsjson.catalogMappingPolicy = JSON.parse(mappingPolicy);
             }
-            if (current.variables.fullfilment_policies.toString() == "") {
+            if (current.variables.fullfilment_policies.toString() == "")
                 policyConfigurationsjson.fulfillmentPolicies = [];
-            } else
+            else
                 policyConfigurationsjson.fulfillmentPolicies = JSON.parse(current.variables.fullfilment_policies.toString());
-            payloadbody.featureConfigurations = featureConfigurationJson;
-            payloadbody.accountConfigurations = accountConfigurationJson;
-            payloadbody.policyConfigurations = policyConfigurationsjson;
-            new HCMSLogLevel().LogMsg("info", "* EMP Configuration Wizard Json Payload for Request number  " + current.request.number + " : " + JSON.stringify(payloadbody));
+
+            payloadBody.featureConfigurations = featureConfigurationJson;
+            payloadBody.accountConfigurations = accountConfigurationJson;
+            payloadBody.policyConfigurations = policyConfigurationsjson;
+            new EmpLogLevel().logMsg("info", "* EMP Configuration Wizard Json Payload for Request number  " + current.request.number + " : " + JSON.stringify(payloadBody));
 
             //Fetch the name of the rest method
 
             var url = current.variables.mcmp_endpoint.toString();
             //Define variables to hold response body and status code
-            var responseBody, statusCode, endPoint = '';
-            var req_domain = current.sys_domain.toString();
+            var responseBody, statusCode, endPoint = '', reqDomain, outbndCall;
+            reqDomain = current.sys_domain.toString();
             //Invoke the below function to make an outbound call to emp for sending configurations
             if (versionIdentity != 'v3')
                 var restMethodName = gs.getProperty('x_ibmg3_hcms.send_configuration');
             else
                 restMethodName = gs.getProperty('x_ibmg3_hcms.send_v3_configuration');
 
-            var outbndCall = this.outBoundRestCallToEmpInstance(restMethodName, credential, url, payloadbody, req_domain);
+            outbndCall = this.outBoundRestCallToEmpInstance(restMethodName, credential, url, payloadBody, reqDomain);
 
             if (outbndCall) {
                 responseBody = outbndCall.responseBody;
                 statusCode = outbndCall.statusCode;
                 endPoint = outbndCall.endPoint;
 
-            } else {
-                new HCMSLogLevel().LogMsg("info", "* Invalid response from EMP for Configuration call *");
-            }
-
-
+            } else
+                new EmpLogLevel().logMsg("info", "* Invalid response from EMP for Configuration call *");
+            
             workflow.scratchpad.statuscode = statusCode; //store the status code in scratchpad to pass the value to EMP Configuration Workflow
 
             //only on successful response
-
             if (statusCode == '200' && versionIdentity != 'v3') {
                 var parsedRes = JSON.parse(responseBody);
-                var instance_state = parsedRes.instance.state;
+                var instanceState = parsedRes.instance.state;
 
-                if (instance_state == 'completed') {
+                if (instanceState == 'completed') {
 
-                    var msg = [];
-                    var flMsg = [];
-
+                    var msg = [], flMsg = [] ;
                     var comment = parsedRes.instance.result.DiscoveryResults.comments;
                     if (comment) {
                         if (comment.length > 0) {
@@ -266,8 +253,6 @@ EmpConfigurationOutboundCall.prototype = {
                         }
                     }
 
-
-
                     var fulPolicy = parsedRes.instance.result.registerFulfillmentPolicyOutput;
                     var policyFlg = "false";
                     if (fulPolicy) {
@@ -276,85 +261,83 @@ EmpConfigurationOutboundCall.prototype = {
                         }
                         if (policyFlg == "true")
                             current.comments = "Fulfillment Policy Registration Output:  \nFulfillment policy validation failed. Please check the start date/end date, policy with same name already exists";
-
                     }
-                } else if (instance_state == 'failed') {
+                } else if (instanceState == 'failed') {
                     workflow.scratchpad.statuscode = "fail"; // mark RITM closed incomplete
-                    new HCMSLogLevel().LogMsg("info", "Response from EM is FAILED with connection error");
-                } else if (instance_state == 'active') {
+                    new EmpLogLevel().logMsg("info", "Response from EM is FAILED with connection error");
+                } else if (instanceState == 'active') {
                     workflow.scratchpad.statuscode = "fail"; // mark RITM closed incomplete
                     current.comments = "Response from MarketPlace is not retreived even after 10 retries";
                 }
 
             }
 
-            new HCMSLogLevel().LogMsg("info", "Configuration " + versionIdentity + " setup Call Status Response from EM for Request number " + current.request.number + " : " + responseBody + " \nhttpStatus: " + statusCode + " \nEndPoint:" + endPoint);
+            new EmpLogLevel().logMsg("info", "Configuration " + versionIdentity + " setup Call Status Response from EM for Request number " + current.request.number + " : " + responseBody + " \nhttpStatus: " + statusCode + " \nEndPoint:" + endPoint);
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Sending " + versionIdentity + " Configurations to Enterprise Marketplace error " + err);
+            new EmpLogLevel().logMsg("info", "Sending " + versionIdentity + " Configurations to Enterprise Marketplace error " + err);
         }
     },
 
-    outBoundRestCallToEmp: function(restMethodName, credential, url, body, reqdomain) {
+    outBoundRestCallToEmp: function(restMethodName, credential, url, body, reqDomain) {
         try {
-            var domainFlg = new Emp_Auth_Profile_Configuration().CheckDomainSeparation();
-            var midserver_details, rm, userName, apiKey;
+            var domainFlg = new EmpAuthProfileConfiguration().checkDomainSeparation();
+            var midserverDetails, restMsg, userName, apiKey;
             //Fetch the name of the rest message name
             var restMessageName = gs.getProperty('x_ibmg3_hcms.outbound_calls.restmsg');
             //** Check the Outbound Call via MID Server Property is true / false
-            var out_bound_flag = gs.getProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver');
+            var outBoundFlag = gs.getProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver');
             //** Outbound Call's using MID Server **// 
 
-            var domain_enabled = new HCMSGetTenatDetails().QSCheckDS().toString();
-            if (domain_enabled == 'true' && out_bound_flag == 'true') {
-                midserver_details = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString() + "-" + tenant[0];
-            } else {
-                midserver_details = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString();
-            }
-            if (out_bound_flag == 'true') {
-                rm = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
-                rm.setMIDServer(midserver_details);
-                rm.setEccParameter("skip_sensor", "true");
-            } else {
-                rm = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
-            }
-            rm.setRequestHeader("Content-Type", "application/json");
-            rm.setRequestHeader("Accept", "Application/json");
+            var domainEnabled = new EmpGetTenatDetails().qsCheckDS().toString();
+            if (domainEnabled == 'true' && outBoundFlag == 'true')
+                midserverDetails = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString() + "-" + tenant[0];
+            else
+                midserverDetails = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString();
+
+            if (outBoundFlag == 'true') {
+                restMsg = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
+                restMsg.setMIDServer(midserverDetails);
+                restMsg.setEccParameter("skip_sensor", "true");
+            } else
+                restMsg = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
+            
+            restMsg.setRequestHeader("Content-Type", "application/json");
+            restMsg.setRequestHeader("Accept", "Application/json");
             //Check if credentials are sent via payload else fetch from property
             if (!credential) {
                 if (domainFlg == 'false')
                     credential = gs.getProperty('x_ibmg3_hcms.emp_api_key_credential');
                 else
-                    credential = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_api_key_credential', reqdomain);
+                    credential = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_api_key_credential', reqDomain);
             }
             if (!url) {
                 if (domainFlg == 'false')
                     url = gs.getProperty('x_ibmg3_hcms.emp.tenant.url');
                 else
-                    url = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.tenant.url', reqdomain);
+                    url = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.tenant.url', reqDomain);
             }
             var version, system = '';
             if (domainFlg == 'false')
-                version = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration');
+                version = gs.getProperty('x_ibmg3_hcms.adapter.version.configuration');
             else
-                version = GlideApplicationProperty.getValue('x_ibmg3_hcms.AdapterVersionConfiguration', reqdomain);
+                version = GlideApplicationProperty.getValue('x_ibmg3_hcms.adapter.version.configuration', reqDomain);
 
             //Fetch the username and apikey from credentials table
-            var Customer_details_preProv = new HCMSGetTenatDetails().get_tenant_details(credential, reqdomain);
-            if (Customer_details_preProv) {
-                userName = Customer_details_preProv.UserName;
-                apiKey = Customer_details_preProv.ApiKey;
-                rm.setRequestHeader("Username", userName);
-                rm.setRequestHeader("Apikey", apiKey);
-            } else {
-                new HCMSLogLevel().LogMsg("info", "* ApiKey and UserName are invalid *" + order_location);
-            }
+            var customerDetailsPreprov = new EmpGetTenatDetails().getTenantDetails(credential, reqDomain);
+            if (customerDetailsPreprov) {
+                userName = customerDetailsPreprov.UserName;
+                apiKey = customerDetailsPreprov.ApiKey;
+                restMsg.setRequestHeader("Username", userName);
+                restMsg.setRequestHeader("Apikey", apiKey);
+            } else
+                new EmpLogLevel().logMsg("info", "* ApiKey and UserName are invalid *" + order_location);
 
             if (version == 'v3') {
                 //fetch v3auth token
                 var authToken = new FetchV3AuthToken().getToken(restMessageName, url, apiKey, userName);
-                new HCMSLogLevel().LogMsg("info", "*This is V3 authToken *" + authToken);
+                new EmpLogLevel().logMsg("info", "*This is V3 authToken *" + authToken);
                 var token = 'Bearer ' + authToken;
-                rm.setRequestHeader("Authorization", token);
+                restMsg.setRequestHeader("Authorization", token);
                 url = url + '/consume';
             }
             //fetch the version and set the system accordingly
@@ -366,32 +349,30 @@ EmpConfigurationOutboundCall.prototype = {
                 version = 'v4';
             }
 
-            rm.setStringParameterNoEscape('url', url);
-            rm.setStringParameterNoEscape('version', version);
-            rm.setStringParameterNoEscape('system', system);
+            restMsg.setStringParameterNoEscape('url', url);
+            restMsg.setStringParameterNoEscape('version', version);
+            restMsg.setStringParameterNoEscape('system', system);
 
             //No body for GET api
 
             var strBody = JSON.stringify(body);
-            if (strBody.toString().equals("{}")) {
-                rm.setRequestBody(body);
-            } else {
-                rm.setRequestBody(strBody);
-            }
+            if (strBody.toString().equals("{}"))
+                restMsg.setRequestBody(body);
+            else
+                restMsg.setRequestBody(strBody);
 
-            var endPoint = rm.getEndpoint();
+            var endPoint = restMsg.getEndpoint();
             var api = endPoint.split('{url}');
             var adapterSystem = api[1].split('${system}');
             var adapterVersion = adapterSystem[1].split('${version}');
             endPoint = url + adapterSystem[0] + system + adapterVersion[0] + version + adapterVersion[1];
-            rm.setLogLevel('Basic'); //LogLevel Basic
+            restMsg.setLogLevel('Basic'); //LogLevel Basic
             //In milliseconds. Wait at most 30 seconds for response from http request.
-            rm.setHttpTimeout(50000);
-            var req_body = rm.getRequestBody();
-            var response = rm.execute();
+            restMsg.setHttpTimeout(50000);
+            var response = restMsg.execute();
             var responseBody = response.getBody();
             var httpStatus = response.getStatusCode();
-            new HCMSLogLevel().LogMsg("info", "Response from EM " + responseBody + " \nhttpStatus: " + httpStatus + " \nEndPoint : " + endPoint);
+            new EmpLogLevel().logMsg("info", "Response from EM " + responseBody + " \nhttpStatus: " + httpStatus + " \nEndPoint : " + endPoint);
             //return the response to calling function
             return {
                 responseBody: responseBody,
@@ -399,121 +380,117 @@ EmpConfigurationOutboundCall.prototype = {
                 endPoint: endPoint
             };
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Sending outbound calls to Enterprise Marketplace error " + err);
+            new EmpLogLevel().logMsg("info", "Sending outbound calls to Enterprise Marketplace error " + err);
         }
     },
 
 
-    outBoundRestCallToEmpInstance: function(restMethodName, credential, url, body, reqdomain) {
+    outBoundRestCallToEmpInstance: function(restMethodName, credential, url, body, reqDomain) {
         try {
-            var domainFlg = new Emp_Auth_Profile_Configuration().CheckDomainSeparation();
-            var midserver_details, rm;
+            var domainFlg = new EmpAuthProfileConfiguration().checkDomainSeparation();
+            var midserverDetails, restMsg;
             //Fetch the name of the rest message name
             var restMessageName = gs.getProperty('x_ibmg3_hcms.outbound_calls.restmsg');
             //** Check the Outbound Call via MID Server Property is true / false
-            var out_bound_flag = gs.getProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver');
+            var outBoundFlag = gs.getProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver');
             //** Outbound Call's using MID Server **// 
 
-            var domain_enabled = new HCMSGetTenatDetails().QSCheckDS().toString();
-            if (domain_enabled == 'true' && out_bound_flag == 'true') {
-                midserver_details = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString() + "-" + tenant[0];
-            } else {
-                midserver_details = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString();
-            }
-            if (out_bound_flag == 'true') {
-                rm = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
-                rm.setMIDServer(midserver_details);
-                rm.setEccParameter("skip_sensor", "true");
-            } else {
-                rm = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
-            }
-            rm.setRequestHeader("Content-Type", "application/json");
-            rm.setRequestHeader("Accept", "Application/json");
+            var domainEnabled = new EmpGetTenatDetails().qsCheckDS().toString();
+            if (domainEnabled == 'true' && outBoundFlag == 'true')
+                midserverDetails = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString() + "-" + tenant[0];
+            else
+                midserverDetails = gs.getProperty('x_ibmg3_hcms.emp.midserver.details').toString();
+            
+            if (outBoundFlag == 'true') {
+                restMsg = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
+                restMsg.setMIDServer(midserverDetails);
+                restMsg.setEccParameter("skip_sensor", "true");
+            } else
+                restMsg = new sn_ws.RESTMessageV2(restMessageName, restMethodName);
+
+            restMsg.setRequestHeader("Content-Type", "application/json");
+            restMsg.setRequestHeader("Accept", "Application/json");
             //Check if credentials are sent via payload else fetch from property
             if (!credential) {
                 if (domainFlg == 'false')
                     credential = gs.getProperty('x_ibmg3_hcms.emp_api_key_credential');
                 else
-                    credential = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_api_key_credential', reqdomain);
+                    credential = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_api_key_credential', reqDomain);
             }
             var version = '';
             if (domainFlg == 'false')
-                version = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration');
+                version = gs.getProperty('x_ibmg3_hcms.adapter.version.configuration');
             else
-                version = GlideApplicationProperty.getValue('x_ibmg3_hcms.AdapterVersionConfiguration', reqdomain);
+                version = GlideApplicationProperty.getValue('x_ibmg3_hcms.adapter.version.configuration', reqDomain);
 
             //Fetch the username and apikey from credentials table
-            var Customer_details_preProv = new HCMSGetTenatDetails().get_tenant_details(credential, reqdomain);
-            if (Customer_details_preProv) {
-                userName = Customer_details_preProv.UserName;
-                apiKey = Customer_details_preProv.ApiKey;
-                rm.setRequestHeader("Username", userName);
-                rm.setRequestHeader("Apikey", apiKey);
+            var customerDetailsPreprov = new EmpGetTenatDetails().getTenantDetails(credential, reqDomain);
+            if (customerDetailsPreprov) {
+                userName = customerDetailsPreprov.UserName;
+                apiKey = customerDetailsPreprov.ApiKey;
+                restMsg.setRequestHeader("Username", userName);
+                restMsg.setRequestHeader("Apikey", apiKey);
             } else {
-                new HCMSLogLevel().LogMsg("info", "* ApiKey and UserName are invalid *" + order_location);
+                new EmpLogLevel().logMsg("info", "* ApiKey and UserName are invalid *" + order_location);
             }
             if (version == 'v3') {
-                new HCMSLogLevel().LogMsg("info", "* In V3 instance *");
+                new EmpLogLevel().logMsg("info", "* In V3 authToken instance *");
                 //fetch v3auth token
                 var authToken = new FetchV3AuthToken().getToken(restMessageName, url, apiKey, userName);
-                new HCMSLogLevel().LogMsg("info", "* This is V3 authToken instance *" + authToken);
                 var token = 'Bearer ' + authToken;
-                rm.setRequestHeader("Authorization", token);
+                restMsg.setRequestHeader("Authorization", token);
                 url = url + '/consume/provision';
             }
-            rm.setStringParameterNoEscape('url', url);
-            //rm.setStringParameterNoEscape('version', version); for future use
+            restMsg.setStringParameterNoEscape('url', url);
             //No body for GET api
 
             var strBody = JSON.stringify(body);
             if (strBody.toString().equals("{}")) {
-                rm.setRequestBody(body);
+                restMsg.setRequestBody(body);
             } else {
-                rm.setRequestBody(strBody);
+                restMsg.setRequestBody(strBody);
             }
 
-            var endPoint = rm.getEndpoint();
+            var endPoint = restMsg.getEndpoint();
             var api = endPoint.split('{url}');
             endPoint = url + api[1];
-            rm.setLogLevel('Basic'); //LogLevel Basic
+            restMsg.setLogLevel('Basic'); //LogLevel Basic
             //In milliseconds. Wait at most 30 seconds for response from http request.
-            rm.setHttpTimeout(50000);
-            var req_body = rm.getRequestBody();
-            var response = rm.execute();
+            restMsg.setHttpTimeout(50000);
+            var response = restMsg.execute();
             var responseBody = response.getBody();
             var httpStatus = response.getStatusCode();
-            new HCMSLogLevel().LogMsg("info", "Response from Marketplace for " + version + " OutBoundRestCall  " + responseBody + " \nhttpStatus: " + httpStatus + " \nEndPoint : " + endPoint);
+            new EmpLogLevel().logMsg("info", "Response from Marketplace for " + version + " OutBoundRestCall  " + responseBody + " \nhttpStatus: " + httpStatus + " \nEndPoint : " + endPoint);
 
             if (httpStatus == '200' && version != "v3") {
-                //INT-14295 - Fetch the status from Instance Id in post config call
-                var resp = JSON.parse(responseBody);
-                //var ins_state = resp.instance.state;
-                var ins_id = resp.message.instanceId;
+                //Fetch the status from Instance Id in post config call
+                var resp = JSON.parse(responseBody);                
+                var instanceID = resp.message.instanceId;
                 var restMethodNameIns = gs.getProperty('x_ibmg3_hcms.fetch_default_configuration_instance'); //fetchDefaultConfigurationInstance	
-                var respnse, i = 0;
-                respnse = this.fetchInstanceState(restMessageName, restMethodNameIns, credential, reqdomain, url, body, ins_id);
+                var respnse, retryCnt = 0;
+                respnse = this._fetchInstanceState(restMessageName, restMethodNameIns, credential, reqDomain, url, body, instanceID);
                 responseBody = respnse.getBody();
 
                 var parsedRes = JSON.parse(responseBody);
 
-                var ins_state = parsedRes.instance.state;
-                while (ins_state == 'active') { // loop for 10 times(call api)	
+                var insState = parsedRes.instance.state;
+                while (insState == 'active') { // loop for 10 times(call api)	
 
-                    if (i < 10) { //retry to hit api max 10 times
-                        respnse = this.fetchInstanceState(restMessageName, restMethodNameIns, credential, reqdomain, url, body, ins_id);
+                    if (retryCnt < 10) { //retry to hit api max 10 timesreqdomain
+                        respnse = this._fetchInstanceState(restMessageName, restMethodNameIns, credential, reqDomain, url, body, instanceID);
 
                         responseBody = respnse.getBody();
                         httpStatus = respnse.getStatusCode();
                         parsedRes = JSON.parse(responseBody);
-                        ins_state = parsedRes.instance.state;
+                        insState = parsedRes.instance.state;
 
                         //sleep 9 sec
-                        if (ins_state == 'active') {
+                        if (insState == 'active') {
                             this.sleep(9000);
-                            i++;
+                            retryCnt++;
                         } else break;
                     } else {
-                        new HCMSLogLevel().LogMsg("info", "Instance State is still in Active even after 10 retries");
+                        new EmpLogLevel().logMsg("info", "Instance State is still in Active even after 10 retries");
                         break;
                     }
                 }
@@ -526,61 +503,60 @@ EmpConfigurationOutboundCall.prototype = {
                 endPoint: endPoint
             };
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Sending " + version + " outbound calls for Instance id to Enterprise Marketplace error " + err);
+            new EmpLogLevel().logMsg("info", "Sending " + version + " outbound calls for Instance id to Enterprise Marketplace error " + err);
         }
     },
 
 
-    fetchInstanceState: function(restMessageName, restMethodNameIns, credential, reqdomain, url, body, ins_id) {
+    _fetchInstanceState: function(restMessageName, restMethodNameIns, credential, reqDomain, url, body, instanceID) {
         try {
-            var rm1 = new sn_ws.RESTMessageV2(restMessageName, restMethodNameIns);
-            rm1.setRequestHeader("Content-Type", "application/json");
-            rm1.setRequestHeader("Accept", "Application/json");
-            rm1.setStringParameterNoEscape('url', url);
-            rm1.setStringParameterNoEscape('instanceId', ins_id);
+            var restMsgIns = new sn_ws.RESTMessageV2(restMessageName, restMethodNameIns);
+            restMsgIns.setRequestHeader("Content-Type", "application/json");
+            restMsgIns.setRequestHeader("Accept", "Application/json");
+            restMsgIns.setStringParameterNoEscape('url', url);
+            restMsgIns.setStringParameterNoEscape('instanceId', instanceID);
 
             //Fetch the username and apikey from credentials table
-            var Customer_details_preProv = new HCMSGetTenatDetails().get_tenant_details(credential, reqdomain);
-            if (Customer_details_preProv) {
-                rm1.setRequestHeader("Username", Customer_details_preProv.UserName);
-                rm1.setRequestHeader("Apikey", Customer_details_preProv.ApiKey);
+            var customerDetailsPreProv = new EmpGetTenatDetails().getTenantDetails(credential, reqDomain);
+            if (customerDetailsPreProv) {
+                restMsgIns.setRequestHeader("Username", customerDetailsPreProv.UserName);
+                restMsgIns.setRequestHeader("Apikey", customerDetailsPreProv.ApiKey);
             } else {
-                new HCMSLogLevel().LogMsg("info", "* ApiKey and UserName are invalid *" + order_location);
+                new EmpLogLevel().logMsg("info", "* ApiKey and UserName are invalid *" + order_location);
             }
 
             var strBody = JSON.stringify(body);
             if (strBody.toString().equals("{}")) {
-                rm1.setRequestBody(body);
+                restMsgIns.setRequestBody(body);
             } else {
-                rm1.setRequestBody(strBody);
+                restMsgIns.setRequestBody(strBody);
             }
 
-            var endPoint = rm1.getEndpoint();
+            var endPoint = restMsgIns.getEndpoint();
             var api = endPoint.split('{url}');
             endPoint = url + api[1];
 
-            var te = endPoint.split('${instanceId}');
-            endPoint = te[0] + ins_id + te[1]; //cascaded instance id
+            var splitEndPoint = endPoint.split('${instanceId}');
+            endPoint = splitEndPoint[0] + instanceID + splitEndPoint[1]; //cascaded instance id
 
-            rm1.setLogLevel('Basic'); //LogLevel Basic
-            rm1.setHttpTimeout(20000); //In milliseconds. Wait at most 30 seconds for response from http request.
-            var req_body = rm1.getRequestBody();
-            var response = rm1.execute();
+            restMsgIns.setLogLevel('Basic'); //LogLevel Basic
+            restMsgIns.setHttpTimeout(20000); //In milliseconds. Wait at most 30 seconds for response from http request.
+            var response = restMsgIns.execute();
             var responseBody = response.getBody();
             var httpStatus = response.getStatusCode();
-            new HCMSLogLevel().LogMsg("info", "Response from EM for Instance state" + responseBody + " \nhttpStatus: " + httpStatus + " \nEndPoint : " + endPoint);
+            new EmpLogLevel().logMsg("info", "Response from EM for Instance state" + responseBody + " \nhttpStatus: " + httpStatus + " \nEndPoint : " + endPoint);
 
             return response;
 
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Sending outbound calls for InstanceId to Enterprise Marketplace error " + err);
+            new EmpLogLevel().logMsg("info", "Sending outbound calls for InstanceId to Enterprise Marketplace error " + err);
         }
 
     },
 
     //sleep function for scoped application
-    sleep: function(ms) {
-        var endSleep = new GlideDuration().getNumericValue() + ms;
+    sleep: function(milliSec) {
+        var endSleep = new GlideDuration().getNumericValue() + milliSec;
         while (new GlideDuration().getNumericValue() < endSleep) {
             //wait 
         }
@@ -593,13 +569,13 @@ EmpConfigurationOutboundCall.prototype = {
         <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
         <sys_created_on>2020-11-25 12:05:35</sys_created_on>
         <sys_id>2a6444c4db74e4102019d90d68961954</sys_id>
-        <sys_mod_count>303</sys_mod_count>
+        <sys_mod_count>320</sys_mod_count>
         <sys_name>EmpConfigurationOutboundCall</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_2a6444c4db74e4102019d90d68961954</sys_update_name>
         <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-26 06:36:19</sys_updated_on>
+        <sys_updated_on>2024-05-28 07:37:01</sys_updated_on>
     </sys_script_include>
 </record_update>

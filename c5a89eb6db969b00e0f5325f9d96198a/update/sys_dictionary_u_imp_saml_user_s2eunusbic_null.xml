@@ -47,7 +47,6 @@
         <sys_class_name>sys_dictionary</sys_class_name>
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2020-10-29 09:04:38</sys_created_on>
-        <sys_id>7e9eacdb1b4ce8109840631abc4bcb40</sys_id>
         <sys_name>u_imp_saml_user_s2eunusbic</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>

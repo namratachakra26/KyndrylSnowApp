@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="hasWorkflow=true" audit="true" create_roles="catalog_admin" db_object_id="7814c5eb1ba10210a9be2fc02a4bcb56" extends="task" label="Request" max_length="40" name="sc_request" read_roles="catalog,itil" text_index="true" type="collection">
+        <element choice="1" label="Approval Controller" max_length="1000" name="x_ibmg3_hcms_approval_controller" type="string">
+            <choice>
+                <element inactive_on_update="false" label="ICB" sequence="100" value="icb"/>
+                <element inactive_on_update="false" label="SNOW" sequence="200" value="snow"/>
+            </choice>
+        </element>
+        <element label="Broker Approval Request JSON" max_length="4000" name="x_ibmg3_hcms_broker_approval_request_json" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Broker Approval Request Summary" max_length="4000" name="x_ibmg3_hcms_broker_approval_request_summary" type="html"/>
+        <element choice="1" label="Kyndryl marketplace request type" max_length="40" name="x_ibmg3_hcms_broker_request_type" type="string">
+            <choice>
+                <element inactive_on_update="false" label="New Provision Request" sequence="1" value="1"/>
+                <element inactive_on_update="false" label="Terminate Request" sequence="2" value="2"/>
+                <element inactive_on_update="false" label="Edit/Modify Request" sequence="3" value="3"/>
+                <element inactive_on_update="false" label="Operation Request" sequence="4" value="4"/>
+            </choice>
+        </element>
+        <element label="Kyndryl marketplace location" max_length="80" name="x_ibmg3_hcms_cloud_broker_location" type="string"/>
+        <element choice="1" label="External Approval" max_length="1000" name="x_ibmg3_hcms_external_approval" type="string">
+            <choice>
+                <element inactive_on_update="false" label="Not Yet Requested" sequence="100" value="not_yet_requested"/>
+                <element inactive_on_update="false" label="Requested" sequence="200" value="requested"/>
+                <element inactive_on_update="false" label="Approved" sequence="300" value="approved"/>
+                <element inactive_on_update="false" label="Rejected" sequence="400" value="rejected"/>
+            </choice>
+        </element>
+        <element label="Order Number" max_length="40" name="x_ibmg3_hcms_order_number" type="string"/>
+        <element label="Order Submitted Date" max_length="40" name="x_ibmg3_hcms_order_submitted_date" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Request approval hold" max_length="40" name="x_ibmg3_hcms_requestapprovalhold" type="boolean"/>
+    </element>
+</database>

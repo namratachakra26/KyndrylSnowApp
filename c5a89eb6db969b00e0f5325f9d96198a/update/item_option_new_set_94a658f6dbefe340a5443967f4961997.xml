@@ -23,6 +23,7 @@
         <sys_updated_on>2024-02-15 10:14:13</sys_updated_on>
         <title>vs_item_variables_set</title>
         <type>one_to_one</type>
+        <version/>
         <write_roles/>
     </item_option_new_set>
 </record_update>

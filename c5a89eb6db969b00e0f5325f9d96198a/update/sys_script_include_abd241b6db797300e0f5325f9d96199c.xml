@@ -2,7 +2,7 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.PostProvisioningHookCallToBroker</api_name>
+        <api_name>x_ibmg3_hcms.PostProvisioningHookCallToEmp</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description>/** &#13;
@@ -12,29 +12,24 @@
 * @author Asha Bagade &#13;
 * @Script Include is invoked from BR MCMP Post Provision HookStatus to Broker - to send Post Provisioning call to EM&#13;
 **/</description>
-        <name>PostProvisioningHookCallToBroker</name>
-        <script><![CDATA[var PostProvisioningHookCallToBroker = Class.create();
-PostProvisioningHookCallToBroker.prototype = {
+        <name>PostProvisioningHookCallToEmp</name>
+        <script><![CDATA[var PostProvisioningHookCallToEmp = Class.create();
+PostProvisioningHookCallToEmp.prototype = {
     initialize: function() {},
 
     postProvisionStatus: function(ritm) {
         try {
             //invoking rest outbound message	
-            var rm;
-            var midserver_details;
-            var out_bound_flag;
             //Define variables to hold response body and status code
             var responseBody, statusCode, endPoint = '';
             var restMethodName = gs.getProperty('x_ibmg3_hcms.post_provisioning.rest.method');
-// 			var adapterVerson = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration'); ////as per INT-11672
-// 			if(adapterVerson == 'v3')restMethodName = restMethodName+'-v3';
+
             //Fetch the source url and credential details from SR create payload
             var requestPayload = ritm.variables.var_broker_json;
             var jsonPayload = JSON.parse(requestPayload);
-			
             var url = jsonPayload.source;
             var credential = jsonPayload.credential;
-            var req_orderNumber = jsonPayload.orderNumber;
+            var reqOrderNumber = jsonPayload.orderNumber;
             //array to hold the serviceOfferingInstanceId
             var serviceInstanceId = [];
             serviceInstanceId.push(ritm.variables.var_service_instance_id.toString());
@@ -50,53 +45,52 @@ PostProvisioningHookCallToBroker.prototype = {
             }
 
             //build request body
-            var reqbody = {};
-            reqbody.serviceOfferingInstanceId = serviceInstanceId;
-            reqbody.orderNumber = ritm.request.x_ibmg3_hcms_order_number.toString();
-            reqbody.message = msg;
-            reqbody.status = state;
+            var reqBody = {};
+            reqBody.serviceOfferingInstanceId = serviceInstanceId;
+            reqBody.orderNumber = ritm.request.x_ibmg3_hcms_order_number.toString();
+            reqBody.message = msg;
+            reqBody.status = state;
 
-            var JSONString = JSON.stringify(reqbody);
-            new HCMSLogLevel().LogMsg("info", "RITM " + ritm.number + " Closed (Post Provisioning) Status to EM : " + JSONString);
+            var jsonString = JSON.stringify(reqBody);
+            new EmpLogLevel().logMsg("info", "RITM " + ritm.number + " Closed (Post Provisioning) Status to EM : " + jsonString);
 
-            //Invoke the below function to make an outbound call to mcmp for sending post prov hook reponse
-			var req_domain = new HCMSGetTenatDetails().getRequestDomain(req_orderNumber);
-            var postProvHook = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, reqbody, req_domain);
+            //Invoke the below function to make an outbound call to emp for sending post prov hook reponse
+			var reqDomain = new EmpGetTenatDetails().getRequestDomain(reqOrderNumber);
+            var postProvHook = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, reqBody, reqDomain);
             if (postProvHook) {
                 responseBody = postProvHook.responseBody;
                 statusCode = postProvHook.statusCode;
 				endPoint = postProvHook.endPoint;
             } else {
-                new HCMSLogLevel().LogMsg("info", "* Invalid response from Kyndryl Marketplace for  *" + ritm.request.x_ibmg3_hcms_order_number);
+                new EmpLogLevel().logMsg("info", "* Invalid response from Kyndryl Marketplace for  *" + ritm.request.x_ibmg3_hcms_order_number);
             }
-            new HCMSLogLevel().LogMsg("info", "RITM " + ritm.number + " Closed (Post Provisioning) Status response from EM : " + ritm.request.x_ibmg3_hcms_order_number + " is :" + responseBody + " \nhttpStatus: " + statusCode + " \nEndpoint : " +endPoint);
+            new EmpLogLevel().logMsg("info", "RITM " + ritm.number + " Closed (Post Provisioning) Status response from EM : " + ritm.request.x_ibmg3_hcms_order_number + " is :" + responseBody + " \nhttpStatus: " + statusCode + " \nEndpoint : " +endPoint);
 
             //Create record in ecc queue for unsuccessful outbound call
             if (statusCode > 201 || statusCode == 0) {
                 var topic = ritm.request.x_ibmg3_hcms_order_number.toString() + "-PostProvisioningCall";
                 var source = ritm.getDisplayValue().toString();
-                var responsefromHost = "Response received from Kyndryl Marketplace : " + responseBody + " \nResponse status code : " + statusCode;
+                var responseFromHost = "Response received from Kyndryl Marketplace : " + responseBody + " \nResponse status code : " + statusCode;
                 //Call retry function
-                var ecc = new RetryOutboundcalltoBroker().eccQueueRetryRecord(topic, source, JSONString, responsefromHost);
+                var ecc = new RetryOutboundCallToEmp().eccQueueRetryRecord(topic, source, jsonString, responseFromHost);
             }
         } catch (e) {
-            new HCMSLogLevel().LogMsg("error", "Sending Post Provisioning Hook Status to Kyndryl Marketplace error " + e);
+            new EmpLogLevel().logMsg("error", "Sending Post Provisioning Hook Status to Kyndryl Marketplace error " + e);
         }
     },
-
-    type: 'PostProvisioningHookCallToBroker'
+    type: 'PostProvisioningHookCallToEmp'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
         <sys_created_on>2019-06-06 08:33:18</sys_created_on>
         <sys_id>abd241b6db797300e0f5325f9d96199c</sys_id>
-        <sys_mod_count>63</sys_mod_count>
-        <sys_name>PostProvisioningHookCallToBroker</sys_name>
+        <sys_mod_count>74</sys_mod_count>
+        <sys_name>PostProvisioningHookCallToEmp</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_abd241b6db797300e0f5325f9d96199c</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 16:50:19</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:41:26</sys_updated_on>
     </sys_script_include>
 </record_update>

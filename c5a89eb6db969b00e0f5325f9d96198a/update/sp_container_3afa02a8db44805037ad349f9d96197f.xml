@@ -8,6 +8,7 @@
         <container_class_name/>
         <name>hcms_broker_inventory - Container 1</name>
         <order>1</order>
+        <semantic_tag/>
         <sp_page display_value="hcms_broker_inventory">e2fa02a8db44805037ad349f9d96197d</sp_page>
         <subheader>false</subheader>
         <sys_class_name>sp_container</sys_class_name>

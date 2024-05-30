@@ -17,7 +17,7 @@
         <provider_class/>
         <read_access>true</read_access>
         <scriptable_table>false</scriptable_table>
-        <super_class display_value="Configuration Item" name="cmdb_ci">fe9f3a7adb301010aa38cf5e139619c8</super_class>
+        <super_class display_value="Configuration Item" name="cmdb_ci">993e7caf1b210210a9be2fc02a4bcb5a</super_class>
         <sys_class_name>sys_db_object</sys_class_name>
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2018-11-04 11:06:19</sys_created_on>

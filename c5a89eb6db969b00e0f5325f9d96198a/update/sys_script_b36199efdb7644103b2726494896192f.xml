@@ -12,18 +12,17 @@
         <change_fields>false</change_fields>
         <client_callable>false</client_callable>
         <collection>change_request</collection>
-        <condition>gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true"</condition>
-        <description/>
+        <condition>gs.getProperty('x_ibmg3_hcms.enable_quickstart') == "true"</condition>
+        <description>This Business Rule triggers Pre provisioning for QS catalogs</description>
         <execute_function>false</execute_function>
-        <filter_condition table="change_request">stateCHANGESTO4^ORapprovalCHANGESTOapproved^ORapprovalCHANGESTOrejected^u_qs_requested_itemISNOTEMPTY^EQ<item display_value="Cancelled" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="4"/>
+        <filter_condition table="change_request">stateCHANGESTO4^ORapprovalCHANGESTOapproved^ORapprovalCHANGESTOrejected^EQ<item display_value="Canceled" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="4"/>
             <item display_value="Approved" endquery="false" field="approval" goto="false" newquery="false" operator="CHANGESTO" or="true" value="approved"/>
             <item display_value="Rejected" endquery="false" field="approval" goto="false" newquery="false" operator="CHANGESTO" or="true" value="rejected"/>
-            <item endquery="false" field="u_qs_requested_item" goto="false" newquery="false" operator="ISNOTEMPTY" or="false" value=""/>
             <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
         </filter_condition>
         <is_rest>false</is_rest>
         <message/>
-        <name>QSNotify Martketplace on Chg multistages</name>
+        <name>QSNotify Martketplace On Chg Multistages</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -42,37 +41,44 @@
 
 (function executeRule(current, previous /*null when async*/ ) {
     try {
-        var mcmplocation = current.u_qs_requested_item.request.x_ibmg3_hcms_cloud_broker_location;
+        var empLocation = current.u_qs_requested_item.request.x_ibmg3_hcms_cloud_broker_location;
         var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
         if (mappingTable.get('u_catalog_item', current.u_qs_requested_item.cat_item)) {
-            var rm = new sn_ws.RESTMessageV2();
-            rm.setHttpMethod("post");
-            rm.setRequestHeader("Content-Type", "application/json");
-            rm.setRequestHeader("Accept", "Application/json");
+            var restMsg = new sn_ws.RESTMessageV2();
+            restMsg.setHttpMethod("post");
+            restMsg.setRequestHeader("Content-Type", "application/json");
+            restMsg.setRequestHeader("Accept", "Application/json");
+
+            //fetch username and apikey based on store location
+            var chReqDomain = current.sys_domain.toString();
+            var customerDetails = new EmpGetTenatDetails().getTenantDetails(empLocation, chReqDomain);
+            if (customerDetails) {
+                restMsg.setRequestHeader("username", customerDetails.UserName);
+                restMsg.setRequestHeader("apikey", customerDetails.ApiKey);
+            } else {
+                new EmpLogLevel().logMsg("info", "* ApiKey and UserName are invalid *" + empLocation);
+            }
+
             //fetch the Qs integration property to set the Endpoint
             var propertyValueString = gs.getProperty('QS_MCMP_Integration');
             var objProperty = JSON.parse(propertyValueString);
-            var chreq_domain = current.sys_domain.toString();
-            //fetch username and apikey based on store location
-            var Customer_details = new HCMSGetTenatDetails().get_tenant_details(mcmplocation, chreq_domain);
-            if (Customer_details) {
-                rm.setRequestHeader("username", Customer_details.UserName);
-                rm.setRequestHeader("apikey", Customer_details.ApiKey);
-            } else {
-                new HCMSLogLevel().LogMsg("info", "* ApiKey and UserName are invalid *" + mcmplocation);
-            }
             var restEndpoint = objProperty.preprovisionRestEndpoint;
-            var brokerUrl = current.u_qs_requested_item.request.correlation_display;
-            restEndpoint = brokerUrl + restEndpoint;
-            rm.setEndpoint(restEndpoint);
+            var empUrl = current.u_qs_requested_item.request.correlation_display;
+            restEndpoint = empUrl + restEndpoint;
+            restMsg.setEndpoint(restEndpoint);
+
             //Fetch correlation id serviceofferingins id
             var ritm = new GlideRecord('sc_req_item');
-            ritm.get(current.u_qs_requested_item);
-            var correlationId = ritm.correlation_id.toString();
+            if (ritm.get(current.u_qs_requested_item)) {
+                var correlationId = ritm.correlation_id.toString();
+                var ritmNumber = ritm.number.toString();
+            }
+
             var arCorrelation = correlationId.split('::', 3);
             var orderNumber = arCorrelation[0];
             var serviceOfferingInstanceId = arCorrelation[1];
             var chgTsk = '';
+
             //Fetch cloud group and user of the grp
             var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
             var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
@@ -81,6 +87,7 @@
             var requester; // To hold value for requester
             var cancelUser = current.sys_updated_by;
             var query = 'state=approved^ORstate=rejected^sysapproval=' + current.sys_id;
+
             // Fetch the change approved by/ rejected by
             var requestor = new GlideRecord('sysapproval_approver');
             requestor.addEncodedQuery(query);
@@ -89,15 +96,16 @@
             if (requestor.next()) {
                 requester = requestor.approver.getDisplayValue();
             }
+
             //Fetch Change task related to provisioning
+            var provTskQuery = 'change_request=' + current.sys_id + '^assignment_group.name=' + assgnGrp + '^assigned_to.name=' + assgnTo;
             var provTsk = new GlideRecord('change_task');
-            provTsk.addQuery('change_request', current.sys_id);
-            provTsk.addQuery('assignment_group.name', assgnGrp);
-            provTsk.addQuery('assigned_to.name', assgnTo);
+            provTsk.addEncodedQuery(provTskQuery);
             provTsk.query();
             if (provTsk.next()) {
                 chgTsk = provTsk.number.toString();
             }
+
             //checking for change states
             if (changeApprovalStatus == 'Approved' && current.state != '-1' && current.state != '4') {
                 changeRequestStatus = "APPROVED";
@@ -113,28 +121,29 @@
                 changeRequestStatus = "CANCELLED";
                 message = "The change task is cancelled by " + current.sys_updated_by;
             }
+
             //build the payload
             var reqbody = {};
             reqbody.changeTaskId = chgTsk;
             reqbody.orderNumber = orderNumber;
             reqbody.serviceInstanceId = serviceOfferingInstanceId;
-            reqbody.requestItemId = ritm.number.toString(),
-                reqbody.catalogTaskId = "NONE";
+            reqbody.requestItemId = ritmNumber,
+            reqbody.catalogTaskId = "NONE";
             reqbody.changeRequestStatus = changeRequestStatus;
             reqbody.message = message;
-            var str = JSON.stringify(reqbody);
-            new HCMSLogLevel().LogMsg("info", "*QS Outbound Change Task Provisioning Status to EnterPrise Marketplace for order " + orderNumber + " : * " + str);
-            rm.setRequestBody(str);
-            rm.setLogLevel('all');
+            var strReqBody = JSON.stringify(reqbody);
+            new EmpLogLevel().logMsg("info", "*QS Outbound Change Task Provisioning Status to EnterPrise Marketplace for order " + orderNumber + " : * " + strReqBody);
+            restMsg.setRequestBody(strReqBody);
+            restMsg.setLogLevel('all');
             //In milliseconds. Wait at most 30 seconds for response from http request.
-            rm.setHttpTimeout(30000);
-            var response = rm.execute();
+            restMsg.setHttpTimeout(30000);
+            var response = restMsg.execute();
             var responseBody = response.getBody();
             var httpStatus = response.getStatusCode();
-            new HCMSLogLevel().LogMsg("info", "*QS Change Task Provisioning Status Response body for order " + orderNumber + " " + changeRequestStatus + " : * " + responseBody + " httpStatus: " + httpStatus);
+            new EmpLogLevel().logMsg("info", "*QS Change Task Provisioning Status Response body for order " + orderNumber + " " + changeRequestStatus + " : * " + responseBody + " httpStatus: " + httpStatus);
         }
     } catch (e) {
-        new HCMSLogLevel().LogMsg("error", "Sending QS Change Task Status to EnterPrise Marketplace error " + e);
+        new EmpLogLevel().logMsg("error", "Sending QS Change Task Status to EnterPrise Marketplace error " + e);
     }
 
 })(current, previous);]]></script>
@@ -144,15 +153,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>b36199efdb7644103b2726494896192f</sys_id>
-        <sys_mod_count>80</sys_mod_count>
-        <sys_name>QSNotify Martketplace on Chg multistages</sys_name>
+        <sys_mod_count>91</sys_mod_count>
+        <sys_name>QSNotify Martketplace On Chg Multistages</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_b36199efdb7644103b2726494896192f</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 07:28:53</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 06:58:32</sys_updated_on>
         <template/>
         <when>async_always</when>
     </sys_script>

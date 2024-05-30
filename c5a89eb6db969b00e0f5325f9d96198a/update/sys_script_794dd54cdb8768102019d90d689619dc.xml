@@ -13,7 +13,7 @@
         <client_callable>false</client_callable>
         <collection>change_task</collection>
         <condition/>
-        <description/>
+        <description>This Business Rule is used to trigger pre provisioning call</description>
         <execute_function>false</execute_function>
         <filter_condition table="change_task">stateCHANGESTO2^short_descriptionSTARTSWITHProvisioning Task^change_request.state=-1^change_request.parent.ref_sc_req_item.cat_item=d863b2b7dbd0730037ad349f9d961914^ORchange_request.parent.ref_sc_req_item.cat_item=4de9b051db64370037ad349f9d96195b^ORchange_request.parent.ref_sc_req_item.cat_item=c92d681cdb64b300e0f5325f9d9619cf^EQ<item display_value="In Progress" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="2"/>
             <item endquery="false" field="short_description" goto="false" newquery="false" operator="STARTSWITH" or="false" value="Provisioning Task"/>
@@ -46,13 +46,14 @@
     //Fetch cloud group and user of the grp
     var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
     var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
-    //initiate provisioning only for MCMP Cloud grp
+
+    //initiate provisioning only for EMP Cloud grp
     var changeApprovalStatus = current.change_request.approval.getDisplayValue();
-    gs.info('Testing Approval Status' + changeApprovalStatus);
     var message, changeRequestStatus = ""; //Variable to hold change values
     var requester; // To hold value for requester
     var cancelUser = current.change_request.sys_updated_by;
     var query = 'state=approved^ORstate=rejected^sysapproval=' + current.change_request.sys_id;
+
     // Fetch the change approved by/ rejected by
     var requestor = new GlideRecord('sysapproval_approver');
     requestor.addEncodedQuery(query);
@@ -61,12 +62,10 @@
     if (requestor.next()) {
         requester = requestor.approver.getDisplayValue();
     }
-
-    var provTsk = new GlideRecord('change_task');
-    provTsk.addQuery('change_request', current.change_request.sys_id);
-    provTsk.addQuery('assignment_group.name', assgnGrp);
-    provTsk.addQuery('assigned_to.name', assgnTo);
-    provTsk.addQuery('short_description', 'Provisioning Task');
+	
+    var provTskQuery ='change_request=' + current.change_request.sys_id + '^assignment_group.name=' + assgnGrp + '^assigned_to.name=' + assgnTo + '^short_description=Provisioning Task';
+    var provTsk = new GlideRecord('change_task'); 
+	provTsk.addEncodedQuery(provTskQuery);
     provTsk.query();
     if (provTsk.next()) {
         if (current.change_request.state == '-1') {
@@ -76,7 +75,7 @@
         var cart = gs.getProperty('x_ibmg3_hcms.mvp3.cart.enabled');
         //Initiate Provisioning to EM when cart if true(for v2 api) or when state is implement (for v1)
         if (cart == "true" || (cart == "false" && current.change_request.state == '-1')) {
-            var preProv = new ChangeTaskProvisioningCallToBroker().changeTaskStatusCall(provTsk, changeRequestStatus, message);
+            var preProv = new ChangeTaskProvisioningCallToEmp().changeTaskStatusCall(provTsk, changeRequestStatus, message);
         }
     }
 })(current, previous);]]></script>
@@ -86,15 +85,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>794dd54cdb8768102019d90d689619dc</sys_id>
-        <sys_mod_count>41</sys_mod_count>
+        <sys_mod_count>45</sys_mod_count>
         <sys_name>Emp Change Task Provision Inititation </sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_794dd54cdb8768102019d90d689619dc</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 15:39:54</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 06:42:48</sys_updated_on>
         <template/>
         <when>async_always</when>
     </sys_script>

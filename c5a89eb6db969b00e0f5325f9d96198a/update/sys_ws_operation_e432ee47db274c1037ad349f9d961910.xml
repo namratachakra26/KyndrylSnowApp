@@ -8,25 +8,25 @@
         <http_method>POST</http_method>
         <name>ChangeTask</name>
         <operation_script><![CDATA[/** 
-* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
-* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
-* Schedule Contract with Kyndryl Corp. 
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
  * @author Asha Bagade 
  * @Rest Api is invoked from Kyndryl Marketplace for change task update**/
 
 (function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
 
     try {
-        //Defining variables
+        //Defining variables		
         var body = request.body.data;
-        var task_status = "";
-        var ritm1 = '';
-        var change_request, operationType;
+        var taskStatus = "";
+        var reqItem = '';
+        var changeRequest, operationType;
         var orderNumber = '';
         var state = body.u_state;
-        var chtsnumber = body.u_number;
-        var worknotes = body.u_work_notes;
-        var closenotes = body.u_notes;
+        var chgTskNum = body.u_number;
+        var workNotes = body.u_work_notes;
+        var closeNotes = body.u_notes;
         var onHold = body.onHold; //sent for only snow provider
         var strIncomingRequest = JSON.stringify(body);
         //variable to build reponse
@@ -36,7 +36,7 @@
 
         //call Payload validation function
         var validationError = "false";
-        validateBaseElements(body);
+        validationError = new EmpRestApiUtils().validateBaseTaskElements(body, response);
         //Fetch cloud assignment grp and assigned to
         var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
         var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
@@ -45,88 +45,83 @@
         // if payload is correct the update happens
         if (validationError == "false") {
             // fetch the Provisioning change task 
-            var chg_Task = new GlideRecord('change_task');
-            chg_Task.addActiveQuery();
-            chg_Task.addQuery("number", chtsnumber);
-            chg_Task.addQuery('assignment_group.name', assgnGrp);
-            chg_Task.addQuery('assigned_to.name', assgnTo);
-            chg_Task.query();
-            if (chg_Task.next()) {
+            var query = 'active=true^number=' + chgTskNum + '^assignment_group.name=' + assgnGrp + '^assigned_to.name=' + assgnTo;
+            var chgTask = new GlideRecord('change_task');
+            chgTask.addEncodedQuery(query);
+            chgTask.query();
+            if (chgTask.next()) {
                 //Change request sys_id
-                change_request = chg_Task.change_request;
-                ritm1 = chg_Task.change_request.u_qs_requested_item; // u_qs_requested_item variable present in Qs for change request
-				chgTskdomain = chg_Task.sys_domain.toString();
+                changeRequest = chgTask.change_request;
+                reqItem = chgTask.change_request.u_qs_requested_item; // u_qs_requested_item variable present in Qs for change request
+                chgTskdomain = chgTask.sys_domain.toString();
                 // QS code redirection for change task Update
-                if (ritm1 && gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true") { // ritm(u_qs_requested_item) field is populated by QS
-                    var reqItem = new GlideRecord('sc_req_item');
-                    if (reqItem.get('sys_id', ritm1)) {
-                        orderNumber = reqItem.request.correlation_id;
+                if (reqItem && gs.getProperty('x_ibmg3_hcms.enable_quickstart') == "true") { // ritm(u_qs_requested_item) field is populated by QS
+                    var ritm = new GlideRecord('sc_req_item');
+                    if (ritm.get('sys_id', reqItem)) {
+                        orderNumber = ritm.request.correlation_id;
                         //check if QS catalog item
                         var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
-                        if (mappingTable.get('u_catalog_item', reqItem.cat_item)) {
+                        if (mappingTable.get('u_catalog_item', ritm.cat_item)) {
                             qsCatalog = 'true';
                         }
                     }
                 }
                 //Redirection to QS endpoint
                 if (qsCatalog == 'true') {
-                    new HCMSLogLevel().LogMsg("info", "Change Task Update api for order " + orderNumber + " - " + strIncomingRequest);
+                    new EmpLogLevel().logMsg("info", "Change Task Update api for order " + orderNumber + " - " + strIncomingRequest);
                     if (state == '3')
-                        task_status = "CLOSE";
+                        taskStatus = "CLOSE";
                     else
-                        task_status = "HOLD"; //For failed scenario to create incident
+                        taskStatus = "HOLD"; //For failed scenario to create incident
                     //build payload to QS
-                    var reqbody = {};
-                    reqbody.u_task_status = task_status;
-                    reqbody.u_work_notes = worknotes;
-                    reqbody.u_taskId = chtsnumber;
+                    var reqBody = {};
+                    reqBody.u_task_status = taskStatus;
+                    reqBody.u_work_notes = workNotes;
+                    reqBody.u_taskId = chgTskNum;
                     //check if request is for start/stop/restart operation Type
                     //Update won't happen if chg task state is closure and not of operation type
-                    if (task_status == "CLOSE") {
-                        new HCMSLogLevel().LogMsg('info', 'QS change task ' + chtsnumber + ' closure will be handled by CI Update api for order: ' + orderNumber);
-                        message = "QS Change Task : " + chtsnumber + " closure will be handled via CI Update";
+                    if (taskStatus == "CLOSE") {
+                        new EmpLogLevel().logMsg('info', 'QS change task ' + chgTskNum + ' closure will be handled by CI Update api for order: ' + orderNumber);
+                        message = "QS Change Task : " + chgTskNum + " closure will be handled via CI Update";
                         //Set the response body
                         responsePayload.message = message;
                         response.setBody(responsePayload);
                     }
                     // Update happens for failed/HOLD(incident creation) and Day 2 closure
                     else {
-                        var qs_auth_profile_id;
+                        var qsAuthProfileId;
                         var domain_seperation_check_flag = new HCMSGetTenatDetails().QSCheckDS();
-
                         if (domain_seperation_check_flag == 'true') {
-                            qs_auth_profile_id = GlideApplicationProperty.getValue('x_ibmg3_hcms.API_AuthenticationProfile', chgTskdomain);
+                            qsAuthProfileId = GlideApplicationProperty.getValue('x_ibmg3_hcms.api_authenticationprofile', chgTskdomain);
                         } else {
-
-                            qs_auth_profile_id = gs.getProperty('x_ibmg3_hcms.API_AuthenticationProfile');
+                            qsAuthProfileId = gs.getProperty('x_ibmg3_hcms.api_authenticationprofile');
                         }
-
-                        var myJSONString = JSON.stringify(reqbody);
-                        new HCMSLogLevel().LogMsg('info', 'Change task closure Payload to QS for order: ' + orderNumber + ' - ' + myJSONString);
+                        var myJsonString = JSON.stringify(reqBody);
+                        new EmpLogLevel().logMsg('info', 'Change task closure Payload to QS for order: ' + orderNumber + ' - ' + myJsonString);
                         //build the rest message to call the QS endpoint
                         var qs = new sn_ws.RESTMessageV2();
-                        var end_point = gs.getProperty('x_ibmg3_hcms.quick_start.end_point.ci_update');
+                        var endPoint = gs.getProperty('x_ibmg3_hcms.quick_start.endPoint.ci_update');
                         var instanceURL = gs.getProperty('glide.servlet.uri');
                         //Build the complete URL for the POST message
-                        var restEndPoint = instanceURL + end_point;
+                        var restEndPoint = instanceURL + endPoint;
                         qs.setEndpoint(restEndPoint);
                         qs.setHttpMethod("post");
-                        qs.setAuthenticationProfile("basic", qs_auth_profile_id);
+                        qs.setAuthenticationProfile("basic", qsAuthProfileId);
                         qs.setRequestHeader("Content-Type", "application/json");
                         qs.setRequestHeader("Accept", "Application/json");
                         qs.setRequestHeader("api_key", "MVP3");
-                        qs.setRequestBody(myJSONString);
+                        qs.setRequestBody(myJsonString);
                         var qsresponse = qs.execute();
                         var parse = JSON.parse(qsresponse.getBody());
-                        new HCMSLogLevel().LogMsg('info', 'Quick Start Response for Change Task ' + chtsnumber + ' Update api for order: ' + orderNumber + " : " + JSON.stringify(parse));
+                        new EmpLogLevel().logMsg('info', 'Quick Start Response for Change Task ' + chgTskNum + ' Update api for order: ' + orderNumber + " : " + JSON.stringify(parse));
                         var resError = JSON.stringify(parse.result.error);
                         var resDetail = JSON.stringify(parse.result.detail);
                         if (JSON.stringify(parse.result.statusCode) == "200") { // if success
-                            new HCMSLogLevel().LogMsg('info', 'QS change task updated:' + chtsnumber + "for order: " + orderNumber);
-                            message = " QS Change Task : " + chtsnumber + " updated sucessfully";
+                            new EmpLogLevel().logMsg('info', 'QS change task updated:' + chgTskNum + "for order: " + orderNumber);
+                            message = " QS Change Task : " + chgTskNum + " updated sucessfully";
                         } else { // if fails
-                            new HCMSLogLevel().LogMsg('info', 'Quick Start Change task ' + chtsnumber + ' status response for task update' + JSON.stringify(parse) + ' error: ' + resError + ' detail ' + resDetail + " - for order: " + orderNumber);
-                            message = " QS Change Task : " + chtsnumber + " update failure";
+                            new EmpLogLevel().logMsg('info', 'Quick Start Change task ' + chgTskNum + ' status response for task update' + JSON.stringify(parse) + ' error: ' + resError + ' detail ' + resDetail + " - for order: " + orderNumber);
+                            message = " QS Change Task : " + chgTskNum + " update failure";
                         }
                         responsePayload.message = message;
                         response.setBody(responsePayload);
@@ -135,78 +130,40 @@
                 //droplet generic catalog change task update begins
                 else {
                     //check if RITM is closed, as during change rejection scenario change task is reset to open and should not be updated
-                    var ritm = new GlideRecord('sc_req_item');
-                    ritm.addActiveQuery();
-                    ritm.addQuery('x_ibmg3_hcms_related_change_request', change_request);
-                    ritm.query();
-                    if (ritm.next()) {
-                        orderNumber = ritm.request.x_ibmg3_hcms_order_number;
-                        new HCMSLogLevel().LogMsg("info", "Change Task Update api for order " + orderNumber + " : " + strIncomingRequest);
-                        chg_Task.state = state;
-                        chg_Task.close_notes = closenotes;
-                        chg_Task.work_notes = worknotes;
+                    var reqItm = new GlideRecord('sc_req_item');
+                    reqItm.addActiveQuery();
+                    reqItm.addQuery('x_ibmg3_hcms_related_change_request', changeRequest);
+                    reqItm.query();
+                    if (reqItm.next()) {
+                        orderNumber = reqItm.request.x_ibmg3_hcms_order_number;
+                        new EmpLogLevel().logMsg("info", "Change Task Update api for order " + orderNumber + " : " + strIncomingRequest);
+                        chgTask.state = state;
+                        chgTask.close_notes = closeNotes;
+                        chgTask.work_notes = workNotes;
                         if (onHold == false) // for snow provider the onhold status would be sent
-                            chg_Task.on_hold = false;
-                        chg_Task.update();
-                        new HCMSLogLevel().LogMsg('info', 'Change task ' + chg_Task.number + ' ,' + chg_Task.state.getDisplayValue() + ' for order: ' + orderNumber);
-                        message = "Change Task : " + chtsnumber + " updated sucessfully";
+                            chgTask.on_hold = false;
+                        chgTask.update();
+                        new EmpLogLevel().logMsg('info', 'Change task ' + chgTask.number + ' ,' + chgTask.state.getDisplayValue() + ' for order: ' + orderNumber);
+                        message = "Change Task : " + chgTskNum + " updated sucessfully";
                     } else {
-                        new HCMSLogLevel().LogMsg('info', 'Change task update is ignored as, task is already closed/cancelled for order: ' + orderNumber);
-                        message = "Change Task : " + chtsnumber + " update is ignored as, task is already closed/cancelled'";
+                        new EmpLogLevel().logMsg('info', 'Change task update is ignored as, task is already closed/cancelled for order: ' + orderNumber);
+                        message = "Change Task : " + chgTskNum + " update is ignored as, task is already closed/cancelled'";
                     }
                     //Set the response body
                     responsePayload.message = message;
                     response.setBody(responsePayload);
                 }
             } else { // if change task is not present
-                new HCMSLogLevel().LogMsg('info', 'Change task update is ignored as Change Task not found or already closed/cancelled for order: ' + orderNumber);
-                message = ("Change Task : " + chtsnumber + " update is ignored as, task not found or already closed/cancelled");
+                new EmpLogLevel().logMsg('info', 'Change task update is ignored as Change Task not found or already closed/cancelled for order: ' + orderNumber);
+                message = ("Change Task : " + chgTskNum + " update is ignored as, task not found or already closed/cancelled");
                 //Set the response body
                 responsePayload.message = message;
                 response.setBody(responsePayload);
             }
         }
     } catch (err) {
-        new HCMSLogLevel.LogMsg("error", "Change Task API " + err);
+        new EmpLogLevel.logMsg("error", "Change Task API " + err);
     }
-
-    //********* VALIDATION FUNCTIONS  ************
-    //Function to validate the base level elements
-    function validateBaseElements(bBody) {
-        //change task number
-        if (!bBody.u_number) {
-            validationError = "true";
-            raiseResponseError("change_task number attribute missing");
-        }
-        //change task state
-        if (!bBody.u_state && !bBody.hasOwnProperty('onHold')) {
-            validationError = "true";
-            raiseResponseError("change_task state attribute missing");
-        }
-        //change task work notes
-        if (!bBody.u_work_notes) {
-            validationError = "true";
-            raiseResponseError("change_task worknotes attribute missing");
-        }
-        //change task close notes
-        if (!bBody.u_notes) {
-            validationError = "true";
-            raiseResponseError("change_task closenotes attribute missing");
-        }
-    }
-
-    function raiseResponseError(message) {
-        //Raises a response error
-        var theError = new sn_ws_err.ServiceError();
-        theError.setStatus(404);
-        theError.setMessage("Change Task update aborted");
-        theError.setDetail(message);
-        response.setError(theError);
-        //Log the error on processing the change task update
-        new HCMSLogLevel().LogMsg("error", "CHANGE TASK UPDATE: ERROR: Change Task update aborted.");
-        new HCMSLogLevel().LogMsg("error", "CHANGE TASK UPDATE: ERROR: " + message);
-    }
-
 })(request, response);]]></operation_script>
         <operation_uri>/api/x_ibmg3_hcms/v1/broker/changetask</operation_uri>
         <produces>application/json,application/xml,text/xml</produces>
@@ -221,14 +178,14 @@
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2020-03-19 06:09:40</sys_created_on>
         <sys_id>e432ee47db274c1037ad349f9d961910</sys_id>
-        <sys_mod_count>133</sys_mod_count>
+        <sys_mod_count>143</sys_mod_count>
         <sys_name>ChangeTask</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_ws_operation_e432ee47db274c1037ad349f9d961910</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 08:05:29</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 08:12:44</sys_updated_on>
         <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
         <web_service_version display_value="v1">e691e14ddbe3d70037ad349f9d961962</web_service_version>
     </sys_ws_operation>

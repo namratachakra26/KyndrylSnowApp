@@ -9,7 +9,7 @@
         <next_question/>
         <order>100</order>
         <payload_name/>
-        <question display_value="Base Configuration Item" name="Base Configuration Item">3a9f3a7adb301010aa38cf5e1396197b</question>
+        <question display_value="Base Configuration Item" name="Base Configuration Item">013e7caf1b210210a9be2fc02a4bcb0f</question>
         <roles/>
         <script/>
         <sys_class_name>sys_wizard_answer</sys_class_name>
@@ -18,7 +18,7 @@
         <sys_id>6845152ddbfa2f00a5443967f496196f</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>Service Instance CIs</sys_name>
-        <sys_package display_value="IBM HCMS ServiceNow Discovery" source="x_ibmg3_ibm_hcms_d">6560f061dbba2f00a5443967f496191c</sys_package>
+        <sys_package display_value="">6560f061dbba2f00a5443967f496191c</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_wizard_answer_6845152ddbfa2f00a5443967f496196f</sys_update_name>

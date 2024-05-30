@@ -40,6 +40,7 @@
         <no_proceed_checkout>false</no_proceed_checkout>
         <no_quantity>false</no_quantity>
         <no_quantity_v2>false</no_quantity_v2>
+        <no_save_as_draft>false</no_save_as_draft>
         <no_search>false</no_search>
         <no_wishlist_v2>false</no_wishlist_v2>
         <omit_price>false</omit_price>
@@ -66,35 +67,21 @@
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2020-11-12 05:47:50</sys_created_on>
         <sys_id>1cb704ffdb18e0502019d90d68961925</sys_id>
-        <sys_mod_count>17</sys_mod_count>
+        <sys_mod_count>66</sys_mod_count>
         <sys_name>Enterprise Marketplace Configuration</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sc_cat_item_1cb704ffdb18e0502019d90d68961925</sys_update_name>
         <sys_updated_by>system</sys_updated_by>
-        <sys_updated_on>2023-11-28 07:19:12</sys_updated_on>
+        <sys_updated_on>2024-05-29 10:34:06</sys_updated_on>
         <taxonomy_topic/>
         <template/>
         <template_manager_roles/>
         <type>item</type>
-        <u_qs_business_approval_flow/>
-        <u_qs_business_approval_workflow/>
-        <u_qs_business_preapproved_>false</u_qs_business_preapproved_>
-        <u_qs_change_model/>
-        <u_qs_flow_controlled_execution_plan/>
-        <u_qs_item_approval_flow/>
-        <u_qs_item_approval_workflow/>
-        <u_qs_item_code/>
-        <u_qs_item_preapproved_>false</u_qs_item_preapproved_>
-        <u_qs_managed_item>false</u_qs_managed_item>
-        <u_qs_server_side_validation_framework>false</u_qs_server_side_validation_framework>
-        <u_qs_service_offering/>
-        <u_qs_task_flow/>
-        <u_qs_task_workflow/>
-        <u_qs_wait_for_change_to_complete_>false</u_qs_wait_for_change_to_complete_>
         <use_sc_layout>true</use_sc_layout>
         <vendor/>
+        <version>49</version>
         <visible_bundle>true</visible_bundle>
         <visible_guide>true</visible_guide>
         <visible_standalone>true</visible_standalone>

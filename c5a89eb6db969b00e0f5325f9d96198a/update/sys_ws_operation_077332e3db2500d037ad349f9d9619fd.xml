@@ -19,7 +19,7 @@
         var body = request.body.data;
         var imported = body.u_imported;
         var accountId, accountName, ritm, chg, reqType, type = '';
-        var chTsk_domain;
+        var chTskDomain;
         //Log the body of the incoming API request
         var strIncomingRequest = JSON.stringify(body);
         //fetch change task number from incoming payload and get the related catalog item
@@ -29,235 +29,232 @@
             if (chgTask.get("number", chgTskNum)) {
                 chg = chgTask.change_request;
                 ritm = chgTask.change_request.u_qs_requested_item; // ritm(u_qs_requested_item) field is populated by QS
-                chTsk_domain = chgTask.sys_domain;
+                chTskDomain = chgTask.sys_domain;
             }
         }
         if (chg) {
             var req_Item = new GlideRecord('sc_req_item');
             if (req_Item.get('x_ibmg3_hcms_related_change_request', chg)) {
                 reqType = req_Item.request.x_ibmg3_hcms_broker_request_type;
-                if (reqType == '1')
-                    type = "New";
-                if (reqType == '2')
-                    type = "Terminate";
-                if (reqType == '3')
-                    type = "Edit";
-                if (reqType == '4')
-                    type = req_Item.variables.var_service_offering_name;
+                switch (reqType) {
+                    case '1':
+                        type = "New";
+                        break;
+                    case '2':
+                        type = "Terminate";
+                        break;
+                    case '3':
+                        type = "Edit";
+                        break;
+                    case '4':
+                        type = req_Item.variables.var_service_offering_name;
+                        break;
+                }
             }
-        }
-        new HCMSLogLevel().LogMsg("info", "CI Update v2 api " + type + " Payload: " + strIncomingRequest);
-        var authheaders = request.getHeader("Authorization");
-        var qsCatalog = 'false';
+            new EmpLogLevel().logMsg("info", "CI Update v2 api " + type + " Payload: " + strIncomingRequest);
+            var qsCatalog = 'false';
 
-        //check if QS catalog item
-        if (imported == false && ritm && gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true") {
-            var reqItem = new GlideRecord('sc_req_item');
-            if (reqItem.get('sys_id', ritm)) {
-                var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
-                if (mappingTable.get('u_catalog_item', reqItem.cat_item)) {
-                    qsCatalog = "true";
+            //check if QS catalog item
+            if (!imported && ritm && gs.getProperty('x_ibmg3_hcms.enable_quickstart')) {
+                var reqItem = new GlideRecord('sc_req_item');
+                if (reqItem.get('sys_id', ritm)) {
+                    var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
+                    if (mappingTable.get('u_catalog_item', reqItem.cat_item)) {
+                        qsCatalog = "true";
+                    }
                 }
             }
-        }
-        //if Qs catalog item redirect to QS endpoint
-        if (qsCatalog == "true") {
-            //invoke redirection script
-            var correlation_ID = body.u_correlation_id;
-            //Update the status of the CI update
-            var ResponsePayload = {
-                "u_correlation_id": correlation_ID,
-                "status": "Ci Update Successful"
-            };
-            //Log the body of the outgoing API response
-            var strResponsePayload = JSON.stringify(ResponsePayload);
-            new HCMSLogLevel().LogMsg("info", "CI Update v2 api - Response Payload: " + strResponsePayload);
-            //Set the response body
-            response.setBody(ResponsePayload);
-            var qs = new RedirectionToQuickStartUtils().quickStartSocDetails(body, chTsk_domain);
-        } else {
-            //droplet ci update begins
-            //Set a variable to establish a baseline for the validation check
-            var validationError = "false";
-            //Validate the Base elements
-            validateBaseElements(body);
-            //Defining variables
-            var correlationID = body.u_correlation_id;
-            var providerName = body.u_provider_name;
-            var attributes = body.u_attributes;
-            var updateStatus;
-            var installStatus = body.u_install_status;
-            var operationalStatus = body.u_operational_status;
-            //variables to hold account information
-            if (body.u_account) {
-                accountId = body.u_account.accountId;
-                accountName = body.u_account.accountNameMCMP;
-            }
-            //variable to hold the names of the resrcs
-            var resourceIds = "";
-            if (body.hasOwnProperty("u_resourceIds")) {
-                resourceIds = body.u_resourceIds.toString();
-            }
-            //variables to build the response
-            var SuccessResponsePayload = {};
-            var strCreateServersResponse = {};
-            // Retrieve ServiceInstance Name
-            var instanceName = body.u_instance_name;
-            //Define the tracking variables
-            var trackingIDs = body.u_tracking_info;
-            var stackID, deploymentID, requestID, resourceGroupID;
-            var trackingField, stackID_value, deploymentID_value, requestID_value, resourceGroupID_value;
+            //if Qs catalog item redirect to QS endpoint
+            if (qsCatalog == "true") {
+                //invoke redirection script
+                var corrID = body.u_correlation_id;
+                //Update the status of the CI update
+                var ResponsePayload = {
+                    "u_correlation_id": corrID,
+                    "status": "Ci Update Successful"
+                };
+                //Log the body of the outgoing API response
+                var strResponsePayload = JSON.stringify(ResponsePayload);
+                new EmpLogLevel().logMsg("info", "CI Update v2 api - Response Payload: " + strResponsePayload);
+                //Set the response body
+                response.setBody(ResponsePayload);
+                var qs = new RedirectionToQuickStartUtils().quickStartSocDetails(body, chTskDomain);
+            } else {
+                //droplet ci update begins
+                //Set a variable for the validation check
+                var validationError = new EmpRestApiUtils().validateCiElements(body, reponse); //Validate the Base elements
+                //Defining variables
+                var correlationID = body.u_correlation_id;
+                var providerName = body.u_provider_name;
+                var attributes = body.u_attributes;
+                var updateStatus;
+                var installStatus = body.u_install_status;
+                var operationalStatus = body.u_operational_status;
+                //variables to hold account information
+                if (body.u_account) {
+                    accountId = body.u_account.accountId;
+                    accountName = body.u_account.accountNameMCMP;
+                }
+                //variable to hold the names of the resrcs
+                var resourceIds = "";
+                if (body.hasOwnProperty("u_resourceIds")) {
+                    resourceIds = body.u_resourceIds.toString();
+                }
+                //variables to build the response
+                var successResponsePayload = {};
+                var strCreateServersResponse = {};
+                // Retrieve ServiceInstance Name
+                var instanceName = body.u_instance_name;
+                //Define the tracking variables
+                var trackingIDs = body.u_tracking_info;
+                var stackID, deploymentID, requestID, resourceGroupID;
+                var trackingField, stackIdValue, deploymentIdValue, requestIdValue, resourceGroupIdValue;
+                for (var i = 0; i < trackingIDs.length; i++) {
+                    switch (trackingIDs[i].name) {
+                        case 'stack_id':
+                            stackID = "true";
+                            trackingField = trackingIDs[i].name;
+                            stackIdValue = trackingIDs[i].value;
+                            break;
+                        case 'deployment_id':
+                            deploymentID = "true";
+                            trackingField = trackingIDs[i].name;
+                            deploymentIdValue = trackingIDs[i].value;
+                            break;
+                        case 'request_id':
+                            requestID = "true";
+                            trackingField = trackingIDs[i].name;
+                            requestIdValue = trackingIDs[i].value;
+                            break;
+                        case 'resource_group_id':
+                            resourceGroupID = "true";
+                            resourceGroupIdValue = trackingIDs[i].value;
+                            break;
+                    }
+                } // end for
 
-            for (var i = 0; i < trackingIDs.length; i++) {
-                if (trackingIDs[i].name == "stack_id") {
-                    //Indicate stackID attribute is present
-                    stackID = "true";
-                    trackingField = trackingIDs[i].name;
-                    stackID_value = trackingIDs[i].value;
-                }
-                if (trackingIDs[i].name == "deployment_id") {
-                    //Indicate deploymentID attribute is present
-                    deploymentID = "true";
-                    trackingField = trackingIDs[i].name;
-                    deploymentID_value = trackingIDs[i].value;
-                }
-                if (trackingIDs[i].name == "request_id") {
-                    //Indicate requestID attribute is present
-                    requestID = "true";
-                    trackingField = trackingIDs[i].name;
-                    requestID_value = trackingIDs[i].value;
-                }
-                if (trackingIDs[i].name == "resource_group_id") {
-                    //Indicate resourceGroupID attribute is present
-                    resourceGroupID = "true";
-                    resourceGroupID_value = trackingIDs[i].value;
-                }
-            } // end for
-
-            if (validationError == "false") {
-                var gr = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
-                gr.addQuery('correlation_id', correlationID);
-                gr.query();
-                //Process the found record
-                if (gr.next()) {
-                    if (imported == false) {
-                        if (installStatus == 7 && operationalStatus == 6) {
-                            gr.setValue("install_status", installStatus);
-                            gr.setValue("operational_status", operationalStatus);
+                if (validationError == "false") {
+                    var configItem = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+                    configItem.addQuery('correlation_id', correlationID);
+                    configItem.query();
+                    //Process the found record
+                    if (configItem.next()) {
+                        if (imported == false) {
+                            if (installStatus == 7 && operationalStatus == 6) {
+                                configItem.setValue("install_status", installStatus);
+                                configItem.setValue("operational_status", operationalStatus);
+                            } else {
+                                //Set the values for the virtual server record
+                                configItem.setValue("short_description", providerName);
+                                configItem.setValue("install_status", installStatus);
+                                configItem.setValue("operational_status", operationalStatus);
+                                configItem.setValue("resource_id", resourceIds);
+                                configItem.setValue("account_id", accountId);
+                                configItem.setValue("account_name", accountName);
+                                var attributesString = JSON.stringify(attributes);
+                                configItem.setValue("attributes", attributesString);
+                                //Set the value for the tracking IDs that are present in the payload
+                                if (stackID == "true") {
+                                    //Set trackingField value and stack ID
+                                    configItem.setValue("x_ibmg3_hcms_tracking_field", trackingField);
+                                    configItem.setValue("object_id", stackIdValue);
+                                }
+                                if (deploymentID == "true") {
+                                    //Set trackingField value and deployment ID
+                                    configItem.setValue("x_ibmg3_hcms_tracking_field", trackingField);
+                                    configItem.setValue("object_id", deploymentIdValue);
+                                }
+                                if (requestID == "true") {
+                                    //Set trackingField value and request ID
+                                    configItem.setValue("x_ibmg3_hcms_tracking_field", trackingField);
+                                    configItem.setValue("object_id", requestIdValue);
+                                }
+                                if (resourceGroupID == "true") {
+                                    //Set resource group ID
+                                    configItem.setValue("x_ibmg3_hcms_tracking_resource_group_id", resourceGroupIdValue);
+                                }
+                            }
+                            //Update the CI Record
+                            configItem.update();
+                            //Update the status of the CI update
+                            updateStatus = "CI Updated Successfully";
+                            successResponsePayload = {
+                                "u_correlation_id": correlationID,
+                                "status": updateStatus
+                            };
+                            //Log the body of the outgoing API response
+                            strCreateServersResponse = JSON.stringify(successResponsePayload);
+                            new EmpLogLevel().logMsg("info", "Kyndryl Marketplace CI Update - Response Payload: " + strCreateServersResponse);
+                            //Set the response body
+                            response.setBody(successResponsePayload);
                         } else {
-                            //Set the values for the virtual server record
-                            gr.setValue("short_description", providerName);
-                            gr.setValue("install_status", installStatus);
-                            gr.setValue("operational_status", operationalStatus);
-                            gr.setValue("resource_id", resourceIds);
-                            gr.setValue("account_id", accountId);
-                            gr.setValue("account_name", accountName);
-                            var attributesString = JSON.stringify(attributes);
-                            gr.setValue("attributes", attributesString);
-                            //Set the value for the tracking IDs that are present in the payload
-                            if (stackID == "true") {
-                                //Set trackingField value and stack ID
-                                gr.setValue("x_ibmg3_hcms_tracking_field", trackingField);
-                                gr.setValue("object_id", stackID_value);
-                            }
-                            if (deploymentID == "true") {
-                                //Set trackingField value and deployment ID
-                                gr.setValue("x_ibmg3_hcms_tracking_field", trackingField);
-                                gr.setValue("object_id", deploymentID_value);
-                            }
-                            if (requestID == "true") {
-                                //Set trackingField value and request ID
-                                gr.setValue("x_ibmg3_hcms_tracking_field", trackingField);
-                                gr.setValue("object_id", requestID_value);
-                            }
-                            if (resourceGroupID == "true") {
-                                //Set resource group ID
-                                gr.setValue("x_ibmg3_hcms_tracking_resource_group_id", resourceGroupID_value);
-                            }
+                            new EmpRestApiUtils().raiseResponseError("Ci already present", "JSON payload error", reponse);
                         }
-                        //Update the CI Record
-                        gr.update();
-                        //Update the status of the CI update
-                        updateStatus = "CI Updated Successfully";
-                        SuccessResponsePayload = {
-                            "u_correlation_id": correlationID,
-                            "status": updateStatus
-                        };
-                        //Log the body of the outgoing API response
-                        strCreateServersResponse = JSON.stringify(SuccessResponsePayload);
-                        new HCMSLogLevel().LogMsg("info", "Kyndryl Marketplace CI Update - Response Payload: " + strCreateServersResponse);
-                        //Set the response body
-                        response.setBody(SuccessResponsePayload);
                     } else {
-                        raiseResponseError("Ci already present");
-                    }
-                } else {
-                    if (imported == true) {
-                        //Initialize Service instance ci
-                        var ci = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
-                        ci.initialize();
-                        ci.name = "VRI - Cloud CI ";
-                        ci.instance_id = instanceName;
-                        ci.correlation_id = correlationID;
-                        //Map the value from Property which stores the assignment group name to be assigned to CI
-                        var assignment_group = gs.getProperty('x_ibmg3_hcms.emp_cloud.ci_assignment_group');
-                        ci.assignment_group.setDisplayValue(assignment_group);
-                        if (installStatus == 7 && operationalStatus == 6) {
-                            ci.install_status = installStatus;
-                            ci.operational_status = operationalStatus;
-                        } else {
-                            //Set the values 
-                            ci.short_description = providerName;
-                            ci.install_status = installStatus;
-                            ci.operational_status = operationalStatus;
-                            ci.resource_id = resourceIds;
-                            ci.account_id = accountId;
-                            ci.account_name = accountName;
-                            var attributesString1 = JSON.stringify(attributes);
-                            ci.attributes = attributesString1;
-                            //Set the value for the tracking IDs that are present in the payload
-                            if (stackID == "true") {
-                                //Set trackingField value and stack ID
-                                ci.x_ibmg3_hcms_tracking_field = trackingField;
-                                ci.object_id = stackID_value;
+                        if (imported == true) {
+                            //Initialize Service instance ci
+                            var ci = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+                            ci.initialize();
+                            ci.name = "VRI - Cloud CI ";
+                            ci.instance_id = instanceName;
+                            ci.correlation_id = correlationID;
+                            //Map the value from Property which stores the assignment group name to be assigned to CI
+                            var assignmentGroup = gs.getProperty('x_ibmg3_hcms.emp_cloud.ci_assignment_group');
+                            ci.assignment_group.setDisplayValue(assignmentGroup);
+                            if (installStatus == 7 && operationalStatus == 6) {
+                                ci.install_status = installStatus;
+                                ci.operational_status = operationalStatus;
+                            } else {
+                                //Set the values 
+                                ci.short_description = providerName;
+                                ci.install_status = installStatus;
+                                ci.operational_status = operationalStatus;
+                                ci.resource_id = resourceIds;
+                                ci.account_id = accountId;
+                                ci.account_name = accountName;
+                                var attributesStrng = JSON.stringify(attributes);
+                                ci.attributes = attributesStrng;
+                                //Set the value for the tracking IDs that are present in the payload
+                                if (stackID == "true") {
+                                    //Set trackingField value and stack ID
+                                    ci.x_ibmg3_hcms_tracking_field = trackingField;
+                                    ci.object_id = stackID_value;
+                                }
+                                if (deploymentID == "true") {
+                                    //Set trackingField value and deployment ID
+                                    ci.x_ibmg3_hcms_tracking_field = trackingField;
+                                    ci.object_id = deploymentIdValue;
+                                }
+                                if (requestID == "true") {
+                                    //Set trackingField value and request ID
+                                    ci.x_ibmg3_hcms_tracking_field = trackingField;
+                                    ci.object_id = requestIdValue;
+                                }
+                                if (resourceGroupID == "true") {
+                                    //Set resource group ID
+                                    ci.x_ibmg3_hcms_tracking_resource_group_id = resourceGroupIdValue;
+                                }
                             }
-                            if (deploymentID == "true") {
-                                //Set trackingField value and deployment ID
-                                ci.x_ibmg3_hcms_tracking_field = trackingField;
-                                ci.object_id = deploymentID_value;
-                            }
-                            if (requestID == "true") {
-                                //Set trackingField value and request ID
-                                ci.x_ibmg3_hcms_tracking_field = trackingField;
-                                ci.object_id = requestID_value;
-                            }
-                            if (resourceGroupID == "true") {
-                                //Set resource group ID
-                                ci.x_ibmg3_hcms_tracking_resource_group_id = resourceGroupID_value;
-                            }
+                            ci.insert();
+                            new EmpLogLevel().logMsg("info", "Service Instance CI(Shell Ci) " + ci.name + " created ");
+                            updateStatus = "CI Updated Successfully";
+                            successResponsePayload = {
+                                "u_correlation_id": correlationID,
+                                "status": updateStatus
+                            };
+                            //Log the body of the outgoing API response
+                            strCreateServersResponse = JSON.stringify(successResponsePayload);
+                            new EmpLogLevel().logMsg("info", "Kyndryl Marketplace CI Update - Response Payload: " + strCreateServersResponse);
+                            //Set the response body
+                            response.setBody(successResponsePayload);
                         }
-                        var currentCI = ci.insert();
-                        new HCMSLogLevel().LogMsg("info", "Service Instance CI(Shell Ci) " + ci.name + " created ");
-                        updateStatus = "CI Updated Successfully";
-                        SuccessResponsePayload = {
-                            "u_correlation_id": correlationID,
-                            "status": updateStatus
-                        };
-                        //Log the body of the outgoing API response
-                        strCreateServersResponse = JSON.stringify(SuccessResponsePayload);
-                        new HCMSLogLevel().LogMsg("info", "Kyndryl Marketplace CI Update - Response Payload: " + strCreateServersResponse);
-                        //Set the response body
-                        response.setBody(SuccessResponsePayload);
                     }
-                }
-            } // end if - validation error
-            return {
-                //response body already defined and added to the response object
-            };
+                } // end if - validation error
+            }
         }
     } // end try
     catch (err) {
-        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace - CI Update API Error: " + this.type + "(" + err.message + ")");
+        new EmpLogLevel().logMsg("error", "Kyndryl Marketplace - CI Update API Error: " + this.type + "(" + err.message + ")");
         var catchBody = request.body.data;
         var catchCorrelationID = catchBody.u_correlation_id;
         //Update the status of the CI update
@@ -269,214 +266,6 @@
         //Set the response body
         response.setBody(failureResponsePayload);
     }
-
-    /***************** Payload Validation Functions *********************/
-    //Function to validate the base level elements
-    function validateBaseElements(bBody) {
-        //u_correlation_id
-        if (!bBody.u_correlation_id) {
-            validationError = "true";
-            raiseResponseError("u_correlation_id attribute missing");
-        }
-        if (empty(bBody.u_correlation_id)) {
-            validationError = "true";
-            raiseResponseError("u_correlation_id attribute bad value");
-        }
-        //u_provider_name
-        if (!bBody.u_provider_name) {
-            validationError = "true";
-            raiseResponseError("u_provider_name attribute missing");
-        }
-        if (empty(bBody.u_provider_name)) {
-            validationError = "true";
-            raiseResponseError("u_provider_name attribute bad value");
-        }
-        //Determine if the tracking field is present based on the provider
-        var uTrackingInfoArray = bBody.u_tracking_info;
-        var stackIdPresent = "false";
-        var deploymentIDPresent = "false";
-        var requestIDPresent = "false";
-        var resourceGroupIDPresent = "false";
-
-        //loop through the tracking info array
-        for (var p = 0; p < uTrackingInfoArray.length; p++) {
-            //check for stack id
-            if (uTrackingInfoArray[p].name == "stack_id") {
-                //set the stack id flag as true
-                stackIdPresent = 'true';
-            }
-            //check for deployment id
-            if (uTrackingInfoArray[p].name == "deployment_id") {
-                //set the deployment id flag as true
-                deploymentIDPresent = 'true';
-            }
-            //check for request id
-            if (uTrackingInfoArray[p].name == "request_id") {
-                //set the request id flag as true
-                requestIDPresent = 'true';
-            }
-            //check for resource group id
-            if (uTrackingInfoArray[p].name == "resource_group_id") {
-                //set the resource group id flag as true
-                resourceGroupIDPresent = 'true';
-            }
-        }
-
-        //Perform the provider validations
-        if (bBody.u_provider_name == "amazon" || bBody.u_provider_name.toLowerCase() == "aws") {
-
-            if (stackIdPresent == "false") {
-                //Raise error if stack_id is not present
-                validationError = "true";
-                raiseResponseError("stack_id attribute not present for Amazon Provider");
-            }
-        }
-
-        //Perform the google validation
-        if (bBody.u_provider_name == "google" || bBody.u_provider_name == "gcp") {
-            if (requestIDPresent == "false") {
-                //Raise error if request_id is not present
-                validationError = "true";
-                raiseResponseError("request_id attribute not present for Google Provider");
-            }
-        }
-
-        //Perform the VMware validation
-        if (bBody.u_provider_name == "vmware") {
-            if (requestIDPresent == "false") {
-                //Raise error if request_id is not present
-                validationError = "true";
-                raiseResponseError("request_id attribute not present for VMware Provider");
-            }
-        }
-
-        //Perform the SoftLayer/ibm validation
-        if (bBody.u_provider_name == "ibm" || bBody.u_provider_name == "ibmcloud") {
-            if (requestIDPresent == "false") {
-                //Raise error if request_id is not present
-                validationError = "true";
-                raiseResponseError("request_id attribute not present for SoftLayer Provider");
-            }
-        }
-
-        //Perform the azure validation
-        if (bBody.u_provider_name == "azure") {
-            if (deploymentIDPresent == "false") {
-                //Raise error if deployment_id is not present
-                validationError = "true";
-                raiseResponseError("deployment_id attribute not present for Azure Provider");
-            }
-            if (resourceGroupIDPresent == "false") {
-                //Raise error if resource_group_id is not present
-                validationError = "true";
-                raiseResponseError("resource_group_id attribute not present for Azure Provider");
-            }
-        }
-
-        //u_tracking_info
-        if (!bBody.u_tracking_info) {
-            validationError = "true";
-            raiseResponseError("u_tracking_info attribute missing");
-        }
-        if (bBody.u_tracking_info) {
-            if (uTrackingInfoArray.length == 0) {
-                validationError = "true";
-                raiseResponseError("u_tracking_info array has no array members");
-            } else if (uTrackingInfoArray.length > 0) {
-                for (var i = 0; i < uTrackingInfoArray.length; i++) {
-                    //Define variables for the attributes for each array item
-                    var name = uTrackingInfoArray[i].name;
-                    var value = uTrackingInfoArray[i].value;
-                    var iPlus1 = i + 1;
-                    //name
-                    if (!name) {
-                        validationError = "true";
-                        raiseResponseError("u_tracking_info array name(" + iPlus1 + ") attribute missing");
-                    }
-                    if (empty(name)) {
-                        validationError = "true";
-                        raiseResponseError("u_tracking_info array name(" + iPlus1 + ") attribute bad value");
-                    }
-                    //value
-                    if (!value) {
-                        validationError = "true";
-                        raiseResponseError("u_tracking_info array value(" + iPlus1 + ") attribute missing");
-                    }
-                    if (empty(value)) {
-                        validationError = "true";
-                        raiseResponseError("u_tracking_info array value(" + iPlus1 + ") attribute bad value");
-                    }
-                }
-            }
-        }
-
-        if (bBody.u_attributes) {
-            var uAttributesArray = bBody.u_attributes;
-            //hcmsLog.LogMsg("info", "uAttributesArray.length:" + uAttributesArray.length);
-            if (uAttributesArray.length == 0) {
-                validationError = "true";
-                raiseResponseError("u_attributes array has no array members");
-            } else if (uAttributesArray.length > 0) {
-                for (var q = 0; q < uAttributesArray.length; q++) {
-                    //Define variables for the attributes for each array item
-                    var nameAttributes = uAttributesArray[q].name;
-                    var valueAttributes = uAttributesArray[q].value;
-                    var qPlus1 = q + 1;
-                    //name
-                    if (!nameAttributes) {
-                        validationError = "true";
-                        raiseResponseError("attributes array name(" + qPlus1 + ") attribute missing");
-                    }
-                    if (empty(nameAttributes)) {
-                        validationError = "true";
-                        raiseResponseError("attributes array name(" + qPlus1 + ") attribute bad value");
-                    }
-                    //value
-                    if (!valueAttributes) {
-                        validationError = "true";
-                        raiseResponseError("attributes array value(" + qPlus1 + ") attribute missing");
-                    }
-                    if (empty(valueAttributes)) {
-                        validationError = "true";
-                        raiseResponseError("attributes array value(" + qPlus1 + ") attribute bad value");
-                    }
-                }
-            }
-        }
-    }
-
-    //Function to handle string tests
-    function empty(e) {
-        //Test the string
-        switch (e) {
-            case "":
-                return true;
-            case 0:
-                return true;
-            case "0":
-                return true;
-            case null:
-                return true;
-                //case false:
-            case typeof this == "undefined":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    //Function to handle response error messages
-    function raiseResponseError(message) {
-        //Raises a response error
-        var theError = new sn_ws_err.ServiceError();
-        theError.setStatus(403);
-        theError.setMessage("JSON payload error.");
-        theError.setDetail(message);
-        response.setError(theError);
-        //Log the error on processing the request
-        new HCMSLogLevel().LogMsg("error", "Ci Update Api JSON payload error: ERROR: " + message);
-    } // end raiseResponseError
-
 })(request, response);]]></operation_script>
         <operation_uri>/api/x_ibmg3_hcms/v2/broker/configurationItem</operation_uri>
         <produces>application/json,application/xml,text/xml</produces>
@@ -491,14 +280,14 @@
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2019-12-12 10:35:33</sys_created_on>
         <sys_id>077332e3db2500d037ad349f9d9619fd</sys_id>
-        <sys_mod_count>25</sys_mod_count>
+        <sys_mod_count>30</sys_mod_count>
         <sys_name>configurationItem (v2)</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_ws_operation_077332e3db2500d037ad349f9d9619fd</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 08:36:56</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 05:44:11</sys_updated_on>
         <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
         <web_service_version display_value="v2">3e7332e3db2500d037ad349f9d9619f3</web_service_version>
     </sys_ws_operation>

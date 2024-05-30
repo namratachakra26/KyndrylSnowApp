@@ -16,7 +16,7 @@
         <script><![CDATA[var Emp_CIWizMapper = Class.create();
 Emp_CIWizMapper.prototype = {
     initialize: function() {},
-
+//CD package
     createVMInstanceCI: function(strBody) {
         var parser = JSON.parse(strBody);
         var providerR = parser.provider;
@@ -1318,13 +1318,13 @@ updateTagSoiciLink: function(tagSet, res_rec) {
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2021-05-14 06:29:42</sys_created_on>
         <sys_id>9e3c2a2e1b487410da788403604bcbbb</sys_id>
-        <sys_mod_count>417</sys_mod_count>
+        <sys_mod_count>424</sys_mod_count>
         <sys_name>Emp_CIWizMapper</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_9e3c2a2e1b487410da788403604bcbbb</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 07:47:34</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:23:47</sys_updated_on>
     </sys_script_include>
 </record_update>

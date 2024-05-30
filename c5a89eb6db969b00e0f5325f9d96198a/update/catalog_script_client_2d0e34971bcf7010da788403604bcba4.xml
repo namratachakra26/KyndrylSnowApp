@@ -17,46 +17,46 @@
         <messages/>
         <name>Update ECM Values to Properties</name>
         <order/>
+        <published_ref/>
         <script><![CDATA[function onSubmit() {
     //Type appropriate comment here, and begin script below
 
-    var auth_pfile_val = g_form.getValue('qs_auth_profile');
-    var approval_wf_extension = g_form.getValue('approval_workflow');
+    var authProfileVal = g_form.getValue('qs_auth_profile');
+    var approvalWfExtension = g_form.getValue('approval_workflow');
     var disc = g_form.getValue('discovery');
-    var qkstart = g_form.getValue('quickstart');
+    var qkStart = g_form.getValue('quickstart');
     var retry = g_form.getValue('number_retries_to_be_performed');
 	var anonymous = g_form.getValue('allow_anonymous_user');
 	var oMidServer = g_form.getValue('enable_outbound_calls_using_mid_server');
     var midDet = g_form.getValue('mid_server_details');
-    var cag = g_form.getValue('cloud_assignment_group');
-    var cat = g_form.getValue('cloud_assigned_to');
-    var ciag = g_form.getValue('configuration_item_assignment_group');
+    var cAssignGrp = g_form.getValue('cloud_assignment_group');
+    var cAssignTo = g_form.getValue('cloud_assigned_to');
+    var ciAg = g_form.getValue('configuration_item_assignment_group');
 	var credId = g_form.getValue('mcmp_api_credential');
 	var mcmpUrl = g_form.getValue('mcmp_endpoint');
 	var adapVersion = g_form.getValue('adapterversion');
 
-    var ga = new GlideAjax('Emp_Auth_Profile_Configuration');
-    ga.addParam('sysparm_name', 'update_properties');
-    ga.addParam('auth_name', auth_pfile_val);
-    ga.addParam('approval_wf_name', approval_wf_extension);
-    ga.addParam('discovery_enabled', disc);
-    ga.addParam('qkstart_enabled', qkstart);
-    ga.addParam('retry_count', retry);
-	ga.addParam('anonymous_user', anonymous); //anonymous user
-	ga.addParam('out_midserver', oMidServer);
-    ga.addParam('mid_details', midDet);
-    ga.addParam('cloud_ag', cag);
-    ga.addParam('cloud_at', cat);
-    ga.addParam('cloud_ci_ag', ciag);
-	ga.addParam('adapterVersion', adapVersion);
-    ga.addParam('api_credential', credId);
-	ga.addParam('mcmp_url', mcmpUrl);
-    ga.getXML(UpdateResponse);
+    var updateProp = new GlideAjax('EmpAuthProfileConfiguration');
+    updateProp.addParam('sysparm_name', 'updateProperties');
+    updateProp.addParam('auth_name', authProfileVal);
+    updateProp.addParam('approval_wf_name', approvalWfExtension);
+    updateProp.addParam('discovery_enabled', disc);
+    updateProp.addParam('qkstart_enabled', qkStart);
+    updateProp.addParam('retry_count', retry);
+	updateProp.addParam('anonymous_user', anonymous); //anonymous user
+	updateProp.addParam('out_midserver', oMidServer);
+    updateProp.addParam('mid_details', midDet);
+    updateProp.addParam('cloud_ag', cAssignGrp);
+    updateProp.addParam('cloud_at', cAssignTo);
+    updateProp.addParam('cloud_ci_ag', ciAg);
+	updateProp.addParam('adapterVersion', adapVersion);
+    updateProp.addParam('api_credential', credId);
+	updateProp.addParam('mcmp_url', mcmpUrl);
+    updateProp.getXML(UpdateResponse);
 
     function UpdateResponse(response) {
         try {
             var answer = response.responseXML.documentElement.getAttribute("answer");
-
             if (answer != undefined && answer != '')
                 alert(answer + "Updated Successfully");
         } catch (e) {
@@ -70,7 +70,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>2d0e34971bcf7010da788403604bcba4</sys_id>
-        <sys_mod_count>37</sys_mod_count>
+        <sys_mod_count>41</sys_mod_count>
         <sys_name>Update ECM Values to Properties</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
@@ -78,10 +78,11 @@
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>catalog_script_client_2d0e34971bcf7010da788403604bcba4</sys_update_name>
         <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-14 05:57:12</sys_updated_on>
+        <sys_updated_on>2024-05-28 10:53:32</sys_updated_on>
         <table/>
         <type>onSubmit</type>
         <ui_type>0</ui_type>
+        <va_supported>true</va_supported>
         <variable_set/>
         <view/>
     </catalog_script_client>

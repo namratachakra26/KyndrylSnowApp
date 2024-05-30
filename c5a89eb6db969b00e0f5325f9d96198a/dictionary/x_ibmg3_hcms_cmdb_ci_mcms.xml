@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="ecd1ab3ddb65a300e0f5325f9d96196e" extends="cmdb_ci" label="Service Instance CIs" max_length="40" name="x_ibmg3_hcms_cmdb_ci_mcms" type="collection">
+        <element label="Account id" max_length="40" name="account_id" type="string"/>
+        <element label="Account name" max_length="40" name="account_name" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Instance id" max_length="40" name="instance_id" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Object id" max_length="1000" name="object_id" type="string"/>
+        <element label="Resource Id" max_length="4000" name="resource_id" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Resource Mapping" max_length="40" name="resource_mapping" type="boolean"/>
+    </element>
+</database>

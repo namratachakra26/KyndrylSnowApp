@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element audit="true" db_object_id="257001eb1b610210a9be2fc02a4bcb2c" extends="cmdb_ci_kvm_object" label="KVM Storage Pool" max_length="40" name="cmdb_ci_kvm_storage_pool" type="collection">
+        <element attributes="edge_encryption_enabled=true" label="Resource Mapping" max_length="40" name="x_ibmg3_hcms_resource_mapping" type="boolean"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking field" max_length="80" name="x_ibmg3_hcms_tracking_field" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking Id" max_length="80" name="x_ibmg3_hcms_tracking_id" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking resource group id" max_length="80" name="x_ibmg3_hcms_tracking_resource_group_id" type="string"/>
+    </element>
+</database>

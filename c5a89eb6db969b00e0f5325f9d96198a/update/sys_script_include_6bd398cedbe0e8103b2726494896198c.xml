@@ -20,10 +20,9 @@ EmpFetchConfiguration.prototype = Object.extendsObject(global.AbstractAjaxProces
         try {
             //Fetch the url/endpoint of the instance
             var url = this.getParameter('sysparm_epoint');
-			var version = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration');
+			var version = gs.getProperty('x_ibmg3_hcms.adapter.version.configuration');
             //Define variables to hold response body and status code
             var responseBody, statusCode = '';
-
 
             //Fetch the Rest method name
             var restMethodName;
@@ -33,19 +32,19 @@ EmpFetchConfiguration.prototype = Object.extendsObject(global.AbstractAjaxProces
                 restMethodName = gs.getProperty('x_ibmg3_hcms.fetch_default_configuration');
             //Fetch the credentials
             var credential = this.getParameter('sysparm_cred');
-            var req_domain = new HCMSGetTenatDetails().getRequesUItDomain(credential);
-            var payloadbody = ''; //Not Payload body for GET API hence passing emppty string
-            //Invoke the below function to make outbound call to mcmp to fetch default configuration
-            var getConfig = new EmpConfigurationOutboundCall().outBoundRestCallToEmpInstance(restMethodName, credential, url, payloadbody, req_domain);
+            var reqDomain = new EmpGetTenatDetails().getRequestUiDomain(credential);
+            var payloadBody = ''; //Not Payload body for GET API hence passing emppty string
+            //Invoke the below function to make outbound call to emp to fetch default configuration
+            var getConfig = new EmpConfigurationOutboundCall().outBoundRestCallToEmpInstance(restMethodName, credential, url, payloadBody, reqDomain);
             if (getConfig) {
                 responseBody = getConfig.responseBody;
                 statusCode = getConfig.statusCode;
             } else {
-                new HCMSLogLevel().LogMsg("info", "* Invalid response from MCMP for  *" + credential);
+                new EmpLogLevel().logMsg("info", "* Invalid response from EMP for  *" + credential);
             }
             return responseBody;
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Fetch default Configurations from Kyndryl Marketplace error " + err);
+            new EmpLogLevel().logMsg("info", "Fetch default Configurations from Kyndryl Marketplace error " + err);
         }
     },
 
@@ -55,13 +54,13 @@ EmpFetchConfiguration.prototype = Object.extendsObject(global.AbstractAjaxProces
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2020-11-19 08:16:15</sys_created_on>
         <sys_id>6bd398cedbe0e8103b2726494896198c</sys_id>
-        <sys_mod_count>42</sys_mod_count>
+        <sys_mod_count>53</sys_mod_count>
         <sys_name>EmpFetchConfiguration</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_6bd398cedbe0e8103b2726494896198c</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-11 10:23:32</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:37:36</sys_updated_on>
     </sys_script_include>
 </record_update>

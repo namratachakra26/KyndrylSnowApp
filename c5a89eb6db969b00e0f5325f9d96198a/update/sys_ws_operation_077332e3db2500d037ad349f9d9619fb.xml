@@ -16,52 +16,47 @@
 (function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
     try {
         //Defining variables
-        var body = request.body.data;
-        var approvalStatus, stateStatus, requestUpdateTS, cancelAction, requestedFor, requestNumber, checkIncidentFlag, requestsys_id, catItem = '';
+        var reqBody = request.body.data;
+        var approvalStatus, stateStatus, requestUpdateTs, cancelAction, requestedFor, requestNumber, checkIncidentFlag, requestSysId;
         var responseBody = {};
         //Track the order number
-        var orderNumber = body.orderNumber;
+        var orderNumber = reqBody.orderNumber;
         //Variable to hold the event type
-        var eventType = body.eventType;
-        requestedFor = body.triggeredBy;
+        var eventType = reqBody.eventType;
+        requestedFor = reqBody.triggeredBy;
         var query = 'x_ibmg3_hcms_order_number=' + orderNumber + '^ORcorrelation_id=' + orderNumber;
-        var grREQ = new GlideRecord('sc_request');
-        grREQ.addEncodedQuery(query);
-        grREQ.query();
-        if (grREQ.next()) {
-            requestNumber = grREQ.number;
-            requestsys_id = grREQ.sys_id;
-            approvalStatus = grREQ.approval.toString();
-            stateStatus = grREQ.request_state.toString();
-            requestsys_id = grREQ.sys_id;
-            requestUpdateTS = grREQ.sys_updated_on.toString();
+        var trackingReq = new GlideRecord('sc_request');
+        trackingReq.addEncodedQuery(query);
+        trackingReq.query();
+        if (trackingReq.next()) {
+            requestNumber = trackingReq.number;
+            requestSysId = trackingReq.sys_id;
+            approvalStatus = trackingReq.approval.toString();
+            stateStatus = trackingReq.request_state.toString();
+            requestUpdateTs = trackingReq.sys_updated_on.toString();
             switch (eventType) {
                 //set the approval controller and external approval field
                 case 'APPROVALREQUEST':
-                    if ((body.approvalController == "ICB") && grREQ.active == true) {
-                        new HCMSLogLevel().LogMsg('info', '*State change v2 api payload for ICB approval request: *' + JSON.stringify(body));
-                        grREQ.get(requestsys_id);
-                        grREQ.setValue("x_ibmg3_hcms_external_approval", "not_yet_requested");
-                        grREQ.setValue("x_ibmg3_hcms_approval_controller", "icb");
-                        //Update the record
-                        grREQ.update();
+                    if ((reqBody.approvalController == "ICB") && trackingReq.active) {
+                        new EmpLogLevel().logMsg('info', '*State change v2 api payload for ICB approval request: *' + JSON.stringify(reqBody));
+                        trackingReq.x_ibmg3_hcms_external_approval = "not_yet_requested";
+                        trackingReq.x_ibmg3_hcms_approval_controller = "icb";
+                        trackingReq.update();
 
-                    } else if ((body.approvalController == "SNOW") && grREQ.active == true) {
-                        new HCMSLogLevel().LogMsg('info', '*State change v2 api payload for SNOW approval request: *' + JSON.stringify(body));
-                        grREQ.get(requestsys_id);
-                        grREQ.setValue("x_ibmg3_hcms_external_approval", "not_yet_requested");
-                        grREQ.setValue("x_ibmg3_hcms_approval_controller", "snow");
-                        //Update the record
-                        grREQ.update();
+                    } else if ((reqBody.approvalController == "SNOW") && trackingReq.active == true) {
+                        new EmpLogLevel().logMsg('info', '*State change v2 api payload for SNOW approval request: *' + JSON.stringify(reqBody));
+                        trackingReq.x_ibmg3_hcms_external_approval = "not_yet_requested";
+                        trackingReq.x_ibmg3_hcms_approval_controller = "snow";
+                        trackingReq.update();
                     }
                     break;
 
                 case 'CANCEL':
-                    new HCMSLogLevel().LogMsg('info', '*State change v2 api payload for CANCEL: *' + JSON.stringify(body));
+                    new EmpLogLevel().logMsg('info', '*State change v2 api payload for CANCEL: *' + JSON.stringify(reqBody));
                     //check whether Incident is created for failure scenario or not
-                    checkIncidentFlag = new cancelAfterFailure().changeCatalogTask(orderNumber);
+                    checkIncidentFlag = new CancelAfterFailure().changeCatalogTask(orderNumber);
                     var failedReason = "";
-                    if ((approvalStatus == "approved" || approvalStatus == "rejected") && (checkIncidentFlag == false) && (grREQ.x_ibmg3_hcms_requestapprovalhold == false)) {
+                    if ((approvalStatus == "approved" || approvalStatus == "rejected") && (!checkIncidentFlag && !trackingReq.x_ibmg3_hcms_requestapprovalhold)) {
                         cancelAction = "Request for Cancel is failed";
                         switch (approvalStatus) {
                             case 'approved':
@@ -78,40 +73,36 @@
                             default:
                                 failedReason = "Cancellation Error";
                         }
-                    } else if (((approvalStatus == "requested") || (approvalStatus == "not requested")) || grREQ.x_ibmg3_hcms_requestapprovalhold == true) {
+                    } else if (((approvalStatus == "requested") || (approvalStatus == "not requested")) || trackingReq.x_ibmg3_hcms_requestapprovalhold == true) {
                         if (stateStatus == "closed_cancelled") {
                             cancelAction = "Request for Cancel is failed";
                             failedReason = "Already Cancelled";
                         } else {
                             // when requestapprovalhold is true, close the catalog task (Business rule : QS request closure restricts the closure of RITM if task is open)
                             var ritm = new GlideRecord('sc_req_item');
-                            ritm.addQuery('request', requestsys_id);
+                            ritm.addQuery('request', requestSysId);
                             ritm.query();
                             while (ritm.next()) {
-                                var cattask = new GlideRecord('sc_task');
-                                cattask.addQuery('request_item', ritm.sys_id);
-                                cattask.query();
-                                if (cattask.next()) {
-                                    cattask.state = 4; //closed Incomplete
-                                    cattask.update();
+                                var catTask = new GlideRecord('sc_task');
+                                if (catTask.get('request_item', ritm.sys_id)) {
+                                    catTask.state = 4; //closed Incomplete
+                                    catTask.update();
                                 }
                             }
                             //Cancel the Request
-                            var grREQ1 = new GlideRecord('sc_request');
-                            grREQ1.get(requestsys_id);
-                            grREQ1.setValue("request_state", "closed_cancelled");
-                            grREQ1.setValue("stage", "closed_incomplete");
-                            grREQ1.update();
-                            new HCMSLogLevel().LogMsg('info', 'Request ' + grREQ1.number + ', closed cancelled for ordernumber: ' + orderNumber);
-                            requestUpdateTS = grREQ1.sys_updated_on.toString();
+                            trackingReq.request_state = "closed_cancelled";
+                            trackingReq.stage = "closed_incomplete";
+                            trackingReq.update();
+                            new EmpLogLevel().logMsg('info', 'Request ' + requestNumber + ', closed cancelled for ordernumber: ' + orderNumber);
+                            requestUpdateTs = trackingReq.sys_updated_on.toString();
                             //cancel the change if order is cancelled before change approval
-                            var checkNormalChangeRequest = new cancelBeforeChangeApproval().normalChangeCancellation(requestsys_id);
+                            var checkNormalChangeRequest = new CancelBeforeChangeApproval().normalChangeCancellation(requestSysId);
                             cancelAction = "Request for Cancel is successful";
                         }
                     }
                     //Populate the response body
                     responseBody.requested_for = requestedFor;
-                    responseBody.sys_updated_on = requestUpdateTS;
+                    responseBody.sys_updated_on = requestUpdateTs;
                     responseBody.requestNumber = requestNumber;
                     responseBody.action = cancelAction;
                     responseBody.failed_reason = failedReason;
@@ -119,66 +110,57 @@
                     responseBody.approvalStatus = approvalStatus;
                     responseBody.orderNumber = orderNumber;
                     var strCancelResponse = JSON.stringify(responseBody);
-                    new HCMSLogLevel().LogMsg('info', '*Cancel Response payload for order: ' + orderNumber + '* ' + strCancelResponse);
+                    new EmpLogLevel().logMsg('info', '*Cancel Response payload for order: ' + orderNumber + '* ' + strCancelResponse);
                     //Set the response body
                     response.setBody(responseBody);
-                    new HCMSLogLevel().LogMsg('info', 'Request ' + requestNumber + ', closed cancelled for order: ' + orderNumber);
+                    new EmpLogLevel().logMsg('info', 'Request ' + requestNumber + ', closed cancelled for order: ' + orderNumber);
                     break;
 
                 case 'APPROVALGRANT':
-                    new HCMSLogLevel().LogMsg('info', '*State change v2 api payload for ICB approval grant: *' + JSON.stringify(body));
-                    grREQ.get(requestsys_id);
-                    grREQ.setValue("x_ibmg3_hcms_external_approval", "approved");
-                    grREQ.setValue("x_ibmg3_hcms_requestapprovalhold", false);
-                    //Update the record
-                    grREQ.update();
+                    new EmpLogLevel().logMsg('info', '*State change v2 api payload for ICB approval grant: *' + JSON.stringify(reqBody));
+                    trackingReq.x_ibmg3_hcms_external_approval = "approved";
+                    trackingReq.x_ibmg3_hcms_requestapprovalhold = false;
+                    trackingReq.update();
                     var reqItem = new GlideRecord('sc_req_item');
-                    reqItem.addQuery('request', grREQ.sys_id);
+                    reqItem.addQuery('request', trackingReq.sys_id);
                     reqItem.query();
                     while (reqItem.next()) {
                         reqItem.comments = "Request approved, Change request initiated";
                         reqItem.update();
                     }
-					new HCMSLogLevel().LogMsg('info', '*State change v2 api response for ICB approval grant: *' + JSON.stringify(response.status));
+                    new EmpLogLevel().logMsg('info', '*State change v2 api response for ICB approval grant: *' + JSON.stringify(response.status));
                     break;
 
                 case 'APPROVALREJECT':
-                    new HCMSLogLevel().LogMsg('info', '*State change v2 api payload for ICB approval reject:*' + JSON.stringify(body));
+                    new EmpLogLevel().logMsg('info', '*State change v2 api payload for ICB approval reject:*' + JSON.stringify(reqBody));
                     // when requestapprovalhold is true, close the catalog task (Business rule : QS request closure restricts the closure of RITM if task is open)
-                    var ritm1 = new GlideRecord('sc_req_item');
-                    ritm1.addQuery('request', requestsys_id);
-                    ritm1.query();
-                    while (ritm1.next()) {
-                        var cattask1 = new GlideRecord('sc_task');
-                        cattask1.addQuery('request_item', ritm1.sys_id);
-                        cattask1.query();
-                        if (cattask1.next()) {
-                            cattask1.state = 4; //closed Incomplete
-                            cattask1.update();
+                    var ritmRec = new GlideRecord('sc_req_item');
+                    ritmRec.addQuery('request', requestSysId);
+                    ritmRec.query();
+                    while (ritmRec.next()) {
+                        var catTaskRec = new GlideRecord('sc_task');
+                        catTaskRec.addQuery('request_item', ritmRec.sys_id);
+                        catTaskRec.query();
+                        if (catTaskRec.next()) {
+                            catTaskRec.state = 4; //closed Incomplete
+                            catTaskRec.update();
                         }
                     }
-                    grREQ.get(requestsys_id);
-                    grREQ.setValue("approval", "rejected");
-                    grREQ.setValue("x_ibmg3_hcms_external_approval", "rejected");
-                    grREQ.setValue("x_ibmg3_hcms_requestapprovalhold", false);
-                    grREQ.comments = "Order rejected in Enterprise Marketplace, hence request is closed rejected";
+                    trackingReq.approval = "rejected";
+                    trackingReq.x_ibmg3_hcms_external_approval = "rejected";
+                    trackingReq.x_ibmg3_hcms_requestapprovalhold = false;
+                    trackingReq.comments = "Order rejected in Enterprise Marketplace, hence request is closed rejected";
                     //Update the record
-                    grREQ.update();
-                    new HCMSLogLevel().LogMsg('info', 'Request ' + requestNumber + ', closed rejected for order: ' + orderNumber);
+                    trackingReq.update();
+                    new EmpLogLevel().logMsg('info', 'Request ' + requestNumber + ', closed rejected for order: ' + orderNumber);
                     break;
             } //end switch
         } else {
             message = "{\"message\":\"Service Request is not found for order:" + orderNumber + "\" ,\"code\":\"404\"}";
-            var theError = new sn_ws_err.ServiceError();
-            theError.setStatus(404);
-            theError.setMessage("statechange update failed");
-            theError.setDetail(message);
-            response.setError(theError);
-            //Log the error on processing the request
-            new HCMSLogLevel().LogMsg("error", "statechange api ERROR:" + message);
+            new EmpRestApiUtils().raiseResponseError(message, "Service Request creation aborted", response);
         }
     } catch (err) {
-        new HCMSLogLevel.LogMsg("error", "Request State change API: " + this.type + "(" + err + ")");
+        new EmpLogLevel.logMsg("error", "Request State change API: " + this.type + "(" + err + ")");
     }
 })(request, response);]]></operation_script>
         <operation_uri>/api/x_ibmg3_hcms/v2/broker/request/statechange</operation_uri>
@@ -194,14 +176,14 @@
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2019-12-12 10:35:33</sys_created_on>
         <sys_id>077332e3db2500d037ad349f9d9619fb</sys_id>
-        <sys_mod_count>39</sys_mod_count>
+        <sys_mod_count>47</sys_mod_count>
         <sys_name>statechange (v2)</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_ws_operation_077332e3db2500d037ad349f9d9619fb</sys_update_name>
-        <sys_updated_by>Asha.Bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-10-17 11:08:25</sys_updated_on>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 10:03:05</sys_updated_on>
         <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
         <web_service_version display_value="v2">3e7332e3db2500d037ad349f9d9619f3</web_service_version>
     </sys_ws_operation>

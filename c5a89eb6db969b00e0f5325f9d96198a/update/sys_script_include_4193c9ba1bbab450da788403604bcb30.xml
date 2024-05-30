@@ -17,7 +17,7 @@
 Emp_CIWizMapper_Azure_CI_Configurations_Update.prototype = {
     initialize: function() {},
 
-
+//CD package
     updateAzureVMCI: function(strBody) {
         try {
             new HCMSLogLevel().LogMsg('info', 'Incoming discovery asset for Azure Update vm payload' + strBody);
@@ -1615,13 +1615,13 @@ Emp_CIWizMapper_Azure_CI_Configurations_Update.prototype = {
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2021-09-28 10:23:34</sys_created_on>
         <sys_id>4193c9ba1bbab450da788403604bcb30</sys_id>
-        <sys_mod_count>121</sys_mod_count>
+        <sys_mod_count>128</sys_mod_count>
         <sys_name>Emp_CIWizMapper_Azure_CI_Configurations_Update</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_4193c9ba1bbab450da788403604bcb30</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 07:50:30</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:26:22</sys_updated_on>
     </sys_script_include>
 </record_update>

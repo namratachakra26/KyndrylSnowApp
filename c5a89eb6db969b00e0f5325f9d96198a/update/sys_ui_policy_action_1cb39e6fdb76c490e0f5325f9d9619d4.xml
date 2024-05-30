@@ -3,6 +3,8 @@
         <cleared>false</cleared>
         <disabled>true</disabled>
         <field>x_ibmg3_hcms_requestapprovalhold</field>
+        <field_message/>
+        <field_message_type/>
         <mandatory>ignore</mandatory>
         <sys_class_name>sys_ui_policy_action</sys_class_name>
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
@@ -18,6 +20,8 @@
         <sys_updated_on>2020-02-12 11:35:24</sys_updated_on>
         <table>sc_request</table>
         <ui_policy display_value="Make Request approval hold flag read only">ad63166fdb76c490e0f5325f9d961962</ui_policy>
+        <value/>
+        <value_action/>
         <visible>ignore</visible>
     </sys_ui_policy_action>
 </record_update>

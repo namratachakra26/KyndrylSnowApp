@@ -11,7 +11,7 @@
 Emp_CI_Creation_Validation_Script.prototype = {
     initialize: function() {},
 
-
+    //CD package
     getResourceGrpDetails: function(obj_id) {
 
         try {
@@ -105,10 +105,10 @@ Emp_CI_Creation_Validation_Script.prototype = {
                 res_flag: resource_flag
             };
 
-        } else if (entity_type == 'vms' && provider != 'VRA') {    
+        } else if (entity_type == 'vms' && provider != 'VRA') {
 
             var grvms = new GlideRecord('cmdb_ci_server');
-            grvms.addEncodedQuery('object_id=' + entity_id);     //INT-14425
+            grvms.addEncodedQuery('object_id=' + entity_id); //INT-14425
             grvms.query();
             if (grvms.next()) {
                 resource_id = grvms.sys_id;
@@ -123,10 +123,10 @@ Emp_CI_Creation_Validation_Script.prototype = {
                 res_flag: resource_flag
             };
 
-        } else if (entity_type == 'vms'  && provider == 'VRA') {    
+        } else if (entity_type == 'vms' && provider == 'VRA') {
 
             var vravms = new GlideRecord('cmdb_ci_vmware_instance');
-            vravms.addEncodedQuery('object_id=' + entity_id); 
+            vravms.addEncodedQuery('object_id=' + entity_id);
             vravms.query();
             if (vravms.next()) {
                 resource_id = vravms.sys_id;
@@ -141,7 +141,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
                 res_flag: resource_flag
             };
 
-        }else if (entity_type == 'servers') {
+        } else if (entity_type == 'servers') {
             var grvmserver = new GlideRecord('cmdb_ci_cloud_database');
             grvmserver.addEncodedQuery('object_id=' + entity_id);
             grvmserver.query();
@@ -170,7 +170,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
                 return {
                     res_id: resource_id,
                     res_flag: resource_flag,
-					coid: co_id
+                    coid: co_id
                 };
             }
 
@@ -642,7 +642,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-			
+
         } else if (entity_type == 'ebs') {
             var ebsId = new GlideRecord('cmdb_ci_storage_volume');
             ebsId.addEncodedQuery('object_id=' + entity_id);
@@ -660,7 +660,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-        }else if (entity_type == 'elasticloadbalancing') {
+        } else if (entity_type == 'elasticloadbalancing') {
             var elbId = new GlideRecord('cmdb_ci_cloud_load_balancer');
             elbId.addEncodedQuery('object_id=' + entity_id);
             elbId.query();
@@ -677,8 +677,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-		}
-		else if (entity_type == 'elasticfilesystem') {
+        } else if (entity_type == 'elasticfilesystem') {
             var efsId = new GlideRecord('cmdb_ci_cloud_storage_account');
             efsId.addEncodedQuery('object_id=' + entity_id);
             efsId.query();
@@ -695,8 +694,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-		}
-		else if (entity_type == 'stack') {
+        } else if (entity_type == 'stack') {
             var stack = new GlideRecord('cmdb_ci_cmp_resource');
             stack.addEncodedQuery('object_id=' + entity_id);
             stack.query();
@@ -713,9 +711,9 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-		}
-		// validating vra disk
-		else if (entity_type == 'disk') {
+        }
+        // validating vra disk
+        else if (entity_type == 'disk') {
             var grDisk_data = new GlideRecord('cmdb_ci_storage_volume');
             grDisk_data.addEncodedQuery('object_id=' + entity_id);
             grDisk_data.query();
@@ -731,9 +729,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-		}
-		
-		else if (entity_type == 'network') {
+        } else if (entity_type == 'network') {
             var nw = new GlideRecord('cmdb_ci_network');
             nw.addEncodedQuery('object_id=' + entity_id);
             nw.query();
@@ -750,9 +746,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
             return {
                 res_flag: resource_flag
             };
-		}
-		
-		else {
+        } else {
             return "Unsupported Resource type";
 
         }
@@ -760,8 +754,8 @@ Emp_CI_Creation_Validation_Script.prototype = {
 
 
     validateSOICIExists: function(serviceInstanceName) {
-		var soc_id = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
-		var qry = 'instance_id='+serviceInstanceName+'^ORcorrelation_id='+serviceInstanceName;
+        var soc_id = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+        var qry = 'instance_id=' + serviceInstanceName + '^ORcorrelation_id=' + serviceInstanceName;
         soc_id.addEncodedQuery(qry);
         soc_id.query();
         if (soc_id.next()) {
@@ -783,7 +777,6 @@ Emp_CI_Creation_Validation_Script.prototype = {
 
     validateEntityTypeExists: function(entity_type) {
 
-
         var enti_type_rec = new GlideRecord('sys_choice');
         enti_type_rec.addQuery('value', entity_type);
         enti_type_rec.query();
@@ -791,17 +784,19 @@ Emp_CI_Creation_Validation_Script.prototype = {
         if (enti_type_rec.getRowCount() > 0) {
             return 'true';
         }
-        return 'false';
 
+        return 'false';
     },
 
 
+
+
     createTagResources: function(tagSet, vm_azure_parent_rec) {
-		
+
         for (var m = 0; m < tagSet.length; m++) {
 
             if (tagSet[m].Key == 'serviceInstanceName' || tagSet[m].Key == 'serviceinstancename' || tagSet[m].Key == 'ibm_mcmp_soiid')
-               var InstanceId = tagSet[m].Value;
+                var InstanceId = tagSet[m].Value;
 
             var tag_set_rel = new GlideRecord('cmdb_key_value');
             tag_set_rel.initialize();
@@ -815,12 +810,12 @@ Emp_CI_Creation_Validation_Script.prototype = {
     },
 
     updateTagResources: function(tagSet, vm_azure_parent_rec) {
-      
+
         for (var m = 0; m < tagSet.length; m++) {
-			
-		if (tagSet[m].Key == 'serviceInstanceName' || tagSet[m].Key == 'serviceinstancename' || tagSet[m].Key == 'ibm_mcmp_soiid')
-			
-               var InstanceId = tagSet[m].Value;
+
+            if (tagSet[m].Key == 'serviceInstanceName' || tagSet[m].Key == 'serviceinstancename' || tagSet[m].Key == 'ibm_mcmp_soiid')
+
+                var InstanceId = tagSet[m].Value;
 
             var tag_set_rel = new GlideRecord('cmdb_key_value');
             tag_set_rel.addEncodedQuery('configuration_item=' + vm_azure_parent_rec + '^key=' + tagSet[m].Key);
@@ -836,7 +831,7 @@ Emp_CI_Creation_Validation_Script.prototype = {
                 tag_set_rel.insert();
             }
         }
-		return InstanceId;
+        return InstanceId;
     },
 
     getRelationTypeName: function(rel_parent, rel_child) {
@@ -858,13 +853,13 @@ Emp_CI_Creation_Validation_Script.prototype = {
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2021-08-30 09:10:19</sys_created_on>
         <sys_id>435c1b951bdab450acde777dcc4bcb2a</sys_id>
-        <sys_mod_count>122</sys_mod_count>
+        <sys_mod_count>131</sys_mod_count>
         <sys_name>Emp_CI_Creation_Validation_Script</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_435c1b951bdab450acde777dcc4bcb2a</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 07:46:54</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:28:31</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -17,6 +17,7 @@
         <override_menu_roles>false</override_menu_roles>
         <query>com.glideapp.servicecatalog_cat_item_view.do?sysparm_id=1cb704ffdb18e0502019d90d68961925</query>
         <report/>
+        <require_confirmation>false</require_confirmation>
         <roles>itil</roles>
         <sys_class_name>sys_app_module</sys_class_name>
         <sys_created_by>asbagad1@in.ibm.com</sys_created_by>

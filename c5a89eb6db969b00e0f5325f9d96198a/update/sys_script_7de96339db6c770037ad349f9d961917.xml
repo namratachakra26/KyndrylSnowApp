@@ -13,7 +13,7 @@
         <client_callable>false</client_callable>
         <collection>change_task</collection>
         <condition>new CheckIfEmpCatalogItems().checkCatalogItem(current.change_request)</condition>
-        <description/>
+        <description>This Business Rule triggers during failure use case when change task moves to Pending from In Progress state</description>
         <execute_function>false</execute_function>
         <filter_condition table="change_task">stateCHANGESFROM2^stateCHANGESTO-5^EQ<item display_value="In Progress" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESFROM" or="false" value="2"/>
             <item display_value="Pending" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESTO" or="false" value="-5"/>
@@ -31,31 +31,35 @@
         <rest_variables/>
         <role_conditions/>
         <script><![CDATA[/** 
-* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
-* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
-* Schedule Contract with Kyndryl Corp.  
-* @Business Rule triggers during failure use case when change task moves to Pending from In Progress state
-**/
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp.  
+ * @Business Rule triggers during failure use case when change task moves to Pending from In Progress state
+ **/
 
-(function executeRule(current, previous /*null when async*/) {
-	//catalog task set to pending and copy the latest worknotes
-	try {
-		var worknote = current.work_notes.getJournalEntry(1); //work notes latest entry updated in Activity of change task.
-		worknoteContent = worknote.split("(Work notes)\n");
-		var lastWorknote = worknoteContent[1];
-		var ritm = new GlideRecord('sc_req_item');
-		ritm.get('x_ibmg3_hcms_related_change_request',current.change_request);
-		var catTask = new GlideRecord('sc_task');
-		if(catTask.get('request_item', ritm.sys_id)) {
-			catTask.state = -5;//set to pending
-			catTask.work_notes = lastWorknote;
-			catTask.update();
-		}
-	}
-	catch(e) {
-		new HCMSLogLevel().LogMsg("error"," Error updating catalog task to pending "+e);
-	}
-	
+(function executeRule(current, previous /*null when async*/ ) {
+    //catalog task set to pending and copy the latest worknotes
+    try {
+        var worknote = current.work_notes.getJournalEntry(1); //work notes latest entry updated in Activity of change task.
+        worknoteContent = worknote.split("(Work notes)\n");
+        var lastWorknote = worknoteContent[1];
+        var ritm = new GlideRecord('sc_req_item');
+        ritm.addQuery('x_ibmg3_hcms_related_change_request', current.change_request);
+        ritm.query();
+        while (ritm.next()) {
+            var catTask = new GlideRecord('sc_task');
+            if (catTask.get('request_item', ritm.sys_id)) {
+                catTask.state = -5; //set to pending
+                catTask.work_notes = lastWorknote;
+                catTask.update();
+            }
+        }
+        //ritm.get('x_ibmg3_hcms_related_change_request',current.change_request);
+
+    } catch (e) {
+        new EmpLogLevel().logMsg("error", " Error updating catalog task to pending " + e);
+    }
+
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
@@ -63,15 +67,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>7de96339db6c770037ad349f9d961917</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>12</sys_mod_count>
         <sys_name>Emp Change Task Case Failure Scenario</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_7de96339db6c770037ad349f9d961917</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 05:17:20</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:20:55</sys_updated_on>
         <template/>
         <when>after</when>
     </sys_script>

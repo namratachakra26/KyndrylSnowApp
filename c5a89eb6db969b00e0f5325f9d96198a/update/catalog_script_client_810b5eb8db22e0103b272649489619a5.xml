@@ -17,6 +17,7 @@
         <messages/>
         <name>Default version to V2</name>
         <order/>
+        <published_ref/>
         <script><![CDATA[//inactivated as per INT-11672.
 
 function onChange(control, oldValue, newValue, isLoading) {
@@ -47,6 +48,7 @@ function onChange(control, oldValue, newValue, isLoading) {
         <table/>
         <type>onChange</type>
         <ui_type>0</ui_type>
+        <va_supported>true</va_supported>
         <variable_set display_value="EMP Configurations">335888ffdb18e0502019d90d68961988</variable_set>
         <view/>
     </catalog_script_client>

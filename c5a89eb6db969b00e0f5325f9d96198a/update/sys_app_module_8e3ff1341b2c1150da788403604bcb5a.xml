@@ -17,6 +17,7 @@
         <override_menu_roles>false</override_menu_roles>
         <query>x_ibmg3_hcms_Enterprise_EMP_UI.do</query>
         <report/>
+        <require_confirmation>false</require_confirmation>
         <roles>itil</roles>
         <sys_class_name>sys_app_module</sys_class_name>
         <sys_created_by>asbagad1@in.ibm.com</sys_created_by>

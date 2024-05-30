@@ -52,7 +52,6 @@
         <sys_class_name>sys_dictionary</sys_class_name>
         <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
         <sys_created_on>2018-09-02 08:50:46</sys_created_on>
-        <sys_id>56566665db982f0037ad349f9d96198d</sys_id>
         <sys_name>External Approval</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>

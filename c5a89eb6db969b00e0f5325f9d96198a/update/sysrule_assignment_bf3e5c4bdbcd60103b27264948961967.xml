@@ -8,7 +8,7 @@
         <description/>
         <group display_value="CLOUDGROUP" name="CLOUDGROUP">b432caa90f9a2200061b5d78a1050e2b</group>
         <match_conditions>ALL</match_conditions>
-        <name>IBM_MCMP_STANDARD_CHANGE_ASSIGNMENT</name>
+        <name>Kyndryl EMP Standard Change Management</name>
         <order>100</order>
         <script>/**&#13;
 * Example:&#13;
@@ -30,15 +30,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>bf3e5c4bdbcd60103b27264948961967</sys_id>
-        <sys_mod_count>3</sys_mod_count>
-        <sys_name>IBM_MCMP_STANDARD_CHANGE_ASSIGNMENT</sys_name>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>Kyndryl EMP Standard Change Management</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sysrule_assignment_bf3e5c4bdbcd60103b27264948961967</sys_update_name>
-        <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
-        <sys_updated_on>2021-01-18 07:50:41</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 07:54:35</sys_updated_on>
         <table>change_request</table>
         <user display_value="CLOUDAUTO ">51485741dbb0e3006b6d5ad3ca9619b6</user>
     </sysrule_assignment>

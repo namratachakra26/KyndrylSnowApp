@@ -13,12 +13,12 @@
         <client_callable>false</client_callable>
         <collection>change_task</collection>
         <condition>new CheckIfEmpCatalogItems().checkCatalogItem(current.change_request)</condition>
-        <description/>
+        <description>This Business Rule triggers pre provisioning call on change task creation</description>
         <execute_function>false</execute_function>
         <filter_condition/>
         <is_rest>false</is_rest>
         <message/>
-        <name>Emp Initiate outbound_Automate Change</name>
+        <name>Emp Initiate Outbound Automate Change</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -40,25 +40,24 @@
     var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
     var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
     var cart = gs.getProperty('x_ibmg3_hcms.mvp3.cart.enabled');
-    //initiate provisioning only for MCMP Cloud grp and when cart is enabled
+    //initiate provisioning only for EMP Cloud grp and when cart is enabled
     var message, changeRequestStatus = ""; //Variable to hold change value
 
     if (current.assignment_group.name == assgnGrp && current.assigned_to.name.indexOf(assgnTo) != -1 && current.short_description == 'Provisioning Task' && cart == "true") {
         changeRequestStatus = "OPENED";
         message = "The change task " + current.number + " is opened for fulfillment";
         //Initiate Provisioning to Enterprise Marketplace
-        var preProv = new ChangeTaskProvisioningCallToBroker().changeTaskStatusCall(current, changeRequestStatus, message);
+        var preProv = new ChangeTaskProvisioningCallToEmp().changeTaskStatusCall(current, changeRequestStatus, message);
     }
 
     //Move standard change to implement state for automating change process
-    var CHG = new GlideRecord('change_request');
-    CHG.addQuery('sys_id', current.change_request);
-    CHG.addQuery('type', 'standard');
-    CHG.addQuery('state', '-2');
-    CHG.query();
-    if (CHG.next()) {
-        CHG.state = '-1'; //set to implement state
-        CHG.update();
+	var chngQuery ='sys_id=' + current.change_request + '^type=standard^state=-2';
+    var grChange = new GlideRecord('change_request');
+	grChange.addEncodedQuery(chngQuery);    
+    grChange.query();
+    if (grChange.next()) {
+        grChange.state = '-1'; //set to implement state
+        grChange.update();
     }
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
@@ -67,15 +66,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>accd08f6db4a40d0e0f5325f9d96193f</sys_id>
-        <sys_mod_count>14</sys_mod_count>
-        <sys_name>Emp Initiate outbound_Automate Change</sys_name>
+        <sys_mod_count>19</sys_mod_count>
+        <sys_name>Emp Initiate Outbound Automate Change</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_accd08f6db4a40d0e0f5325f9d96193f</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 15:40:24</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 06:46:32</sys_updated_on>
         <template/>
         <when>async_always</when>
     </sys_script>

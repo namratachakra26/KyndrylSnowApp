@@ -7,77 +7,76 @@
         <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
         <http_method>POST</http_method>
         <name>request (v2)</name>
-        <operation_script><![CDATA[/** 
-  * @copyright(c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved.*@license Licensed Materials - Property of Kyndryl * Note to U.S.Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP *
-      Schedule Contract with Kyndryl Corp. 
+        <operation_script><![CDATA[/**
+ * @copyright(c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved.
+ * @license Licensed Materials - Property of Kyndryl 
+ * Note to U.S.Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
  * @author Asha Bagade 
  * @Rest Api is invoked from EM for creation of Request (cart enabled)**/
+
 (function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
     try {
         //Defining variables
+        var requestType, requestedFor, requestNumber, requestor, isQsCatalog, anonymousUser = '';
         var body = request.body.data;
-        var str = JSON.stringify(body);
+        var strBody = JSON.stringify(body);
         //Log incoming request payload from Enterprise marketplac
-        new HCMSLogLevel().LogMsg('info', 'Incoming Request creation Payload for v2 api: ' + str);
-        var requestType, requestedFor, requestNumber, requestor = '';
+        new EmpLogLevel().logMsg('info', 'Incoming Request creation Payload for v2 api: ' + strBody);
         //Obtaining broker location Information
         var brokerLocation = body.icb_brokerLocation;
-        //property to hold discovery status(enabled/disabled)
-        var discovery = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');
         //Track the order number
         var orderNumber = body.orderNumber;
         //Setting variable values from the request object
         requestedFor = body.requested_for;
         requestType = body.requestType;
-
-        //var cred = body.credential;
+        //property to hold discovery status(enabled/disabled)
+        var isDiscoveryEnabled = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');
+        //Set a variable to establish a baseline for the validation check & anonymous user value
+        var validationError;
+        var anonymousUserFound = false;
         //Establish a variable to hold the response body
         var responseBody = {};
-        //Set a variable to establish a baseline for the validation check
-        var validationError = "false";
-        var qsCatalog = '';
-        //variables to hold anonymous user value
-        var anonymousUserFound = "false";
-        var anonymousUser = '';
 
         //check if QS is enabled
-        if (gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true")
+        if (gs.getProperty('x_ibmg3_hcms.enable_quickstart') == "true")
             //check if QS catalog item
-            qsCatalog = isQSCatalog(body);
-
+            isQsCatalog = new EmpRestApiUtils().qsCatalogCheck(body);
         //validation for mandatory paramater
-        validateBaseElements(body, qsCatalog);
+        validationError = new EmpRestApiUtils().validateBaseElements(body, isQsCatalog, response);
 
         //Check property if system allows Anonymous User for Request creation
         var allowAnonymousUser = gs.getProperty('x_ibmg3_hcms.allow.anonymous.user');
         //Validate if requested_for is active in servicenow
-        var gr = new GlideRecord('sys_user');
-        gr.addEncodedQuery('email=' + requestedFor + '^ORuser_name =' + requestedFor + '^active=true');
-        gr.query();
-        if (!gr.next()) {
-            anonymousUserFound = "true"; //Requested For user is not found in servicenow
+
+        var userRec = new GlideRecord('sys_user');
+        userRec.addEncodedQuery('email=' + requestedFor + '^ORuser_name =' + requestedFor + '^active=true');
+        userRec.query();
+        if (!userRec.next()) {
+            anonymousUserFound = true; //Requested For user is not found in servicenow
             anonymousUser = requestedFor;
-            new HCMSLogLevel().LogMsg('info', "Anonymous User Found: " + anonymousUserFound);
-            if (allowAnonymousUser == "true") {
+            new EmpLogLevel().logMsg('info', "Anonymous User Found: " + anonymousUserFound);
+            if (allowAnonymousUser == 'true') { // Fetch the basic auth user and assign it to Requested For
                 var authHeaders = request.getHeader("Authorization");
                 authHeaders = authHeaders.split(" ");
                 var auth = gs.base64Decode(authHeaders[1]);
                 var split = auth.indexOf(":");
                 if (split == -1) {
-                    new HCMSLogLevel().LogMsg('info', 'Basic authentication not well formed');
+                    new EmpLogLevel().logMsg('info', 'Basic authentication not well formed');
+                } else {
+                    // locate integration user
+                    var userName = auth.substring(0, split);
+                    body.requested_for = userName.toString();
+                    requestedFor = userName;
                 }
-                // locate integration user
-                var userName = auth.substring(0, split);
-                body.requested_for = userName.toString();
-                requestedFor = userName;
             }
         }
-        if ((anonymousUserFound == "false" && allowAnonymousUser == "false") || allowAnonymousUser == "true") {
-            // creation of SR begins
+        if ((!anonymousUserFound && allowAnonymousUser == 'false') || allowAnonymousUser == 'true') {
+            // creation of SR begins    
             if (validationError == "false") {
                 //Redirect to QS if Enable_QuickStart is ture and is a valid QS catalog item(vra order)
-                if (gs.getProperty('x_ibmg3_hcms.Enable_QuickStart') == "true" && qsCatalog) {
-                    var req_for_found = new RedirectionToQuickStartUtils().checkReqForAttributeExists(body);
+                if (gs.getProperty('x_ibmg3_hcms.enable_quickstart') && isQsCatalog) {
+                    var requestedForFound = new RedirectionToQuickStartUtils().checkReqForAttributeExists(body);
                     for (l = 0; l < body.requestedItems.length; l++) {
                         //Add requestedBy property if anonymous user is sent
                         var requestedBy = {
@@ -85,8 +84,7 @@
                             "value": anonymousUser.toString()
                         };
                         body.requestedItems[l].itemProperties[0].properties.push(requestedBy);
-
-                        if (req_for_found == 'false') {
+                        if (requestedForFound == 'false') {
                             var properties = body.requestedItems[l].itemProperties[0].properties.length;
                             var reqforObj = {
                                 "name": "Requested For",
@@ -95,260 +93,43 @@
                             body.requestedItems[l].itemProperties[0].properties[properties] = reqforObj;
                         }
                     }
-
                     //redirect to QS endpoint
                     var qsResponse = new RedirectionToQuickStartUtils().quickStartRequestCreation(body, requestedFor);
                     //return the requestnumber received frm QS
                     var status = JSON.stringify(qsResponse.statusCode);
                     if (status == "200") {
                         responseBody = qsResponse;
-                        new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + ' is: ' + JSON.stringify(responseBody.requestNumber));
+                        new EmpLogLevel().logMsg('info', 'Request created for order ' + orderNumber + ' is: ' + JSON.stringify(responseBody.requestNumber));
                         response.setBody(responseBody);
                     } else {
                         var msg = JSON.stringify(qsResponse.message.message);
-                        new HCMSLogLevel().LogMsg('info', '*QS error for Request creation *' + msg);
-                        raiseResponseError(msg);
+                        new EmpLogLevel().logMsg('info', '*QS error for Request creation *' + msg);
+                        new EmpRestApiUtils().raiseResponseError(msg, "JSON payload error", response);
                     }
                 }
-                //Call droplet if QS is not enabled or for aws,azure providers
+                //Call droplet if QS is not enabled or for public providers like aws,azure
                 else {
-                    switch (requestType) {
-                        case 'New':
-                            requestNumber = new generateSingleCart_V2().processRequest(str, brokerLocation, requestedFor);
-                            //Log response request number from scoped cart API
-                            new HCMSLogLevel().LogMsg('info', 'Request created  for order ' + orderNumber + 'is : *' + requestNumber);
-                            //Set the response body
-                            responseBody.requestNumber = requestNumber;
-                            response.setBody(responseBody);
-                            break;
-
-                        case 'Edit':
-                            requestNumber = new generateSingleCart_V2().processRequest(str, brokerLocation, requestedFor);
-                            //Log response request number from scoped cart API
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
-                            //Set the response body
-                            responseBody.requestNumber = requestNumber;
-                            response.setBody(responseBody);
-                            break;
-
-                        case 'Terminate':
-                            requestNumber = new generateSingleCart_V2().processRequest(str, brokerLocation, requestedFor);
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
-                            responseBody.requestNumber = requestNumber;
-                            response.setBody(responseBody);
-                            break;
-
-                        case 'operation':
-                            requestNumber = new generateSingleCart_V2().processRequest(str, brokerLocation, requestedFor);
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
-                            responseBody.requestNumber = requestNumber;
-                            response.setBody(responseBody);
-                            break;
-
-                        default:
-                            raiseResponseError("requestType attribute");
+                    if (requestType == 'New' || requestType == 'Edit' || requestType == 'Terminate' || requestType == 'operation') {
+                        //invoke the SI , to process Request and RITM creation
+                        requestNumber = new GenerateSingleCartV2().processRequest(strBody, brokerLocation, requestedFor);
+                        //Log response request number from scoped cart API
+                        new EmpLogLevel().logMsg('info', 'Request created  for order ' + orderNumber + 'is : *' + requestNumber);
+                        //Set the response body
+                        responseBody.requestNumber = requestNumber;
+                        response.setBody(responseBody);
+                    } else {
+                        new EmpRestApiUtils().raiseResponseError("requestType attribute", "JSON payload error", response);
                     }
                 }
-            } //end if validationError
-            return {
-                //response body already defined and added to the response object
-            };
+            }
         } else {
             // throw error as there is no User in NOW instance.
-            raiseResponseErrorNoUserPresent("User not found in ServiceNow hence, no Service request created.");
+            new EmpRestApiUtils().raiseResponseError("User not found in ServiceNow hence, no Service request created", "Service Request creation aborted", response);
         }
     } catch (err) {
-        new HCMSLogLevel().LogMsg("error", "Request Creation API error: " + this.type + "(" + err.message + ")");
+        new EmpLogLevel().logMsg("error", "Request Creation API error: " + err.message);
     }
 
-    //********* VALIDATION FUNCTIONS  ************
-    //Function to validate the base level elements
-    function validateBaseElements(bBody, qsCatalog) {
-        var ritmCount = bBody.requestedItems;
-        //var qsCatalog = '';
-        if (ritmCount.length > 0) {
-            if (qsCatalog) {
-                new HCMSLogLevel().LogMsg("info", "QS catalog items validated " + " for order " + bBody.orderNumber);
-            } else { //validate for generic catalogs
-                for (var i = 0; i < ritmCount.length; i++) {
-                    var catFound = "false";
-                    //catalog_item_name
-                    var catName = bBody.requestedItems[i].catalog_item_name;
-                    //catalog item sys id
-                    var catalog_sysId = bBody.requestedItems[i].catalogItemId;
-                    // variable to hold the name of catalog item quried thru sys_id
-                    var catalogName = '';
-                    if (catalog_sysId) {
-                        var catItem = new GlideRecord('sc_cat_item');
-                        if (catItem.get('sys_id', catalog_sysId)) {
-                            gs.info("catalog_sysId " + catalog_sysId + "catItem.name :" + catItem.name);
-                            catalogName = catItem.name.toString();
-                        } else {
-                            validationError = "true";
-                            raiseResponseError("catalogItemId value is incorrect");
-                        }
-                    }
-                    //check if EMP catalog item				
-                    if ((!catalog_sysId && catName) || (catalog_sysId && catalogName)) {
-                        if (catalogName)
-                            catName = catalogName;
-                        //check if valid EMP catalog item
-                        var mcmCat_items = gs.getProperty('x_ibmg3_hcms.EMP_catalog_items').split(';');
-                        for (var j = 0; j < mcmCat_items.length; j++) {
-                            if (mcmCat_items[j].indexOf(catName) > -1 && mcmCat_items[j].length == catName.length) {
-                                catFound = "true";
-                                break;
-                            }
-                        }
-                        if (catFound == "false") { // if catalog is not EMP catalog rasie error
-                            validationError = "true";
-                            raiseResponseError("catalog_item_name/catalogItemId attribute doesn't hold valid catalog or cart cannot contain combination of public and private catalogs");
-                        }
-                    } else {
-                        validationError = "true";
-                        raiseResponseError("catalog_item_name/catalogItemId attribute missing or incorrect");
-                    }
-                    //Change Approval Required
-                    if (!(bBody.requestedItems[i].changeApprovalRequired)) {
-                        validationError = "true";
-                        raiseResponseError("changeApprovalRequired missing");
-                    }
-                    if (empty(bBody.requestedItems[i].changeApprovalRequired)) {
-                        validationError = "true";
-                        raiseResponseError("changeApprovalRequired missing");
-                    }
-                }
-            }
-        } else {
-            validationError = "true";
-            raiseResponseError("catalog_item_sys_id attribute missing");
-        }
-        //validate requested_for
-        if (!bBody.requested_for) {
-            validationError = "true";
-            raiseResponseError("requested_for attribute missing");
-        }
-        if (empty(bBody.requested_for)) {
-            validationError = "true";
-            raiseResponseError("requested_for attribute bad value");
-        }
-        //validate orderNumber
-        if (!bBody.orderNumber) {
-            validationError = "true";
-            raiseResponseError("orderNumber attribute missing");
-        }
-        if (empty(bBody.orderNumber)) {
-            validationError = "true";
-            raiseResponseError("orderNumber attribute bad value");
-        }
-        //validate requestType
-        if (!bBody.requestType) {
-            validationError = "true";
-            raiseResponseError("requestType attribute missing");
-        }
-        if (empty(bBody.requestType)) {
-            validationError = "true";
-            raiseResponseError("requestType attribute bad value");
-        }
-        if (bBody.requestType == "New") {
-            var payloadQuantity = bBody.requestedItems.quantity;
-            var intQuantity = parseInt(payloadQuantity, 10);
-            if (intQuantity < 1) {
-                validationError = "true";
-                raiseResponseError("quantity attribute less than one");
-            }
-        }
-        if (bBody.requestType == "operation" && !qsCatalog && discovery == "true") {
-            //resource name validation
-            var resrc = new HCMSOperationsValidations().validateResourceName(bBody);
-            if (!resrc || resrc == "") {
-                validationError = "true";
-                raiseResponseError("ResourceName not available in cmdb");
-            }
-        }
-    }
-
-    //Function to handle string tests
-    function empty(e) {
-        //Test the string
-        switch (e) {
-            case "":
-                return true;
-            case 0:
-                return true;
-            case "0":
-                return true;
-            case null:
-                return true;
-                //case false:
-            case typeof this == "undefined":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    //Function to handle response error messages
-    function raiseResponseError(message) {
-        //Raises a response error
-        var theError = new sn_ws_err.ServiceError();
-        theError.setStatus(403);
-        theError.setMessage("JSON payload error.");
-        theError.setDetail(message);
-        response.setError(theError);
-
-        //Log the error on processing the request
-        new HCMSLogLevel().LogMsg("error", "Request Creation Validation : ERROR: JSON payload error.");
-        new HCMSLogLevel().LogMsg("error", "Request Creation Validation : ERROR: " + message);
-        new HCMSLogLevel().LogMsg("info", "Request Creation Validation : ERROR: " + message + " for order: " + body.orderNumber);
-    }
-
-    //Function to handle response error messages for no SR creation
-    function raiseResponseErrorNoUserPresent(message) {
-        //Raises a response error
-        var theError = new sn_ws_err.ServiceError();
-        theError.setStatus(403);
-        theError.setMessage("Service Request creation aborted.");
-        theError.setDetail(message);
-        response.setError(theError);
-
-        //Log the error on processing the request
-        new HCMSLogLevel().LogMsg("error", "Request Creation : ERROR: Service Request creation aborted.");
-        new HCMSLogLevel().LogMsg('error', 'Request auto rejected. No user found in ServiceNow. Order Num: ' + body.orderNumber);
-        new HCMSLogLevel().LogMsg("error", "Request Creation: ERROR: " + message);
-        new HCMSLogLevel().LogMsg("info", "Request Creation: ERROR: " + message + " for order: " + body.orderNumber);
-    }
-
-    //Function to validate QS catalog item
-    function isQSCatalog(bBody) {
-        var ritmCount = bBody.requestedItems;
-        if (ritmCount.length > 0) {
-            var qsItem = '';
-            for (var i = 0; i < ritmCount.length; i++) {
-                //catalog_item_name
-                var catalogItemCode = bBody.requestedItems[i].catalog_item_name;
-                var catalog_sysId = bBody.requestedItems[i].catalogItemId;
-                if (catalogItemCode || catalog_sysId) {
-                    var tablefield = 'u_applies_to.name';
-                    var payloadParameter = catalogItemCode;
-                    if (catalog_sysId) { //use catalog item sysId if sent in payload else check for item code
-                        tablefield = 'u_catalog_item';
-                        payloadParameter = catalog_sysId;
-                    } //check if catalog item is available in mapping table
-                    var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
-                    if (mappingTable.get(tablefield, payloadParameter)) {
-                        new HCMSLogLevel().LogMsg("info", "Valid QS Catalog item : " + payloadParameter + " for Ordernumber : " + bBody.orderNumber);
-                        qsItem = true;
-                    } else {
-                        new HCMSLogLevel().LogMsg("info", "Generic Catalog item : " + payloadParameter + " for Ordernumber : " + bBody.orderNumber);
-                        return false;
-                    }
-                } else
-                    return false;
-            }
-            return qsItem;
-        }
-    }
 })(request, response);]]></operation_script>
         <operation_uri>/api/x_ibmg3_hcms/v2/broker/request</operation_uri>
         <produces>application/json,application/xml,text/xml</produces>
@@ -363,14 +144,14 @@
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2019-12-12 10:35:33</sys_created_on>
         <sys_id>cb7332e3db2500d037ad349f9d9619f7</sys_id>
-        <sys_mod_count>103</sys_mod_count>
+        <sys_mod_count>141</sys_mod_count>
         <sys_name>request (v2)</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_ws_operation_cb7332e3db2500d037ad349f9d9619f7</sys_update_name>
         <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 08:41:50</sys_updated_on>
+        <sys_updated_on>2024-05-29 09:09:02</sys_updated_on>
         <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
         <web_service_version display_value="v2">3e7332e3db2500d037ad349f9d9619f3</web_service_version>
     </sys_ws_operation>

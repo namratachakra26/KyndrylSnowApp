@@ -10,6 +10,7 @@
         <name>Users with hcms role</name>
         <role name="x_ibmg3_hcms.hcms_user">0360f629db6b1b00e0f5325f9d961923</role>
         <script/>
+        <short_description/>
         <sys_class_name>user_criteria</sys_class_name>
         <sys_created_by>vram@us.ibm.com</sys_created_by>
         <sys_created_on>2018-07-27 02:51:12</sys_created_on>
@@ -26,4 +27,5 @@
         <sys_updated_on>2018-07-27 02:51:12</sys_updated_on>
         <user/>
     </user_criteria>
+    <sys_translated_text action="delete_multiple" query="documentkey=0f61b269db6b1b00e0f5325f9d961903"/>
 </record_update>

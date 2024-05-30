@@ -13,7 +13,7 @@
         <client_callable>false</client_callable>
         <collection>sysapproval_approver</collection>
         <condition>new CheckIfEmpCatalogItems().checkCatalogItem(current.document_id)</condition>
-        <description/>
+        <description>This Business Rule used to set the Request state and stage field based on change approval</description>
         <execute_function>false</execute_function>
         <filter_condition table="sysapproval_approver">sysapprovalSTARTSWITHCHG^state=approved^ORstate=rejected^EQ<item endquery="false" field="sysapproval" goto="false" newquery="false" operator="STARTSWITH" or="false" value="CHG"/>
             <item display_value="Approved" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="approved"/>
@@ -36,66 +36,65 @@
  * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
  * Schedule Contract with Kyndryl Corp. 
  * @author Asha Bagade 
- * @Business Rule updates the Request state based on Approval
+ * @Business Rule used to set the Request state and stage field based on change approval
  **/
 
 (function executeRule(current, previous /*null when async*/ ) {
-    //this BR is used to set the Request state and stage field based on change approval
-    var st_tus = current.state;
-    var req_rec;
-    var apr_id = current.document_id; //fetch Change id
+try{
+    var status = current.state;
+    var request;
+    var aprId = current.document_id; //fetch Change id
     var cart = gs.getProperty('x_ibmg3_hcms.mvp3.cart.enabled'); // property decides if mvp3 cart is enabled and approval is driven by request alone
-    var req_item = new GlideRecord('sc_req_item');
-    req_item.addQuery('x_ibmg3_hcms_related_change_request', apr_id);
-    req_item.query();
-    if (req_item.next()) {
-        req_rec = req_item.request;
+    var reqItem = new GlideRecord('sc_req_item');
+    reqItem.addQuery('x_ibmg3_hcms_related_change_request', aprId);
+    reqItem.query();
+    if (reqItem.next()) {
+        request = reqItem.request;
     }
 
     //update the request stage
-    var reqrec = new GlideRecord('sc_request');
-    reqrec.addQuery('sys_id', req_rec);
-    reqrec.query();
-    if (reqrec.next()) {
+    var reqRecord = new GlideRecord('sc_request');
+    reqRecord.addQuery('sys_id', request);
+    reqRecord.query();
+    if (reqRecord.next()) {
         //when cart is enabled and approval response to EM is request driven, once change is approved Request stage is set to fulfillment
         if (cart == "true") {
-            if (st_tus == 'approved') {
-                var qry = 'sysapproval=' + apr_id + '^state=requested';
-                var gr = new GlideRecord('sysapproval_approver');
-                gr.addEncodedQuery(qry);
-                gr.query();
-                if (!gr.next()) {
-                    reqrec.stage = 'fulfillment';
-                    new HCMSLogLevel().LogMsg("info", current.document_id.getDisplayValue() + " Approved , Request " + reqrec.number + " moved to Fulfillment");
-                    reqrec.update();
+            if (status == 'approved') {
+                var qry = 'sysapproval=' + aprId + '^state=requested';
+                var grApprover = new GlideRecord('sysapproval_approver');
+                grApprover.addEncodedQuery(qry);
+                grApprover.query();
+                if (!grApprover.next()) {
+                    reqRecord.stage = 'fulfillment';
+                    new EmpLogLevel().logMsg("info", current.document_id.getDisplayValue() + " Approved , Request " + reqRecord.number + " moved to Fulfillment");
+                    reqRecord.update();
                 }
-            } 
-			
-			else if (st_tus == 'rejected') {
-                new HCMSLogLevel().LogMsg("info", current.document_id.getDisplayValue() + " Rejected");
+            } else if (status == 'rejected') {
+                new EmpLogLevel().logMsg("info", current.document_id.getDisplayValue() + " Rejected");
                 //set catalog task to incomplete which inturn will set RITM state via WF
                 var catTsk = new GlideRecord('sc_task');
-                catTsk.addQuery('request_item', req_item.sys_id);
+                catTsk.addQuery('request_item', reqItem.sys_id);
                 catTsk.query();
                 if (catTsk.next()) {
                     catTsk.state = 4;
                     catTsk.update();
                 }
             }
-        } 
-		
-		else {
+        } else {
             //For non cart approval response to EM would be sent after change approval, once chg is approved/rejected Request state and stage are set
-            if (st_tus == 'approved') {
-                reqrec.approval = 'approved';
-                reqrec.stage = 'fulfillment';
-                new HCMSLogLevel().LogMsg("info", current.document_id.getDisplayValue() + " Approved , Request " + reqrec.number + " moved to Fulfillment");
-            } else if (st_tus == 'rejected') {
-                reqrec.approval = 'rejected';
-                new HCMSLogLevel().LogMsg("info", current.document_id.getDisplayValue() + " Rejected");
+            if (status == 'approved') {
+                reqRecord.approval = 'approved';
+                reqRecord.stage = 'fulfillment';
+                new EmpLogLevel().logMsg("info", current.document_id.getDisplayValue() + " Approved , Request " + reqRecord.number + " moved to Fulfillment");
+            } else if (status == 'rejected') {
+                reqRecord.approval = 'rejected';
+                new EmpLogLevel().logMsg("info", current.document_id.getDisplayValue() + " Rejected");
             }
-            reqrec.update();
+            reqRecord.update();
         }
+    }
+	} catch (e) {
+        new EmpLogLevel().logMsg("error", " Error in Change Approval Status " + e);
     }
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
@@ -104,15 +103,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>9f7d4c7bdbc963c0e0f5325f9d961924</sys_id>
-        <sys_mod_count>28</sys_mod_count>
+        <sys_mod_count>33</sys_mod_count>
         <sys_name>Change Approval Status</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_9f7d4c7bdbc963c0e0f5325f9d961924</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 05:04:52</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:10:22</sys_updated_on>
         <template/>
         <when>after</when>
     </sys_script>

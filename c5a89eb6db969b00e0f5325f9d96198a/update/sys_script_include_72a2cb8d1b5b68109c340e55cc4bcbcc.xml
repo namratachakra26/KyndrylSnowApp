@@ -2,7 +2,7 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.Emp_Auth_Profile_Configuration</api_name>
+        <api_name>x_ibmg3_hcms.EmpAuthProfileConfiguration</api_name>
         <caller_access/>
         <client_callable>true</client_callable>
         <description>/** &#13;
@@ -12,92 +12,88 @@
 * @author Shalini S &#13;
 * @Script Include is used to fetch and update properties&#13;
 **/</description>
-        <name>Emp_Auth_Profile_Configuration</name>
-        <script><![CDATA[var Emp_Auth_Profile_Configuration = Class.create();
-Emp_Auth_Profile_Configuration.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+        <name>EmpAuthProfileConfiguration</name>
+        <script><![CDATA[var EmpAuthProfileConfiguration = Class.create();
+EmpAuthProfileConfiguration.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 
 
-    get_Auth_profile: function() {
+    getAuthProfile: function() {
 
-        var auth_val = this.getParameter('auth_name');
-        var approval_wf_ext = this.getParameter('approval_wf_name');
+        var authVal = this.getParameter('auth_name');
+        var approvalWfExt = this.getParameter('approval_wf_name');
         var usr = new GlideRecord('sys_user');
-        usr.get('user_name', auth_val);
-        var usr_domain = usr.sys_domain.getDisplayValue().toString();
-        var bs_auth = new GlideRecord('sys_auth_profile_basic');
-        bs_auth.get('name', auth_val);
-        var bs_auth_val = bs_auth.sys_id;
-        if (usr_domain != 'global') {
-            GlideApplicationProperty.setValue('x_ibmg3_hcms.approval.sub.workflow.name', approval_wf_ext, usr_domain);
-            GlideApplicationProperty.setValue('x_ibmg3_hcms.API_AuthenticationProfile', bs_auth_val, usr_domain);
-
-            return 'Domain Specific AuthProfile Property Updated';
-        } else {
-            gs.setProperty('x_ibmg3_hcms.API_AuthenticationProfile', usr.sys_id);
-            gs.setProperty('x_ibmg3_hcms.approval.sub.workflow.name', approval_wf_ext);
-
-            return 'AuthProfile Property Updated';
+        if (usr.get('user_name', authVal)) {
+            var usrDomain = usr.sys_domain.getDisplayValue().toString();
+            var bsAuth = new GlideRecord('sys_auth_profile_basic');
+            if (bsAuth.get('name', authVal)) {
+                var bsAuthVal = bsAuth.sys_id;
+                if (usrDomain != 'global') {
+                    GlideApplicationProperty.setValue('x_ibmg3_hcms.approval.sub.workflow.name', approvalWfExt, usrDomain);
+                    GlideApplicationProperty.setValue('x_ibmg3_hcms.api_authenticationprofile', bsAuthVal, usrDomain);
+                    return 'Domain Specific AuthProfile Property Updated';
+                } else {
+                    gs.setProperty('x_ibmg3_hcms.api_authenticationprofile', usr.sys_id);
+                    gs.setProperty('x_ibmg3_hcms.approval.sub.workflow.name', approvalWfExt);
+                    return 'AuthProfile Property Updated';
+                }
+            }
         }
 
     },
 
-    update_properties: function() {
+    updateProperties: function() {
         try {
-            var auth_val = this.getParameter('auth_name');
-            var approval_wf_ext = this.getParameter('approval_wf_name');
-            var disc_en = this.getParameter('discovery_enabled');
-            var qkstart_en = this.getParameter('qkstart_enabled');
-            var retry_c = this.getParameter('retry_count');
+            var authVal = this.getParameter('auth_name');
+            var approvalWfExt = this.getParameter('approval_wf_name');
+            var discEn = this.getParameter('discovery_enabled');
+            var qkstartEn = this.getParameter('qkstart_enabled');
+            var retryCount = this.getParameter('retry_count');
             var anonymousUser = this.getParameter('anonymous_user');
-            var out_mid = this.getParameter('out_midserver');
-            var mid_det = this.getParameter('mid_details');
-            var c_ag = this.getParameter('cloud_ag');
-            var c_at = this.getParameter('cloud_at');
-            var ci_ag = this.getParameter('cloud_ci_ag');
+            var outMid = this.getParameter('out_midserver');
+            var midDet = this.getParameter('mid_details');
+            var cloudAg = this.getParameter('cloud_ag');
+            var cloudAt = this.getParameter('cloud_at');
+            var ciAssgrp = this.getParameter('cloud_ci_ag');
             var aVersion = this.getParameter('adapterVersion');
-			gs.info("adapVersion in SI"+aVersion);
             var apiCreden = this.getParameter('api_credential');
-            var mcmpUrl = this.getParameter('mcmp_url');
-            var usr_domain, apiCred;
+            var empUrl = this.getParameter('mcmp_url');
+            var usrDomain, apiCred;
 
             if (apiCreden) {
                 var usr = new GlideRecord('api_key_credentials');
-                usr.get('sys_id', apiCreden);
-                if (usr.name)
+                if (usr.get('sys_id', apiCreden))
                     apiCred = usr.name;
                 else
                     apiCred = apiCreden;
             }
 
             //get auth profile sysid
-            var bs_auth = new GlideRecord('sys_auth_profile_basic');
-            bs_auth.get('name', auth_val);
-            if (bs_auth.sys_id) {
-                var bs_auth_val = bs_auth.sys_id;
-            } else bs_auth_val = '';
+            var bsAuth = new GlideRecord('sys_auth_profile_basic');
+            if (bsAuth.get('name', authVal))
+                var bsAuthVal = bsAuth.sys_id;
+            else bsAuthVal = '';
 
-
-            if (!approval_wf_ext) {
-                approval_wf_ext = '';
+            if (!approvalWfExt) {
+                approvalWfExt = '';
             }
 
             //check Domain Separation
-            var domainFlg = this.CheckDomainSeparation();
+            var domainFlg = this.checkDomainSeparation();
             if (domainFlg == 'false') {
-                gs.setProperty('x_ibmg3_hcms.API_AuthenticationProfile', bs_auth_val);
+                gs.setProperty('x_ibmg3_hcms.api_authenticationprofile', bsAuthVal);
                 gs.setProperty('x_ibmg3_hcms.emp_api_key_credential', apiCred);
-                gs.setProperty('x_ibmg3_hcms.approval.sub.workflow.name', approval_wf_ext);
-                if (retry_c) gs.setProperty('x_ibmg3_hcms.Outbound_Retry_Count', retry_c);
-                gs.setProperty('x_ibmg3_hcms.mvp3.discovery.enabled', disc_en);
-                gs.setProperty('x_ibmg3_hcms.Enable_QuickStart', qkstart_en);
+                gs.setProperty('x_ibmg3_hcms.approval.sub.workflow.name', approvalWfExt);
+                if (retryCount) gs.setProperty('x_ibmg3_hcms.outbound_retry_count', retryCount);
+                gs.setProperty('x_ibmg3_hcms.mvp3.discovery.enabled', discEn);
+                gs.setProperty('x_ibmg3_hcms.enable_quickstart', qkstartEn);
                 gs.setProperty('x_ibmg3_hcms.allow.anonymous.user', anonymousUser);
-                gs.setProperty('x_ibmg3_hcms.AdapterVersionConfiguration', aVersion); // if new ui is used, versioning to v4 for outbound calls
-                if (out_mid) gs.setProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver', out_mid);
-                if (mid_det) gs.setProperty('x_ibmg3_hcms.emp.midserver.details', mid_det);
-                if (c_ag) gs.setProperty('x_ibmg3_hcms.emp_cloud.assignment_group', c_ag);
-                if (c_at) gs.setProperty('x_ibmg3_hcms.emp_cloud.assigned_to', c_at);
-                if (ci_ag) gs.setProperty('x_ibmg3_hcms.emp_cloud.ci_assignment_group', ci_ag);
-                if (mcmpUrl) gs.setProperty('x_ibmg3_hcms.emp.tenant.url', mcmpUrl);
+                gs.setProperty('x_ibmg3_hcms.adapter.version.configuration', aVersion); // if new ui is used, versioning to v4 for outbound calls
+                if (outMid) gs.setProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver', outMid);
+                if (midDet) gs.setProperty('x_ibmg3_hcms.emp.midserver.details', midDet);
+                if (cloudAg) gs.setProperty('x_ibmg3_hcms.emp_cloud.assignment_group', cloudAg);
+                if (cloudAt) gs.setProperty('x_ibmg3_hcms.emp_cloud.assigned_to', cloudAt);
+                if (ciAssgrp) gs.setProperty('x_ibmg3_hcms.emp_cloud.ci_assignment_group', ciAssgrp);
+                if (empUrl) gs.setProperty('x_ibmg3_hcms.emp.tenant.url', empUrl);
 
                 gs.info('Auth Profile Properties for Non Domain Seperation Updated successfully');
                 return 'Auth Profile Properties for Non Domain Seperated ';
@@ -105,57 +101,51 @@ Emp_Auth_Profile_Configuration.prototype = Object.extendsObject(global.AbstractA
 
                 //new UI changes                   
                 var usr1 = new GlideRecord('sys_user');
-                usr1.get('sys_id', gs.getUserID());
-                if (usr1.sys_domain)
-                    usr_domain = usr1.sys_domain;
+                if (usr1.get('sys_id', gs.getUserID()))
+                    usrDomain = usr1.sys_domain;
 
-
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp.outbound_calls.through.midserver', out_mid, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp.midserver.details', mid_det, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_cloud.assignment_group', c_ag, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_cloud.assigned_to', c_at, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_cloud.ci_assignment_group', ci_ag, usr_domain);
-
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.approval.sub.workflow.name', approval_wf_ext, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.API_AuthenticationProfile', bs_auth_val, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_api_key_credential', apiCred, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.Outbound_Retry_Count', retry_c, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.mvp3.discovery.enabled', disc_en, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.Enable_QuickStart', qkstart_en, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.allow.anonymous.user', anonymousUser, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp.tenant.url', mcmpUrl, usr_domain);
-                GlideApplicationProperty.setValue('x_ibmg3_hcms.AdapterVersionConfiguration', aVersion, usr_domain); // if new ui is used, versioning to v4 for outbound calls in DS
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp.outbound_calls.through.midserver', outMid, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp.midserver.details', midDet, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_cloud.assignment_group', cloudAg, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_cloud.assigned_to', cloudAt, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_cloud.ci_assignment_group', ciAssgrp, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.approval.sub.workflow.name', approvalWfExt, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.api_authenticationprofile', bsAuthVal, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp_api_key_credential', apiCred, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.outbound_retry_count', retryCount, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.mvp3.discovery.enabled', discEn, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.enable_quickstart', qkstartEn, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.allow.anonymous.user', anonymousUser, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.emp.tenant.url', empUrl, usrDomain);
+                GlideApplicationProperty.setValue('x_ibmg3_hcms.adapter.version.configuration', aVersion, usrDomain); // if new ui is used, versioning to v4 for outbound calls in DS
                 gs.info('Auth Profile Properties for Domain Seperation Updated successfully');
                 return 'Auth Profile Properties for Domain Seperated ';
             }
 
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Updating Configurations to System Properties error " + err);
+            new EmpLogLevel().logMsg("info", "Updating Configurations to System Properties error " + err);
         }
 
     },
 
-    fetch_properties: function() {
+    fetchProperties: function() {
         try {
             var arr = {};
             var apiCred = this.getParameter('api_credential');
             //check Domain Separation
-            var domainFlg = this.CheckDomainSeparation();
+            var domainFlg = this.checkDomainSeparation();
 
             if (domainFlg == 'false') {
-                var authProf = gs.getProperty('x_ibmg3_hcms.API_AuthenticationProfile');
-
-
+                var authProf = gs.getProperty('x_ibmg3_hcms.api_authenticationprofile');
                 var auth = new GlideRecord('sys_auth_profile_basic');
-                auth.get('sys_id', authProf);
-                if (auth.name) {
+                if (auth.get('sys_id', authProf))
                     arr.authName = (auth.name).toString();
-                }
+
                 arr.appWfl = gs.getProperty('x_ibmg3_hcms.approval.sub.workflow.name');
                 arr.apiKeyCred = gs.getProperty('x_ibmg3_hcms.emp_api_key_credential');
-                arr.retryC = gs.getProperty('x_ibmg3_hcms.Outbound_Retry_Count');
+                arr.retryC = gs.getProperty('x_ibmg3_hcms.outbound_retry_count');
                 arr.discE = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');
-                arr.quickE = gs.getProperty('x_ibmg3_hcms.Enable_QuickStart');
+                arr.quickE = gs.getProperty('x_ibmg3_hcms.enable_quickstart');
                 arr.anonymousUsr = gs.getProperty('x_ibmg3_hcms.allow.anonymous.user');
                 arr.outMid = gs.getProperty('x_ibmg3_hcms.emp.outbound_calls.through.midserver');
                 arr.midDet = gs.getProperty('x_ibmg3_hcms.emp.midserver.details');
@@ -170,75 +160,66 @@ Emp_Auth_Profile_Configuration.prototype = Object.extendsObject(global.AbstractA
             } else {
                 //new UI changes to set domain             
                 var usr1 = new GlideRecord('sys_user');
-                usr1.get('sys_id', gs.getUserID());
-                if (usr1.sys_domain)
-                    usr_domain = usr1.sys_domain;
-
-
-                var authProfDs = GlideApplicationProperty.getValue('x_ibmg3_hcms.API_AuthenticationProfile', usr_domain);
-
+                if (usr1.get('sys_id', gs.getUserID()))
+                    usrDomain = usr1.sys_domain;
+                var authProfDs = GlideApplicationProperty.getValue('x_ibmg3_hcms.api_authenticationprofile', usrDomain);
                 var authDs = new GlideRecord('sys_auth_profile_basic');
-                authDs.get('sys_id', authProfDs);
-                if (authDs.name) {
+                if (authDs.get('sys_id', authProfDs))
                     arr.authName = (authDs.name).toString();
-                }
-                arr.appWfl = GlideApplicationProperty.getValue('x_ibmg3_hcms.approval.sub.workflow.name', usr_domain);
-                arr.apiKeyCred = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_api_key_credential', usr_domain);
-                arr.retryC = GlideApplicationProperty.getValue('x_ibmg3_hcms.Outbound_Retry_Count', usr_domain);
-                arr.discE = GlideApplicationProperty.getValue('x_ibmg3_hcms.mvp3.discovery.enabled', usr_domain);
-                arr.quickE = GlideApplicationProperty.getValue('x_ibmg3_hcms.Enable_QuickStart', usr_domain);
-                arr.anonymousUsr = GlideApplicationProperty.getValue('x_ibmg3_hcms.allow.anonymous.user', usr_domain);
-                arr.outMid = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.outbound_calls.through.midserver', usr_domain);
-                arr.midDet = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.midserver.details', usr_domain);
-                arr.cloudAG = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_cloud.assignment_group', usr_domain);
-                arr.cloudAssign = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_cloud.assigned_to', usr_domain);
-                arr.cloudCIAG = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_cloud.ci_assignment_group', usr_domain);
-                arr.mcmpUrl = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.tenant.url', usr_domain);
+
+                arr.appWfl = GlideApplicationProperty.getValue('x_ibmg3_hcms.approval.sub.workflow.name', usrDomain);
+                arr.apiKeyCred = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_api_key_credential', usrDomain);
+                arr.retryC = GlideApplicationProperty.getValue('x_ibmg3_hcms.outbound_retry_count', usrDomain);
+                arr.discE = GlideApplicationProperty.getValue('x_ibmg3_hcms.mvp3.discovery.enabled', usrDomain);
+                arr.quickE = GlideApplicationProperty.getValue('x_ibmg3_hcms.enable_quickstart', usrDomain);
+                arr.anonymousUsr = GlideApplicationProperty.getValue('x_ibmg3_hcms.allow.anonymous.user', usrDomain);
+                arr.outMid = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.outbound_calls.through.midserver', usrDomain);
+                arr.midDet = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.midserver.details', usrDomain);
+                arr.cloudAG = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_cloud.assignment_group', usrDomain);
+                arr.cloudAssign = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_cloud.assigned_to', usrDomain);
+                arr.cloudCIAG = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp_cloud.ci_assignment_group', usrDomain);
+                arr.empUrl = GlideApplicationProperty.getValue('x_ibmg3_hcms.emp.tenant.url', usrDomain);
 
                 var jsonArrDs = JSON.stringify(arr);
                 return jsonArrDs;
             }
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Fetching Values from System Properties error " + err);
+            new EmpLogLevel().logMsg("info", "Fetching Values from System Properties error " + err);
         }
     },
 
 
-    CheckDomainSeparation: function() {
-        var plg = new GlideRecord('sys_plugins');
-        plg.addQuery('source', 'com.glide.domain');
-        plg.query();
-        plg.next();
-        if (plg.active) {
+    checkDomainSeparation: function() {
+        var plgin = new GlideRecord('sys_plugins');
+        plgin.addQuery('source', 'com.glide.domain');
+        plgin.query();
+        plgin.next();
+        if (plgin.active) {
             return 'true';
         } else {
             return 'false';
         }
     },
-	
-	getIntegratedCreds: function() {
-		var propObj = {};
-		propObj.url = gs.getProperty('x_ibmg3_hcms.emp.tenant.url');
-        propObj.creds = gs.getProperty('x_ibmg3_hcms.emp_api_key_credential');
-		propObj.version = gs.getProperty('x_ibmg3_hcms.AdapterVersionConfiguration');
-		
-		var propObjs = JSON.stringify(propObj);
-		return propObjs;
-    },
 
-    type: 'Emp_Auth_Profile_Configuration'
+    getIntegratedCreds: function() {
+        var propObj = {};
+        propObj.version = gs.getProperty('x_ibmg3_hcms.adapter.version.configuration');
+        var propObjs = JSON.stringify(propObj);
+        return propObjs;
+    },
+    type: 'EmpAuthProfileConfiguration'
 });]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2021-04-02 09:29:47</sys_created_on>
         <sys_id>72a2cb8d1b5b68109c340e55cc4bcbcc</sys_id>
-        <sys_mod_count>125</sys_mod_count>
-        <sys_name>Emp_Auth_Profile_Configuration</sys_name>
+        <sys_mod_count>144</sys_mod_count>
+        <sys_name>EmpAuthProfileConfiguration</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_72a2cb8d1b5b68109c340e55cc4bcbcc</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-11 13:28:09</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 08:09:21</sys_updated_on>
     </sys_script_include>
 </record_update>

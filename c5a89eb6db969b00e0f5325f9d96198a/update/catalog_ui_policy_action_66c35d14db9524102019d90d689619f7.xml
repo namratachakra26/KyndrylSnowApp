@@ -5,6 +5,8 @@
         <cleared>false</cleared>
         <disabled>ignore</disabled>
         <field/>
+        <field_message/>
+        <field_message_type/>
         <mandatory>true</mandatory>
         <order>100</order>
         <sys_class_name>catalog_ui_policy_action</sys_class_name>
@@ -20,8 +22,9 @@
         <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
         <sys_updated_on>2020-12-21 07:24:04</sys_updated_on>
         <table/>
-        <u_item_option_new_sys_id>2980810fdb01a0103b272649489619ad</u_item_option_new_sys_id>
         <ui_policy display_value="Make fields mandatory and ReadOnly onload">01071233db3cac102019d90d689619e2</ui_policy>
+        <value/>
+        <value_action/>
         <variable>mcmp_api_credential</variable>
         <variable_set display_value="EMP Configurations">335888ffdb18e0502019d90d68961988</variable_set>
         <visible>ignore</visible>

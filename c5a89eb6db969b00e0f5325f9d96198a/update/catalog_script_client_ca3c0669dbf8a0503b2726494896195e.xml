@@ -17,6 +17,7 @@
         <messages/>
         <name>ContextsJsonValidation</name>
         <order/>
+        <published_ref/>
         <script><![CDATA[function onChange(control, oldValue, newValue, isLoading) {
     if (isLoading || newValue == '') {
         return;
@@ -24,7 +25,6 @@
 
     var jsonData = g_form.getValue('contexts');
     try {
-        JSON.parse(jsonData);
         if (!Array.isArray(JSON.parse(jsonData)))
             return true;
         else {
@@ -33,7 +33,7 @@
             return false;
         }
     } catch (error) {
-        g_form.addErrorMessage("Context is not a valid json");
+        g_form.addErrorMessage("Error caught in ContextsJsonValidation");
         g_form.clearValue('contexts');
         return false;
     }
@@ -44,18 +44,19 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>ca3c0669dbf8a0503b2726494896195e</sys_id>
-        <sys_mod_count>27</sys_mod_count>
+        <sys_mod_count>28</sys_mod_count>
         <sys_name>ContextsJsonValidation</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>catalog_script_client_ca3c0669dbf8a0503b2726494896195e</sys_update_name>
-        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
-        <sys_updated_on>2023-03-28 11:53:57</sys_updated_on>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 11:57:24</sys_updated_on>
         <table/>
         <type>onChange</type>
         <ui_type>0</ui_type>
+        <va_supported>true</va_supported>
         <variable_set/>
         <view/>
     </catalog_script_client>

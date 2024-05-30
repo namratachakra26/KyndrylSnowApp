@@ -19,26 +19,26 @@ CheckIfEmpCatalogItems.prototype = {
 	},
 	
 	checkCatalogItem : function(chgSysId) {
-		//property stores the mcmp public catalog item names
-		var mcmCat_items = gs.getProperty('x_ibmg3_hcms.EMP_catalog_items');
+		//property stores the emp public catalog item names
+		var empCatItems = gs.getProperty('x_ibmg3_hcms.emp_catalog_items');
 		var catItem;
-		var ritm = new GlideRecord('sc_req_item');//check if change is linked to RITM
-		ritm.addQuery('x_ibmg3_hcms_related_change_request', chgSysId);
-		ritm.query();
-		if(ritm.next()) {
-			catItem = ritm.cat_item.name;//catalog item name
-			if(mcmCat_items.indexOf(catItem) > -1 && ritm.request.x_ibmg3_hcms_order_number)//check if MCMP catalog item and order number exists
-				return true;//MCMP cat item
+		var checkCatItem = new GlideRecord('sc_req_item');//check if change is linked to checkCatItem
+		checkCatItem.addQuery('x_ibmg3_hcms_related_change_request', chgSysId);
+		checkCatItem.query();
+		if(checkCatItem.next()) {
+			catItem = checkCatItem.cat_item.name;//catalog item name
+			if(empCatItems.indexOf(catItem) > -1 && checkCatItem.request.x_ibmg3_hcms_order_number)//check if EMP catalog item and order number exists
+				return true;//EMP cat item
 		}
-		return false;//Non MCMP cat items
+		return false;//Non EMP cat items
 	},
 	
 	checkCatalogItemFForPostProvisioning : function(current) {
-		var mcmCat_items = gs.getProperty('x_ibmg3_hcms.EMP_catalog_items');
-		if(mcmCat_items.indexOf(current.cat_item.name) > -1 && current.request.x_ibmg3_hcms_order_number) {//check if MCMP catalog item and order number exists
-			return true;//MCMP cat item
+		var empCatItemsPstPvng = gs.getProperty('x_ibmg3_hcms.emp_catalog_items');
+		if(empCatItemsPstPvng.indexOf(current.cat_item.name) > -1 && current.request.x_ibmg3_hcms_order_number) {//check if EMP catalog item and order number exists
+			return true;//EMP cat item
 		}
-		return false;//Non MCMP cat items
+		return false;//Non EMP cat items
 	},
 	
 	type: 'CheckIfEmpCatalogItems'
@@ -47,13 +47,13 @@ CheckIfEmpCatalogItems.prototype = {
         <sys_created_by>ashabagade</sys_created_by>
         <sys_created_on>2019-09-16 10:51:28</sys_created_on>
         <sys_id>e4c0966bdbf7bb40e0f5325f9d9619d8</sys_id>
-        <sys_mod_count>21</sys_mod_count>
+        <sys_mod_count>25</sys_mod_count>
         <sys_name>CheckIfEmpCatalogItems</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_e4c0966bdbf7bb40e0f5325f9d9619d8</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 05:02:43</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 08:16:04</sys_updated_on>
     </sys_script_include>
 </record_update>

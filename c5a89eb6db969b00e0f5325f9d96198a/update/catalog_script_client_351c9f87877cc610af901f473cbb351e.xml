@@ -17,22 +17,22 @@
         <messages/>
         <name>Enable Configs Accesstags</name>
         <order/>
+        <published_ref/>
         <script><![CDATA[function onChange(control, oldValue, newValue, isLoading) {
     if (isLoading || newValue == '') {
         return;
     }
 
     if (g_form.getValue('adapterversion') == 'v3') {
-         g_form.setReadOnly('accesstags', false);
-         g_form.setMandatory('accesstags', true);
-
-         g_form.setReadOnly('account_user', false);
-         g_form.setMandatory('account_user', true);
-         g_form.setReadOnly('password', false);
-         g_form.setMandatory('password', true);
-		g_form.setReadOnly('account_name', false);
+        g_form.setReadOnly('accesstags', false);
+        g_form.setMandatory('accesstags', true);
+        g_form.setReadOnly('account_user', false);
+        g_form.setMandatory('account_user', true);
+        g_form.setReadOnly('password', false);
+        g_form.setMandatory('password', true);
+        g_form.setReadOnly('account_name', false);
     } else {
-		g_form.setMandatory('accesstags', false);
+        g_form.setMandatory('accesstags', false);
         g_form.setDisplay('accesstags', false);
     }
 
@@ -44,7 +44,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>351c9f87877cc610af901f473cbb351e</sys_id>
-        <sys_mod_count>5</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>Enable Configs Accesstags</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
@@ -52,10 +52,11 @@
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>catalog_script_client_351c9f87877cc610af901f473cbb351e</sys_update_name>
         <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-20 13:40:34</sys_updated_on>
+        <sys_updated_on>2024-05-28 13:52:43</sys_updated_on>
         <table/>
         <type>onChange</type>
         <ui_type>10</ui_type>
+        <va_supported>true</va_supported>
         <variable_set/>
         <view/>
     </catalog_script_client>

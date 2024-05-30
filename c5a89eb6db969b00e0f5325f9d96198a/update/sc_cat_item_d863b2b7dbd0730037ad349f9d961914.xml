@@ -40,6 +40,7 @@
         <no_proceed_checkout>false</no_proceed_checkout>
         <no_quantity>false</no_quantity>
         <no_quantity_v2>false</no_quantity_v2>
+        <no_save_as_draft>false</no_save_as_draft>
         <no_search>false</no_search>
         <no_wishlist_v2>false</no_wishlist_v2>
         <omit_price>false</omit_price>
@@ -78,23 +79,9 @@
         <template/>
         <template_manager_roles/>
         <type>item</type>
-        <u_qs_business_approval_flow/>
-        <u_qs_business_approval_workflow/>
-        <u_qs_business_preapproved_>false</u_qs_business_preapproved_>
-        <u_qs_change_model/>
-        <u_qs_flow_controlled_execution_plan/>
-        <u_qs_item_approval_flow/>
-        <u_qs_item_approval_workflow/>
-        <u_qs_item_code/>
-        <u_qs_item_preapproved_>false</u_qs_item_preapproved_>
-        <u_qs_managed_item>false</u_qs_managed_item>
-        <u_qs_server_side_validation_framework>false</u_qs_server_side_validation_framework>
-        <u_qs_service_offering/>
-        <u_qs_task_flow/>
-        <u_qs_task_workflow/>
-        <u_qs_wait_for_change_to_complete_>false</u_qs_wait_for_change_to_complete_>
         <use_sc_layout>true</use_sc_layout>
         <vendor/>
+        <version/>
         <visible_bundle>true</visible_bundle>
         <visible_guide>true</visible_guide>
         <visible_standalone>true</visible_standalone>

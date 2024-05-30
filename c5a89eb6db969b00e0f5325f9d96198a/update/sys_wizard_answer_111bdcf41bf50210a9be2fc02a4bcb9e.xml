@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_wizard_answer">
+    <sys_wizard_answer action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <answer>Service Instance CIs</answer>
+        <button_label/>
+        <dependent_value/>
+        <element/>
+        <name>Service Instance CIs</name>
+        <next_question/>
+        <order>100</order>
+        <payload_name/>
+        <question display_value="Base Configuration Item" name="Base Configuration Item">013e7caf1b210210a9be2fc02a4bcb0f</question>
+        <roles/>
+        <script/>
+        <sys_class_name>sys_wizard_answer</sys_class_name>
+        <sys_created_by>sreedhar.mamilla@kyndryl.com</sys_created_by>
+        <sys_created_on>2024-04-23 14:11:19</sys_created_on>
+        <sys_id>111bdcf41bf50210a9be2fc02a4bcb9e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Service Instance CIs</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_wizard_answer_111bdcf41bf50210a9be2fc02a4bcb9e</sys_update_name>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-04-23 14:11:19</sys_updated_on>
+        <table/>
+        <target_url>x_ibmg3_hcms_cmdb_ci_mcms.do</target_url>
+        <type>1</type>
+    </sys_wizard_answer>
+</record_update>

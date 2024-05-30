@@ -52,7 +52,6 @@
         <sys_class_name>sys_dictionary</sys_class_name>
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2020-11-02 10:32:23</sys_created_on>
-        <sys_id>25f8eda4dbd46c102019d90d68961982</sys_id>
         <sys_name>AddOnService Values</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>

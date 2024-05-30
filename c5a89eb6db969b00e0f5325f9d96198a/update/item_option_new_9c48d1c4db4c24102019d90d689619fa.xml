@@ -82,8 +82,6 @@
         <table/>
         <tooltip/>
         <type>16</type>
-        <u_qs_edit_groups/>
-        <u_qs_edit_people/>
         <ui_page/>
         <unique>false</unique>
         <use_dynamic_default>false</use_dynamic_default>

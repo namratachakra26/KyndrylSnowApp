@@ -2,7 +2,7 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.HCMSWorkflowScripts</api_name>
+        <api_name>x_ibmg3_hcms.EmpWorkflowScripts</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description>/** &#13;
@@ -12,61 +12,61 @@
 * @author Asha Bagade &#13;
 * @Script Include is invoked from Workflow "HCMS RQF Default Workflow " - This script include contains all the Individual fucnctions from the default requested item workflow&#13;
 **/</description>
-        <name>HCMSWorkflowScripts</name>
-        <script><![CDATA[var HCMSWorkflowScripts = Class.create();
-HCMSWorkflowScripts.prototype = {
+        <name>EmpWorkflowScripts</name>
+        <script><![CDATA[var EmpWorkflowScripts = Class.create();
+EmpWorkflowScripts.prototype = {
     initialize: function() {},
 
 
     //***************** CREATE BROKER SHELL CI ************************
-    CreateBrokerShellCI: function(current) {
+    createEmpShellCi: function(current) {
         try {
             //Initialize Service instance ci
-            var gr = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
-            gr.initialize();
-            var req_payload;
-            gr.name = "VRI - Cloud CI " + current.number;
-            gr.instance_id = current.variables.var_service_name;
-            gr.correlation_id = current.variables.var_service_instance_id;
-            req_payload = current.request.x_ibmg3_hcms_broker_approval_request_json;
-            var sc_parser = JSON.parse(req_payload);
-            var environ_val = '';
-            if (sc_parser.context.environment)
-                environ_val = sc_parser.context.environment.toString();
-            if (environ_val) {
-                if (environ_val == 'Development') {
-                    gr.environment = 'development';
+            var createCi = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+            createCi.initialize();
+            var reqPayload;
+            createCi.name = "VRI - Cloud CI " + current.number;
+            createCi.instance_id = current.variables.var_service_name;
+            createCi.correlation_id = current.variables.var_service_instance_id;
+            reqPayload = current.request.x_ibmg3_hcms_broker_approval_request_json;
+            var scParser = JSON.parse(reqPayload);
+            var environVal = '';
+            if (scParser.context.environment)
+                environVal = scParser.context.environment.toString();
+            if (environVal) {
+                if (environVal == 'Development') {
+                    createCi.environment = 'development';
                 }
-                if (environ_val == 'Production') {
-                    gr.environment = 'production';
+                if (environVal == 'Production') {
+                    createCi.environment = 'production';
                 }
-                if (environ_val == 'QA') {
-                    gr.environment = 'qa';
+                if (environVal == 'QA') {
+                    createCi.environment = 'qa';
                 }
-                if (environ_val == 'Staging') {
-                    gr.environment = 'staging';
+                if (environVal == 'Staging') {
+                    createCi.environment = 'staging';
                 }
-                if (environ_val == 'Demonstration') {
-                    gr.environment = 'demonstration';
+                if (environVal == 'Demonstration') {
+                    createCi.environment = 'demonstration';
                 }
-                if (environ_val == 'Test') {
-                    gr.environment = 'test';
+                if (environVal == 'Test') {
+                    createCi.environment = 'test';
                 }
-                if (environ_val == 'Training') {
-                    gr.environment = 'training';
+                if (environVal == 'Training') {
+                    createCi.environment = 'training';
                 }
-                if (environ_val == 'Disasterrecovery') {
-                    gr.environment = 'disaster';
+                if (environVal == 'Disasterrecovery') {
+                    createCi.environment = 'disaster';
                 }
             }
             //Map the value from Property which stores the assignment group name to be assigned to CI
-            var assignment_group = gs.getProperty('x_ibmg3_hcms.emp_cloud.ci_assignment_group');
-            gr.assignment_group.setDisplayValue(assignment_group);
-            var currentCI = gr.insert();
-            new HCMSLogLevel().LogMsg("info", "Service Instance CI(Shell Ci) " + gr.name + " created for order: " + current.variables.order_number);
-            current.configuration_item = currentCI;
-            gr.install_status = 4; //status set to pending install
-            workflow.scratchpad.tsk_relation_ci = currentCI;
+            var assignmentGroup = gs.getProperty('x_ibmg3_hcms.emp_cloud.ci_assignment_group');
+            createCi.assignment_group.setDisplayValue(assignmentGroup);
+            var currentCi = createCi.insert();
+            new EmpLogLevel().logMsg("info", "Service Instance CI(Shell Ci) " + createCi.name + " created for order: " + current.variables.order_number);
+            current.configuration_item = currentCi;
+            createCi.install_status = 4; //status set to pending install
+            workflow.scratchpad.tsk_relation_ci = currentCi;
         } catch (err) {
             workflow.error("Kyndryl Marketplace Provision Workflow: Build Create Broker Shell Summary: " + this.type + "(" + err.message + ")");
         }
@@ -75,26 +75,26 @@ HCMSWorkflowScripts.prototype = {
     getGroupId: function(teamName, orderNumber) {
         try {
 
-            var grp = new GlideRecord('sys_user_group');
-            if (grp.get('name', teamName))
-                return grp.sys_id;
+            var getGroup = new GlideRecord('sys_user_group');
+            if (getGroup.get('name', teamName))
+                return getGroup.sys_id;
             else
-                new HCMSLogLevel().LogMsg("info", "Invalid Assignment Group: " + teamName + " for " + orderNumber);
+                new EmpLogLevel().logMsg("info", "Invalid Assignment Group: " + teamName + " for " + orderNumber);
         } catch (e) {
             workflow.error("Kyndryl Marketplace Provision Workflow: get assignment group id: " + this.type + "(" + e.message + ")");
         }
     },
 
     //***************** Link BROKER SHELL CI  to  RITM NUMber:************************
-    linkBrokerShellCI_ritm: function(current) {
+    linkEmpShellCiRitm: function(current) {
         try {
-            var gr = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
-            gr.addQuery('correlation_id', current.variables.var_service_instance_id);
-            gr.query();
-            if (gr.next()) {
-                var currentCI = gr.sys_id;
-                current.configuration_item = currentCI;
-				new HCMSLogLevel().LogMsg('info', 'Service Instance CI ' + gr.name +' linked to RITM '+ current.number + ', for order ' + current.variables.order_number);
+            var updateCi = new GlideRecord('x_ibmg3_hcms_cmdb_ci_mcms');
+            updateCi.addQuery('correlation_id', current.variables.var_service_instance_id);
+            updateCi.query();
+            if (updateCi.next()) {
+                var currentCi = updateCi.sys_id;
+                current.configuration_item = currentCi;
+                new EmpLogLevel().logMsg('info', 'Service Instance CI ' + updateCi.name + ' linked to RITM ' + current.number + ', for order ' + current.variables.order_number);
             }
         } catch (err) {
             workflow.error("Kyndryl Marketplace Provision Workflow: Link Broker Shell : " + this.type + "(" + err.message + ")");
@@ -104,138 +104,138 @@ HCMSWorkflowScripts.prototype = {
 
     //******************* CREATE STANDARD/NORMAL CHANGE REQUEST ************************
 
-    CreateStandardChangeRequest: function(current) {
-		var chg_task_creation = current.variables.var_create_changetask.toString();
-        var gr = new GlideRecord('change_request');
-        gr.initialize();
-        gr.type = "standard";
-		gr.chg_model = "e55d0bfec343101035ae3f52c1d3ae49";
-        var assignment_group = gs.getProperty('x_ibmg3_hcms.emp_cloud.standard_change_assignment_group');
-       gr.assignment_group.setDisplayValue(assignment_group);
-        gr.short_description = current.short_description;
-        //variable to hold broker requet type
+    createStandardChangeRequest: function(current) {
+        var chgTaskCreation = current.variables.var_create_changetask.toString();
+        var createSChg = new GlideRecord('change_request');
+        createSChg.initialize();
+        createSChg.type = "standard";
+        createSChg.chg_model = "e55d0bfec343101035ae3f52c1d3ae49";
+        var assignmentGroup = gs.getProperty('x_ibmg3_hcms.emp_cloud.standard_change_assignment_group');
+        createSChg.assignment_group.setDisplayValue(assignmentGroup);
+        createSChg.short_description = current.short_description;
+        //variable to hold Emp requet type
         if (current.request.x_ibmg3_hcms_broker_request_type == '1') { //new
-            gr.description = "Change created to Provision a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
+            createSChg.description = "Change created to Provision a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
         } else if (current.request.x_ibmg3_hcms_broker_request_type == '2') { //terminate
-            gr.description = "Change created for Termination of a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
+            createSChg.description = "Change created for Termination of a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
         } else if (current.request.x_ibmg3_hcms_broker_request_type == '3') { //edit
-            gr.description = "Change created to Provision(Edit) a Kyndryl Marketplace cloud resource : order number  " + current.request.x_ibmg3_hcms_order_number;
-        } else if (current.request.x_ibmg3_hcms_broker_request_type == '4') {    //if order type is day2 operation
-            var Opr_type = current.variables.var_service_offering_name; //variable to hold operation type
-            gr.description = "Change created to " + Opr_type + " an Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
-        }
-        gr.cmdb_ci = current.configuration_item;
-		gr.parent = current.sys_id;
-        gr.state = -2; //OOB state for scheduled
-        gr.category = 'cloud_services';
-        gr.requested_by = new generateSingleCart().getRequestedFor(current.variables.var_requested_for);
-        var changeSysID = gr.insert();
-
-        //Update the ritm with related change        
-        current.x_ibmg3_hcms_related_change_request = gr.sys_id;
-        current.update();
-        new HCMSLogLevel().LogMsg("info", "Standard Change Request created " + gr.number + ", for order: " + current.variables.order_number);
-        // Create change tasks
-		if(chg_task_creation=='true'){
-        var chgtask = this.createChangeTask(gr, current.variables.order_number);}
-
-    },
-
-
-	
-    CreateNormalChangeRequest: function(current) {
-		var chg_task_creation_normal = current.variables.var_create_changetask.toString();
-        var gr = new GlideRecord('change_request');
-        gr.initialize();
-        gr.type = "normal";
-        gr.short_description = current.short_description;
-        if (current.request.x_ibmg3_hcms_broker_request_type == '1') { //new
-            gr.description = "Change created to Provision a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
-        } else if (current.request.x_ibmg3_hcms_broker_request_type == '2') { //terminate
-            gr.description = "Change created for Termination of a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
-        } else if (current.request.x_ibmg3_hcms_broker_request_type == '3') { //edit
-            gr.description = "Change created to Provision(Edit) a Kyndryl Marketplace cloud resource : order number  " + current.request.x_ibmg3_hcms_order_number;
+            createSChg.description = "Change created to Provision(Edit) a Kyndryl Marketplace cloud resource : order number  " + current.request.x_ibmg3_hcms_order_number;
         } else if (current.request.x_ibmg3_hcms_broker_request_type == '4') { //if order type is day2 operation
-            var type = current.variables.var_service_offering_name; //variable to hold operation type
-		// gr.description = " Change created for Operation " + type + " an Kyndryl Marketplace cloud resource " + current.request.x_ibmg3_hcms_order_number;
-			gr.description = "Change created to " + type + " an Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
+            var oprType = current.variables.var_service_offering_name; //variable to hold operation type
+            createSChg.description = "Change created to " + oprType + " an Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
         }
-        gr.cmdb_ci = current.configuration_item;
-        gr.category = 'cloud_services';
-		gr.parent = current.sys_id;
-        gr.requested_by = new generateSingleCart().getRequestedFor(current.variables.var_requested_for);
-        var changeSysID = gr.insert();
+        createSChg.cmdb_ci = current.configuration_item;
+        createSChg.parent = current.sys_id;
+        createSChg.state = -2; //OOB state for scheduled
+        createSChg.category = 'cloud_services';
+        createSChg.requested_by = new GenerateSingleCart().getRequestedFor(current.variables.var_requested_for);
+        var changeSysId = createSChg.insert();
 
         //Update the ritm with related change        
-        current.x_ibmg3_hcms_related_change_request = gr.sys_id;
+        current.x_ibmg3_hcms_related_change_request = createSChg.sys_id;
         current.update();
-        new HCMSLogLevel().LogMsg("info", "Normal Change Request created " + gr.number + ", for order: " + current.variables.order_number);
+        new EmpLogLevel().logMsg("info", "Standard Change Request created " + createSChg.number + ", for order: " + current.variables.order_number);
         // Create change tasks
-		if(chg_task_creation_normal=='true'){
-        var chgtask = this.createChangeTask(gr, current.variables.order_number);}
+        if (chgTaskCreation == 'true') {
+            var chgTask = this.createChangeTask(createSChg, current.variables.order_number);
+        }
+
     },
 
-	
+
+
+    createNormalChangeRequest: function(current) {
+        var chgTaskCreationNormal = current.variables.var_create_changetask.toString();
+        var createNChg = new GlideRecord('change_request');
+        createNChg.initialize();
+        createNChg.type = "normal";
+        createNChg.short_description = current.short_description;
+        if (current.request.x_ibmg3_hcms_broker_request_type == '1') { //new
+            createNChg.description = "Change created to Provision a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
+        } else if (current.request.x_ibmg3_hcms_broker_request_type == '2') { //terminate
+            createNChg.description = "Change created for Termination of a Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
+        } else if (current.request.x_ibmg3_hcms_broker_request_type == '3') { //edit
+            createNChg.description = "Change created to Provision(Edit) a Kyndryl Marketplace cloud resource : order number  " + current.request.x_ibmg3_hcms_order_number;
+        } else if (current.request.x_ibmg3_hcms_broker_request_type == '4') { //if order type is day2 operation
+            var type = current.variables.var_service_offering_name; //variable to hold operation type           
+            createNChg.description = "Change created to " + type + " an Kyndryl Marketplace cloud resource : order number " + current.request.x_ibmg3_hcms_order_number;
+        }
+        createNChg.cmdb_ci = current.configuration_item;
+        createNChg.category = 'cloud_services';
+        createNChg.parent = current.sys_id;
+        createNChg.requested_by = new GenerateSingleCart().getRequestedFor(current.variables.var_requested_for);
+        var changeSysId = createNChg.insert();
+
+        //Update the ritm with related change        
+        current.x_ibmg3_hcms_related_change_request = createNChg.sys_id;
+        current.update();
+        new EmpLogLevel().logMsg("info", "Normal Change Request created " + createNChg.number + ", for order: " + current.variables.order_number);
+        // Create change tasks
+        if (chgTaskCreationNormal == 'true') {
+            var chgTask = this.createChangeTask(createNChg, current.variables.order_number);
+        }
+    },
+
+
     //************Create Change Task************
     createChangeTask: function(change, ordernum) {
         try {
             //Fetch cloud group and user of the grp
             var tsk = new GlideRecord('change_task');
             tsk.initialize();
-			tsk.state = '-5';
+            tsk.state = '-5';
             tsk.change_request = change.sys_id;
             tsk.short_description = "Provisioning Task";
-			tsk.assignment_group = this.getAssignmentGroup(gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group'));
-			tsk.assigned_to = this.getAssignedToUser(gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to'));
+            tsk.assignment_group = this._getAssignmentGroup(gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group'));
+            tsk.assigned_to = this._getAssignedToUser(gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to'));
             tsk.cmdb_ci = change.cmdb_ci;
-            var chgtsk = tsk.insert();
-            new HCMSLogLevel().LogMsg("info", "Change Task created " + tsk.number + " for order: " + ordernum);
-            return chgtsk;
+            var chgTsk = tsk.insert();
+            new EmpLogLevel().logMsg("info", "Change Task created " + tsk.number + " for order: " + ordernum);
+            return chgTsk;
         } catch (err) {
             workflow.error("Kyndryl Marketplace Provision Workflow: Creation of Change : " + this.type + "(" + err.message + ")");
         }
     },
 
-	getAssignmentGroup: function(grp){
-		var grp_rec = new GlideRecord('sys_user_group');
-		grp_rec.addQuery('name',grp);
-		grp_rec.query();
-		if(grp_rec.next()){
-			return grp_rec.sys_id.toString();
-		}
-		
-	},
-	
-	
-	getAssignedToUser: function(grp){
-	
-		var grp_rec = new GlideRecord('sys_user');
-		grp_rec.addQuery('user_name',grp);
-		grp_rec.query();
-		if(grp_rec.next()){
-			return grp_rec.sys_id.toString();
-		}
-		
-	},
-	
-	
+    _getAssignmentGroup: function(grp) {
+        var getAssnGrp = new GlideRecord('sys_user_group');
+        getAssnGrp.addQuery('name', grp);
+        getAssnGrp.query();
+        if (getAssnGrp.next()) {
+            return getAssnGrp.sys_id.toString();
+        }
+    },
+
+
+    _getAssignedToUser: function(grp) {
+
+        var getAssnToUsr = new GlideRecord('sys_user');
+        getAssnToUsr.addQuery('user_name', grp);
+        getAssnToUsr.query();
+        if (getAssnToUsr.next()) {
+            return getAssnToUsr.sys_id.toString();
+        }
+
+    },
+
+
     //*******  Update Requested Item to Closed / Closed Complete ***************
 
-    UpdateRequestedItem: function(current) {
+    updateRequestedItem: function(current) {
         try {
-            var gr_task = new GlideRecord("sc_task");
-            gr_task.addQuery('request_item', current.sys_id);
-            gr_task.query();
-            while (gr_task.next()) {
+            var updateTask = new GlideRecord("sc_task");
+            updateTask.addQuery('request_item', current.sys_id);
+            updateTask.query();
+            while (updateTask.next()) {
                 // check if state of the task is closed incomplete
-                if (gr_task.state == 4) {
-                    new HCMSLogLevel().LogMsg("info", "RITM Number: " + current.number + ", closed for order: " + current.variables.order_number);
+                if (updateTask.state == 4) {
+                    new EmpLogLevel().logMsg("info", "RITM Number: " + current.number + ", closed for order: " + current.variables.order_number);
                     current.state = 4;
                     current.update();
                 }
                 //update state of the task to closed complete
-                else if (gr_task.state == 3) {
-                    new HCMSLogLevel().LogMsg("info", "RITM Number: " + current.number + ", closed for order: " + current.variables.order_number);
+                else if (updateTask.state == 3) {
+                    new EmpLogLevel().logMsg("info", "RITM Number: " + current.number + ", closed for order: " + current.variables.order_number);
                     current.state = 3;
                     current.update();
                 }
@@ -249,29 +249,28 @@ HCMSWorkflowScripts.prototype = {
 
     //***********  Close Related Change Request **************************
 
-    CloseRelatedChange: function(current) {
+    closeRelatedChange: function(current) {
         try {
-            var catalogItemName = gs.getProperty('x_ibmg3_hcms.HCMS_Catalog_Item_Name');
-            var rfc_id;
-            var rfc_item;
+            var catalogItemName = gs.getProperty('x_ibmg3_hcms.emp_catalog_item_name');
+            var rfcId;
+            var rfcItem;
             var rfc = new GlideRecord('sc_req_item');
             rfc.addQuery('request.sys_id=' + current.sys_id);
             rfc.query();
             if (rfc.next()) {
-                rfc_id = rfc.x_ibmg3_hcms_related_change_request;
-                rfc_item = rfc.cat_item.name;
+                rfcId = rfc.x_ibmg3_hcms_related_change_request;
+                rfcItem = rfc.cat_item.name;
             }
 
-            if (rfc_item == catalogItemName) {
-                var rfc_change = new GlideRecord('change_request');
-                rfc_change.addQuery('sys_id', rfc_id);
-                rfc_change.addActiveQuery();
-                rfc_change.query();
-                if (rfc_change.next()) {
-                    rfc_change.state = '0'; // closed state
-                    rfc_change.close_code = 'successful';
-                    //current.stage = "complete";
-                    rfc_change.update();
+            if (rfcItem == catalogItemName) {
+                var rfcCancelChange = new GlideRecord('change_request');
+                rfcCancelChange.addQuery('sys_id', rfcId);
+                rfcCancelChange.addActiveQuery();
+                rfcCancelChange.query();
+                if (rfcCancelChange.next()) {
+                    rfcCancelChange.state = '0'; // closed state
+                    rfcCancelChange.close_code = 'successful';                   
+                    rfcCancelChange.update();
                 }
             }
         } catch (err) {
@@ -282,28 +281,28 @@ HCMSWorkflowScripts.prototype = {
 
 
     //*************** Cancel Related Change Request **********************
-    CancelRelatedChange: function(current) {
+    cancelRelatedChange: function(current) {
         try {
             //current.stage = "complete";	
-            var catalogItemName = gs.getProperty('x_ibmg3_hcms.HCMS_Catalog_Item_Name');
-            var rfc_id;
-            var rfc_item;
+            var catalogItemName = gs.getProperty('x_ibmg3_hcms.emp_catalog_item_name');
+            var rfcId;
+            var rfcItem;
             var rfc = new GlideRecord('sc_req_item');
             rfc.addQuery('request.sys_id=' + current.sys_id);
             rfc.query();
             if (rfc.next()) {
-                rfc_id = rfc.x_ibmg3_hcms_related_change_request;
-                rfc_item = rfc.cat_item.name;
+                rfcId = rfc.x_ibmg3_hcms_related_change_request;
+                rfcItem = rfc.cat_item.name;
             }
-            if (rfc_item == catalogItemName) {
-                var rfc_change = new GlideRecord('change_request');
-                rfc_change.addQuery('sys_id', rfc_id);
-                rfc_change.addActiveQuery();
-                rfc_change.query();
-                if (rfc_change.next()) {
-                    rfc_change.close_code = 'unsuccessful';
-                    rfc_change.state = '4';
-                    rfc_change.update();
+            if (rfcItem == catalogItemName) {
+                var rfcCancelChange = new GlideRecord('change_request');
+                rfcCancelChange.addQuery('sys_id', rfcId);
+                rfcCancelChange.addActiveQuery();
+                rfcCancelChange.query();
+                if (rfcCancelChange.next()) {
+                    rfcCancelChange.close_code = 'unsuccessful';
+                    rfcCancelChange.state = '4';
+                    rfcCancelChange.update();
                 }
             }
         } catch (err) {
@@ -313,17 +312,17 @@ HCMSWorkflowScripts.prototype = {
 
     //******************** Attach Shell CI - catalog task ci**************
 
-    CreateTaskCIRecord: function(current) {
+    createTaskCiRecord: function(current) {
         try {
-            var tsk_ci = new GlideRecord('sc_task');
-            tsk_ci.addQuery('request_item.number=' + current.number);
-            tsk_ci.query();
-            if (tsk_ci.next()) {
-                tsk_ci.cmdb_ci = current.configuration_item;
-				tsk_ci.u_service_offering_instance_id = current.variables.u_service_offering_instance_id;
-                tsk_ci.update();
+            var tskCi = new GlideRecord('sc_task');
+            tskCi.addQuery('request_item.number=' + current.number);
+            tskCi.query();
+            if (tskCi.next()) {
+                tskCi.cmdb_ci = current.configuration_item;
+                tskCi.u_service_offering_instance_id = current.variables.u_service_offering_instance_id;
+                tskCi.update();
             }
-            new HCMSLogLevel().LogMsg('info', 'Service Instance CI ' +current.configuration_item.name  + ' linked to Catalog Task '+ tsk_ci.number + ' for order ' + current.variables.order_number);
+            new EmpLogLevel().logMsg('info', 'Service Instance CI ' + current.configuration_item.name + ' linked to Catalog Task ' + tskCi.number + ' for order ' + current.variables.order_number);
         } catch (err) {
             workflow.error("Kyndryl Marketplace Provision Workflow: Create Task Record in Task_CI  Script Include  : " + this.type + "(" + err.message + ")");
         }
@@ -331,28 +330,35 @@ HCMSWorkflowScripts.prototype = {
 
     //*************Close/cancel Request******************
 
-    close_CancelRequest: function(current) {
+    closeCancelRequest: function(current) {
         try {
             //varibles to hold the completion status
             var failed = 0;
             var completed = 0;
             var chgRejected = 0;
-            var relatedRitm = new GlideRecord('sc_req_item');
+
+            var relatedRitm = new GlideAggregate('sc_req_item');
             relatedRitm.addQuery('request', current.sys_id);
+            relatedRitm.addAggregate('COUNT');
             relatedRitm.query();
-			var ritmCount = relatedRitm.getRowCount();
+
+            var ritmCount;
             while (relatedRitm.next()) {
-				var chgTsk = new GlideRecord('change_task');
-				var query = 'change_request='+relatedRitm.x_ibmg3_hcms_related_change_request+'^short_description=Provisioning Task^cmdb_ci='+relatedRitm.configuration_item;
-				chgTsk.addEncodedQuery(query);
-				chgTsk.query();
-				if(chgTsk.next()) {
-                if (chgTsk.state == '4') { //state is cancelled
-                    failed++;
-                } else
-                    completed++;
-                //the below code is added for the use case when SR approval is driven only by request and not chg and one of the chg req is rejected the SR state should be closed incomplete
-			}
+                ritmCount = relatedRitm.getAggregate('COUNT');
+            }
+
+            while (relatedRitm.next()) {
+                var chgTsk = new GlideRecord('change_task');
+                var query = 'change_request=' + relatedRitm.x_ibmg3_hcms_related_change_request + '^short_description=Provisioning Task^cmdb_ci=' + relatedRitm.configuration_item;
+                chgTsk.addEncodedQuery(query);
+                chgTsk.query();
+                if (chgTsk.next()) {
+                    if (chgTsk.state == '4') { //state is cancelled
+                        failed++;
+                    } else
+                        completed++;
+                    //the below code is added for the use case when SR approval is driven only by request and not chg and one of the chg req is rejected the SR state should be closed incomplete
+                }
                 var app = new GlideRecord('sysapproval_approver');
                 app.addQuery('sysapproval', relatedRitm.x_ibmg3_hcms_related_change_request);
                 app.query();
@@ -362,32 +368,32 @@ HCMSWorkflowScripts.prototype = {
                 }
             }
             if (failed == ritmCount || chgRejected == ritmCount) {
-				current.request_state = 'closed_incomplete'; // if all ritms are failed or rejected
-				current.stage = 'closed_incomplete';
-			}
-                 // if combination of failure and success or all success 
-			else {
-				current.request_state = 'closed_complete';
-				current.stage = 'closed_complete';
-			}
+                current.request_state = 'closed_incomplete'; // if all ritms are failed or rejected
+                current.stage = 'closed_incomplete';
+            }
+            // if combination of failure and success or all success 
+            else {
+                current.request_state = 'closed_complete';
+                current.stage = 'closed_complete';
+            }
         } catch (ex) {
-            new HCMSLogLevel().LogMsg("error", " error while cancelling the Request for order " + current.x_ibmg3_hcms_order_number + " : " + ex);
+            new EmpLogLevel().logMsg("error", " error while cancelling the Request for order " + current.x_ibmg3_hcms_order_number + " : " + ex);
         }
     },
 
-    type: 'HCMSWorkflowScripts'
+    type: 'EmpWorkflowScripts'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2018-07-26 05:31:30</sys_created_on>
         <sys_id>427a4a55db6fd70037ad349f9d96194c</sys_id>
-        <sys_mod_count>164</sys_mod_count>
-        <sys_name>HCMSWorkflowScripts</sys_name>
+        <sys_mod_count>182</sys_mod_count>
+        <sys_name>EmpWorkflowScripts</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_427a4a55db6fd70037ad349f9d96194c</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 07:17:14</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:39:52</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="a40f34e31b610210a9be2fc02a4bcb10" extends="cmdb_ci_vm_object" label="Route Table" max_length="40" name="cmdb_ci_route_table" type="collection">
+        <element attributes="edge_encryption_enabled=true" label="Resource Mapping" max_length="40" name="x_ibmg3_hcms_resource_mapping" type="boolean"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking field" max_length="80" name="x_ibmg3_hcms_tracking_field" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking Id" max_length="80" name="x_ibmg3_hcms_tracking_id" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking resource group id" max_length="80" name="x_ibmg3_hcms_tracking_resource_group_id" type="string"/>
+    </element>
+</database>

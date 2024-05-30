@@ -2,7 +2,7 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>public</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.OutBoundCalltoBroker</api_name>
+        <api_name>x_ibmg3_hcms.OutBoundCallToEmp</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description>Out bound call.&#13;
@@ -13,18 +13,15 @@
 * @author Asha Bagade &#13;
 * @Script Include is invoked from Workflow HCMS Provision Workflow - for sending approval response to EM&#13;
 **/</description>
-        <name>OutBoundCalltoBroker</name>
-        <script><![CDATA[var OutBoundCalltoBroker = Class.create();
+        <name>OutBoundCallToEmp</name>
+        <script><![CDATA[var OutBoundCallToEmp = Class.create();
 
-OutBoundCalltoBroker.prototype = {
+OutBoundCallToEmp.prototype = {
     initialize: function() {},
 
     generateApprovalResponse: function(current) {
         try {
             var requestBody;
-            var r;
-            var midserver_details;
-            var out_bound_flag;
             //Define variables to hold response body and status code
             var responseBody, statusCode, endPoint = '';
 
@@ -40,13 +37,12 @@ OutBoundCalltoBroker.prototype = {
             var changeTask;
             var catItemName = '';
             var approvedBy;
-            var approvedTs = "";
+            var approvedDate = "";
             var additionalDataJson = '';
             var reqPayload = '';
             //flag for  order rejection
-            var appr_flag = "";
-            var mcmCat_items = gs.getProperty('x_ibmg3_hcms.EMP_catalog_items'); //property holds emp catalog item
-            var req_domain = new HCMSGetTenatDetails().getRequestDomain(orderNumber);
+            var mcmCatItems = gs.getProperty('x_ibmg3_hcms.emp_catalog_items'); //property holds emp catalog item
+            var reqDomain = new EmpGetTenatDetails().getRequestDomain(orderNumber);
             if (approvalControllerFlag == "icb") {
                 approvalController = "ICB";
                 changeApprovalStatus = "SCHEDULED";
@@ -55,90 +51,101 @@ OutBoundCalltoBroker.prototype = {
                 changeApprovalStatus = "SCHEDULED";
             }
             //Get approval date from request
-            var reqGR = new GlideRecord('sysapproval_approver');
-            var tempsysid = current.sys_id;
-            reqGR.addQuery("sysapproval", current.sys_id);
-            reqGR.query();
-            if (reqGR.next()) {
-                approvedTs = reqGR.sys_created_on;
-                approvedBy = reqGR.approver.user_name;
+            var getApprovalDate = new GlideRecord('sysapproval_approver');
+            getApprovalDate.addQuery("sysapproval", current.sys_id);
+            getApprovalDate.query();
+            if (getApprovalDate.next()) {
+                approvedDate = getApprovalDate.sys_created_on;
+                approvedBy = getApprovalDate.approver.user_name;
             }
-            var reqItemGR = new GlideRecord('sc_req_item');
-            reqItemGR.addQuery("request.number", current.number);
-            reqItemGR.query();
-            var countItems = reqItemGR.getRowCount();
+
+            var reqItemGr = new GlideAggregate('sc_req_item');
+            reqItemGr.addQuery('request.number', current.number);
+            reqItemGr.addAggregate('COUNT');
+            reqItemGr.query();
+            var countItems;
+            if (reqItemGr.next()) {
+                countItems = parseInt(reqItemGr.getAggregate('COUNT'));
+            }
+
             var aPayload = [];
             //Initiate the payload field
             aPayload.push("{");
             aPayload.push("\"approvalInfo\": {");
             if (approvalStatus == 'Approved') {
                 aPayload.push("\"ApprovedRITMS\": [");
-                var i_item = 0;
-                while (reqItemGR.next()) {
-                    catItemName = reqItemGR.cat_item.name;
-                    if (mcmCat_items.indexOf(catItemName) > -1) {
+                var iItem = 0;
+                while (reqItemGr.next()) {
+                    catItemName = reqItemGr.cat_item.name;
+                    if (mcmCatItems.indexOf(catItemName) > -1) {
                         changeTask = "true"; // for pre-provisioning hook, true if change task is involved(mvp3)
                     } else {
                         changeTask = "false";
                     }
                     //Fetch the SR creation payload from ritm variable
-                    reqPayload = reqItemGR.variables.var_broker_json;
+                    reqPayload = reqItemGr.variables.var_broker_json;
                     // Fetch Additional Data
                     additionalDataJson = new AdditionalDataOnOutboundCall().returnAdditionalDataJson(reqPayload); // request payload is passed to calling script include 
                     additionalDataJson = JSON.stringify(additionalDataJson);
-                    var currentReqItemNumber = reqItemGR.number;
+                    var currentReqItemNumber = reqItemGr.number;
+                    var taskCount = new GlideAggregate('sc_task');
+                    taskCount.addAggregate('COUNT');
+                    taskCount.addQuery('request_item.number', currentReqItemNumber);
+                    taskCount.query();
+                    if (taskCount.next()) {
+                        var countTasks = taskGR.getAggregate('COUNT');
+                    }                    
                     var taskGR = new GlideRecord('sc_task');
                     taskGR.addQuery('request_item.number', currentReqItemNumber);
                     taskGR.query();
-                    var counttasks = taskGR.getRowCount();
                     aPayload.push("{");
                     aPayload.push("\"ApprovedTasks\":[");
                     aPayload.push("{");
                     // For loop get tasks info
-                    var i_task = 0;
+                    var iTask = 0;
                     while (taskGR.next()) {
                         aPayload.push("\"task_sys_id\": \"" + taskGR.sys_id + "\",");
                         aPayload.push("\"taskNumber\": \"" + taskGR.number + "\",");
                         aPayload.push("\"serviceOfferingInstanceId\": \"" + taskGR.x_ibmg3_hcms_service_offering_instance_id + "\",");
                         aPayload.push("\"taskType\": \"" + taskGR.sys_class_name + "\"");
-                        if (i_task == counttasks - 1) {
+                        if (iTask == countTasks - 1) {
                             aPayload.push("}");
                         } else {
                             aPayload.push("},");
-                            i_task++;
+                            iTask++;
                         }
                     }
                     aPayload.push("],");
                     aPayload.push("\"ritmID\": \"" + currentReqItemNumber + "\",");
-                    aPayload.push("\"serviceOfferingInstanceId\": \"" + reqItemGR.variables.var_service_instance_id + "\",");
-                    aPayload.push("\"serviceName\": \"" + reqItemGR.variables.var_service_name + "\",");
-                    aPayload.push("\"cmdbCISysid\": \"" + reqItemGR.configuration_item + "\",");
-                    aPayload.push("\"additionalData\": " + additionalDataJson); // appends fetched JSON from script include to "additionalData" field of outbound Broker Json.					
-                    if (i_item == countItems - 1) {
+                    aPayload.push("\"serviceOfferingInstanceId\": \"" + reqItemGr.variables.var_service_instance_id + "\",");
+                    aPayload.push("\"serviceName\": \"" + reqItemGr.variables.var_service_name + "\",");
+                    aPayload.push("\"cmdbCISysid\": \"" + reqItemGr.configuration_item + "\",");
+                    aPayload.push("\"additionalData\": " + additionalDataJson); // appends fetched JSON from script include to "additionalData" field of outbound Emp Json.					
+                    if (iItem == countItems - 1) {
                         //last item in the array should not be followed by a comma
                         aPayload.push("}");
                     } else {
                         //all items in the array should be followed by a comma, except the last
                         aPayload.push("},");
-                        i_item++;
+                        iItem++;
                     }
                 }
                 aPayload.push("],");
             } else if (approvalStatus == 'Rejected') {
                 //Fetch Rejection reason 
-                while (reqItemGR.next()) {
-                    catItemName = reqItemGR.cat_item.name;
-                    if (mcmCat_items.indexOf(catItemName) > -1) {
+                while (reqItemGr.next()) {
+                    catItemName = reqItemGr.cat_item.name;
+                    if (mcmCatItems.indexOf(catItemName) > -1) {
                         changeTask = "true"; ///////// for pre-provisioning hook, true if change task is involved(mvp3)
                     } else {
                         changeTask = "false";
                     }
                     //Fetch the SR creation payload from ritm variable
-                    reqPayload = reqItemGR.variables.var_broker_json;
+                    reqPayload = reqItemGr.variables.var_broker_json;
                     // Fetch Additional Data
                     additionalDataJson = new AdditionalDataOnOutboundCall().returnAdditionalDataJson(reqPayload); // request payload is passed to calling script include 
                     additionalDataJson = JSON.stringify(additionalDataJson);
-                    var encquery = 'state=rejected^document_id=' + reqItemGR.x_ibmg3_hcms_related_change_request + '^ORdocument_id=' + current.sys_id;
+                    var encquery = 'state=rejected^document_id=' + reqItemGr.x_ibmg3_hcms_related_change_request + '^ORdocument_id=' + current.sys_id;
                     var appr = new GlideRecord('sysapproval_approver');
                     appr.addEncodedQuery(encquery);
                     appr.query();
@@ -155,49 +162,49 @@ OutBoundCalltoBroker.prototype = {
             aPayload.push("\"approvalStatus\": \"" + approvalStatus + "\",");
             aPayload.push("\"comments\": \"" + comments + "\",");
             aPayload.push("\"approvedBy\": \"" + approvedBy + "\",");
-            aPayload.push("\"approvedTs\": \"" + approvedTs + "\",");
+            aPayload.push("\"approvedDate\": \"" + approvedDate + "\",");
             aPayload.push("\"orderNumber\": \"" + orderNumber + "\",");
             aPayload.push("\"requestNumber\": \"" + requestNumber + "\",");
             aPayload.push("\"requested_for\": \"" + requestedFor + "\",");
             aPayload.push("\"approvalController\": \"" + approvalController + "\",");
             aPayload.push("\"changeTask\": \"" + changeTask + "\",");
             aPayload.push("\"changeApprovalStatus\": \"" + changeApprovalStatus + "\",");
-            aPayload.push("\"additionalData\": " + additionalDataJson); // appends fetched JSON from script include to "additionalData" field of outbound Broker Json.
+            aPayload.push("\"additionalData\": " + additionalDataJson); // appends fetched JSON from script include to "additionalData" field of outbound Emp Json.
             aPayload.push("}");
             aPayload.push("}");
             requestBody = aPayload.join("");
-            new HCMSLogLevel().LogMsg("info", "*Request Approved, approval payload to EM:* " + requestBody);
+            new EmpLogLevel().logMsg("info", "*Request Approved, approval payload to EM:* " + requestBody);
             var requestBodyParsed = JSON.parse(requestBody);
 
             //Fetch the source url and credential details from SR create payload
-            var requestPayload = reqItemGR.variables.var_broker_json;
+            var requestPayload = reqItemGr.variables.var_broker_json;
             var jsonPayload = JSON.parse(requestPayload);
             var url = jsonPayload.source;
             var credential = jsonPayload.credential;
             //Fetch the restmethod name 
             var restMethodName = gs.getProperty('x_ibmg3_hcms.approval_response.rest.method');
             //Invoke the below function to make an outbound call to emp to send approval reponse
-            var approvalResp = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, requestBodyParsed, req_domain);
+            var approvalResp = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, requestBodyParsed, reqDomain);
             if (approvalResp) {
                 responseBody = approvalResp.responseBody;
                 statusCode = approvalResp.statusCode;
                 endPoint = approvalResp.endPoint;
             } else {
-                new HCMSLogLevel().LogMsg("info", "* Invalid response from EMP for  *" + orderNumber);
+                new EmpLogLevel().logMsg("info", "* Invalid response from EMP for  *" + orderNumber);
             }
             //store the statuscode in wf scratchpad
             workflow.scratchpad.RESTStatus = statusCode;
-            new HCMSLogLevel().LogMsg("info", " Outbound Approval Response body for order " + orderNumber + ": " + responseBody + " \nStatusCode : " + statusCode + " \nEndPoint : " + endPoint);
+            new EmpLogLevel().logMsg("info", " Outbound Approval Response body for order " + orderNumber + ": " + responseBody + " \nStatusCode : " + statusCode + " \nEndPoint : " + endPoint);
             //Create record in ecc queue for unsuccessful outbound call
             if (statusCode > 201 || statusCode == 0) {
                 var topic = current.x_ibmg3_hcms_order_number.toString() + "-Approval";
                 var source = current.getDisplayValue().toString();
-                var responsefromHost = "Response received from broker : " + responseBody + " \nResponse status code : " + statusCode;
-                var ecc = new RetryOutboundcalltoBroker().eccQueueRetryRecord(topic, source, requestBody, responsefromHost);
+                var responsefromHost = "Response received from Emp : " + responseBody + " \nResponse status code : " + statusCode;
+                var ecc = new RetryOutboundCallToEmp().eccQueueRetryRecord(topic, source, requestBody, responsefromHost);
             }
         } catch (ex) {
             var message = ex;
-            new HCMSLogLevel().LogMsg("error", " Error during approval outbnd response: " + message);
+            new EmpLogLevel().logMsg("error", " Error during approval outbnd response: " + message);
         }
 
     }
@@ -206,13 +213,13 @@ OutBoundCalltoBroker.prototype = {
         <sys_created_by>vram@us.ibm.com</sys_created_by>
         <sys_created_on>2018-06-14 03:12:58</sys_created_on>
         <sys_id>95b9d577dba29f0037ad349f9d961982</sys_id>
-        <sys_mod_count>179</sys_mod_count>
-        <sys_name>OutBoundCalltoBroker</sys_name>
+        <sys_mod_count>197</sys_mod_count>
+        <sys_name>OutBoundCallToEmp</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_95b9d577dba29f0037ad349f9d961982</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 07:15:57</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 12:25:45</sys_updated_on>
     </sys_script_include>
 </record_update>

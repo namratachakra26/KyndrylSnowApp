@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="9c7ce550db28b300e0f5325f9d961917" extends="sys_import_set_row" label="change_task_ibmhcms" max_length="40" name="x_ibmg3_hcms_change_task_ibmhcms" type="collection">
+        <element label="notes" max_length="1000" name="u_notes" type="string"/>
+        <element label="number" max_length="40" name="u_number" type="string"/>
+        <element label="state" max_length="40" name="u_state" type="string"/>
+        <element label="work_notes" max_length="1000" name="u_work_notes" type="string"/>
+    </element>
+</database>

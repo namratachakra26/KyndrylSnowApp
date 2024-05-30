@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_fix">
+    <sys_script_fix action="INSERT_OR_UPDATE">
+        <before>false</before>
+        <description>to update the Script Include scripts for HCMSLogLevel().LogMsg to EMPLogLevel().logMsg . </description>
+        <name>Update ScriptIncludes with EMPLogLevel</name>
+        <record_for_rollback>true</record_for_rollback>
+        <script><![CDATA[// Query Script Includes
+var scriptIncludeGR = new GlideRecord('sys_script_include');
+scriptIncludeGR.addEncodedQuery('sys_scope=c5a89eb6db969b00e0f5325f9d96198a^active=true^nameINEmpGenericIncidentCreation,EmpOperationsValidations,EmpRestApiUtils,EmpSnowProvisioning,EmpWorkflowScripts,Emp_CIWizMapper,Emp_CIWizMapper_Azure_CI_Configurations,Emp_CIWizMapper_Azure_CI_Configurations_Delete,Emp_CIWizMapper_Azure_CI_Configurations_Update,Emp_CIWizMapper_Update,Emp_CIWizMapper_VRA_CI_Configurations,Emp_CIWizMapper_VRA_CI_Configurations_Update,Emp_CI_Creation_Validation_Script,FetchV3AuthToken,GenerateSingleCart,GenerateSingleCartV2,OutBoundCalltoEmp,PostProvisioningHookCallToEmp,ProvisioningCallToEMmarketplace,RedirectionToQuickStartUtils,RetryOutboundCallToEmp'); // You need to specify a condition to identify the script includes you want to update
+scriptIncludeGR.query();
+
+while (scriptIncludeGR.next()) {
+    var script = scriptIncludeGR.script.getDisplayValue(); // Get the script content
+    var updatedScript = script.replace(/EMPLogLevel\(\)\.logMsg/g, 'HCMSLogLevel().LogMsg');
+    // Perform replacement
+
+    // Update script include with the modified script content
+    scriptIncludeGR.script = updatedScript;
+    scriptIncludeGR.update();
+}
+]]></script>
+        <sys_class_name>sys_script_fix</sys_class_name>
+        <sys_created_by>sreedhar.mamilla@kyndryl.com</sys_created_by>
+        <sys_created_on>2024-05-28 06:29:25</sys_created_on>
+        <sys_id>5f2ffa771b1e8a90a9be2fc02a4bcb6c</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Update ScriptIncludes with EMPLogLevel</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_fix_5f2ffa771b1e8a90a9be2fc02a4bcb6c</sys_update_name>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 06:47:04</sys_updated_on>
+        <unloadable>false</unloadable>
+    </sys_script_fix>
+</record_update>

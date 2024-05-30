@@ -18,28 +18,22 @@
 
     // implement resource here
     var usr = request.pathParams.user;
-
     var query = 'user.user_nameSTARTSWITH' + usr + '^ORuser.emailSTARTSWITH' + usr;
     var notPresent = [],
         rolesListFromGlide = [];
 
-
     var rolesList = new GlideRecord('sys_user_has_role');
     rolesList.addEncodedQuery(query);
     rolesList.query();
-
     while (rolesList.next()) {
         rolesListFromGlide.push(rolesList.role.name.split(',').toString());
     }
 
     var rolesProp = gs.getProperty('x_ibmg3_hcms.em.integration.roles').split(',');
-
     for (var i = 0; i < rolesProp.length; i++) {
         if (rolesListFromGlide.indexOf(rolesProp[i]) < 0)
             notPresent.push(rolesProp[i]);
-
     }
-
     if (notPresent.length == 0) {
         ResponsePayload = {
             "status": "User Authentication Successful",
@@ -47,24 +41,9 @@
         };
         response.setBody(ResponsePayload);
     } else {
-        raiseResponseError('User Authentication Failed, Insufficient roles', notPresent);
+        var infoMsg = "User Roles: " + notPresent + " are missing";
+        new EmpRestApiUtils().raiseResponseError(infoMsg, 'User Authentication Failed, Insufficient roles', response);
     }
-
-    function raiseResponseError(message, nP) {
-
-        //Raises a response error
-        var theError = new sn_ws_err.ServiceError();
-        theError.setStatus(403);
-        theError.setMessage(message);
-        theError.setDetail("User Roles: "+nP+ " are missing");
-        response.setError(theError);
-
-        //Log the error
-
-        new HCMSLogLevel().LogMsg("info", "Test authentication Validation : ERROR: " + message);
-
-    }
-
 })(request, response);]]></operation_script>
         <operation_uri>/api/x_ibmg3_hcms/v2/broker/{user}/authenticateUser</operation_uri>
         <produces>application/json,application/xml,text/xml</produces>
@@ -79,14 +58,14 @@
         <sys_created_by>asbagad1@in.ibm.com</sys_created_by>
         <sys_created_on>2022-11-18 09:21:59</sys_created_on>
         <sys_id>67594fa41b171110da788403604bcbd8</sys_id>
-        <sys_mod_count>29</sys_mod_count>
+        <sys_mod_count>32</sys_mod_count>
         <sys_name>authenticateUser</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_ws_operation_67594fa41b171110da788403604bcbd8</sys_update_name>
-        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
-        <sys_updated_on>2023-04-24 14:56:15</sys_updated_on>
+        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 08:05:58</sys_updated_on>
         <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
         <web_service_version display_value="v2">3e7332e3db2500d037ad349f9d9619f3</web_service_version>
     </sys_ws_operation>

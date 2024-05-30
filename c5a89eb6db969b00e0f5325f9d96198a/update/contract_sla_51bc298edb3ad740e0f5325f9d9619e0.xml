@@ -20,7 +20,6 @@
         <schedule display_value="8-5 weekdays">08fcd0830a0a0b2600079f56b1adb9ae</schedule>
         <schedule_source>sla_definition</schedule_source>
         <schedule_source_field/>
-        <service_commitment>false</service_commitment>
         <set_start_to>sys_created_on</set_start_to>
         <start_condition table="sc_task">state=1^sys_class_name=sc_task^EQ<item display_value="Open" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="1"/>
             <item display_value="Catalog Task" endquery="false" field="sys_class_name" goto="false" newquery="false" operator="=" or="false" value="sc_task"/>

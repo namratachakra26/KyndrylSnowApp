@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="global_search_config_handler=RequestItemSearchConfig,hasWorkflow=true" audit="true" create_roles="catalog_admin" db_object_id="3c84cd2f1ba10210a9be2fc02a4bcb3a" extends="task" label="Requested Item" max_length="40" name="sc_req_item" text_index="true" type="collection">
+        <element attributes="edge_encryption_enabled=true" label="AddOnService Values" max_length="8000" name="x_ibmg3_hcms_addonservice_values" type="html"/>
+        <element attributes="edge_encryption_enabled=true" label="Kyndryl marketplace config values" max_length="4000" name="x_ibmg3_hcms_broker_approval_item_json" type="html"/>
+        <element attributes="edge_encryption_enabled=true" label="Bill Of Materials Summary" max_length="4000" name="x_ibmg3_hcms_broker_approval_item_summary" type="html"/>
+        <element label="Cloud Broker Service Name" max_length="40" name="x_ibmg3_hcms_cloud_broker_service_name" type="string"/>
+        <element attributes="edge_encryption_enabled=true,encode_utf8=false" label="Related Change Request" max_length="32" name="x_ibmg3_hcms_related_change_request" reference="change_request" type="reference"/>
+        <element label="service_offering_Id" max_length="80" name="x_ibmg3_hcms_service_offering_id" type="string"/>
+        <element label="service_offering_instance_id" max_length="80" name="x_ibmg3_hcms_service_offering_instance_id" type="string"/>
+    </element>
+</database>

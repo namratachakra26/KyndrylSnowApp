@@ -17,6 +17,7 @@
         <override_menu_roles>false</override_menu_roles>
         <query>/$pa_dashboard.do?sysparm_dashboard=db752411db275cd03b272649489619c3</query>
         <report/>
+        <require_confirmation>false</require_confirmation>
         <roles/>
         <sys_class_name>sys_app_module</sys_class_name>
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>

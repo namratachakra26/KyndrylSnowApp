@@ -12,12 +12,10 @@
         <change_fields>false</change_fields>
         <client_callable>false</client_callable>
         <collection>change_request</collection>
-        <condition/>
-        <description/>
+        <condition>new CheckIfEmpCatalogItems().checkCatalogItem(current.sys_id)</condition>
+        <description>This Business Rule change the state of a Standard Change to Scheduled</description>
         <execute_function>false</execute_function>
-        <filter_condition table="change_request">short_descriptionSTARTSWITHStandard change for cloud provisioning from Broker^EQ<item endquery="false" field="short_description" goto="false" newquery="false" operator="STARTSWITH" or="false" value="Standard change for cloud provisioning from Broker"/>
-            <item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/>
-        </filter_condition>
+        <filter_condition/>
         <is_rest>false</is_rest>
         <message/>
         <name>Emp Update Change Status</name>
@@ -40,15 +38,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>7fb81cb2dbe21f0037ad349f9d9619a1</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>11</sys_mod_count>
         <sys_name>Emp Update Change Status</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_7fb81cb2dbe21f0037ad349f9d9619a1</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 05:24:19</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-24 11:05:50</sys_updated_on>
         <template>state=-2^EQ</template>
         <when>before</when>
     </sys_script>

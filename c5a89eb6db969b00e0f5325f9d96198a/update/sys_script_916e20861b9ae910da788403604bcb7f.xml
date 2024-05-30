@@ -13,12 +13,12 @@
         <client_callable>false</client_callable>
         <collection>change_request</collection>
         <condition>current.active.changesTo(false) &amp;&amp; new CheckIfEmpCatalogItems().checkCatalogItem(current.sys_id)</condition>
-        <description/>
+        <description>This Business Rule sets catalog to closed complete/incomplete based on change task status</description>
         <execute_function>false</execute_function>
         <filter_condition/>
         <is_rest>false</is_rest>
         <message/>
-        <name>Set Catalog Task State to Completed</name>
+        <name>Set Catalog Task State To Completed</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -37,15 +37,13 @@
 (function executeRule(current, previous /*null when async*/ ) {
     //set catalog task to complete/incomplete based on change close code
     try {
-        new HCMSLogLevel().LogMsg("info", "Change Request " + current.number + " Closed ");
+        new EmpLogLevel().logMsg("info", "Change Request " + current.number + " Closed ");
         var assgnGrp = gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group');
         var assgnTo = gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to');
         //set catalog task state based on provisioning change task state
-        var provTsk = new GlideRecord('change_task');
-        provTsk.addQuery('change_request', current.sys_id);
-        provTsk.addQuery('assignment_group.name', assgnGrp);
-        provTsk.addQuery('assigned_to.name', assgnTo);
-        provTsk.addQuery('short_description', 'Provisioning Task');
+		var provTskQuery = 'change_request=' + current.sys_id + '^assignment_group.name=' + assgnGrp + '^assigned_to.name=' + assgnTo + '^short_description=Provisioning Task' ;
+        var provTsk = new GlideRecord('change_task');        
+        provTsk.addEncodedQuery(provTskQuery);
         provTsk.query();
         if (provTsk.next()) {
             var ritm = new GlideRecord('sc_req_item');
@@ -53,25 +51,25 @@
             ritm.addActiveQuery();
             ritm.query();
             if (ritm.next()) {
-                var sctask = new GlideRecord('sc_task');
-                sctask.addQuery('request_item', ritm.sys_id); //related catalog task
-                sctask.addActiveQuery();
-                sctask.query();
-                if (sctask.next()) {
+                var scTask = new GlideRecord('sc_task');
+                scTask.addQuery('request_item', ritm.sys_id); //related catalog task
+                scTask.addActiveQuery();
+                scTask.query();
+                if (scTask.next()) {
                     if (provTsk.state == 3) { //change task state value for closure
-                        sctask.state = 3; //closed complete if provisioning task is successful
+                        scTask.state = 3; //closed complete if provisioning task is successful
 
-                        new HCMSLogLevel().LogMsg("info", "Catalog task " + sctask.number + " Closed Complete");
+                        new EmpLogLevel().logMsg("info", "Catalog task " + scTask.number + " Closed Complete");
                     } else {
-                        sctask.state = 4; //closed incomplete if provisioning task is cancelled/unsuccessful
-                        new HCMSLogLevel().LogMsg("info", "Catalog task " + sctask.number + " Closed Incomplete");
+                        scTask.state = 4; //closed incomplete if provisioning task is cancelled/unsuccessful
+                        new EmpLogLevel().logMsg("info", "Catalog task " + scTask.number + " Closed Incomplete");
                     }
-                    sctask.update();
+                    scTask.update();
                 }
             }
         }
     } catch (e) {
-        new HCMSLogLevel().LogMsg("error", " Error updating catalog task to complete/incomplete " + e);
+        new EmpLogLevel().logMsg("error", " Error updating catalog task to complete/incomplete " + e);
     }
 
 })(current, previous);]]></script>
@@ -81,15 +79,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>916e20861b9ae910da788403604bcb7f</sys_id>
-        <sys_mod_count>3</sys_mod_count>
-        <sys_name>Set Catalog Task State to Completed</sys_name>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>Set Catalog Task State To Completed</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_916e20861b9ae910da788403604bcb7f</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 05:15:20</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:21:47</sys_updated_on>
         <template/>
         <when>after</when>
     </sys_script>

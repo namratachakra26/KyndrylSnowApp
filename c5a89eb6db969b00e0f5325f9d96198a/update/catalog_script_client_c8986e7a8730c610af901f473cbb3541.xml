@@ -20,93 +20,111 @@
         <published_ref/>
         <script><![CDATA[function onLoad() {
     //Type appropriate comment here, and begin script below
-        var ga = new GlideAjax('Emp_Auth_Profile_Configuration');
-        ga.addParam('sysparm_name', 'getIntegratedCreds');
-        ga.getXML(credsResponse);
+    var authProfConfig = new GlideAjax('EmpAuthProfileConfiguration');
+    authProfConfig.addParam('sysparm_name', 'getIntegratedCreds');
+    authProfConfig.getXML(credsResponse);
 
     function credsResponse(response) {
-    var intCreds = response.responseXML.documentElement.getAttribute("answer");
-    var intCredvalues = JSON.parse(intCreds);
-    if (intCredvalues) {
-    g_form.setValue('adapterversion', intCredvalues.version);
-//     g_form.setValue('mcmp_endpoint', intCredvalues.url);
-//     g_form.setValue('mcmp_api_credential', intCredvalues.creds);
+        var intCreds = response.responseXML.documentElement.getAttribute("answer");
+        var intCredValues = JSON.parse(intCreds);
+        if (intCredValues) {
+            g_form.setValue('adapterversion', intCredValues.version);
+            var adapterVersion = g_form.getValue('adapterversion');
 
-    var adapterversion = g_form.getValue('adapterversion');
-    
-    //             if (g_form.getValue('mcmp_endpoint') != '') {
-    //             g_form.setReadOnly('account_name', true);
-    //             }
-    if (adapterversion == 'v3') {
-        g_form.setDisplay('accesstags', true);
-        g_form.setMandatory('accesstags', true);
-        g_form.setMandatory('account_user', true);
-        g_form.setMandatory('password', true);
+            if (adapterVersion == 'v3') {
+                setMandatoryV3();
+                setDisplayV3();
 
-        g_form.setDisplay('enable_common_discovery', false);
-        //g_form.setDisplay('provisioning_using_servicenow', false); 
-        g_form.setDisplay('additional_dataschema', false);
-        g_form.setDisplay('external_context_list', false);
-        g_form.setDisplay('qs_auth_profile', false);
-        g_form.setDisplay('consume_namespace', false);
-        g_form.setDisplay('quickstart', false);
-        g_form.setDisplay('multistep_approval', false);
+            } else {
+                setMandatoryV2();
+                setDisplayV2();
 
-        g_form.setMandatory('purpose', false);
-        g_form.setDisplay('purpose', false);
+            }
 
-        g_form.setMandatory('contexts', false);
-        g_form.setDisplay('contexts', false);
+        }
 
-        g_form.setMandatory('ordertracking', false);
-        g_form.setDisplay('ordertracking', false);
+        function setMandatoryV3() {
+            var fieldJsonForMndV3 = {
+                "accesstags": "true",
+                "account_user": "true",
+                "password": "true",
+                "purpose": "false",
+                "ordertracking": "false",
+                "contexts": "false",
+                "externalapproval": "false",
+                "inventory": "false",
+                "external_context": "false"
+            };
+            for (var key in fieldJsonForMndV3) {
+                g_form.setMandatory(key, fieldJsonForMndV3[key]);
+            }
+        }
 
-        g_form.setMandatory('externalapproval', false);
-        g_form.setDisplay('externalapproval', false);
+        function setDisplayV3() {
+            var fieldJsonForDspV3 = {
+                "accesstags": "true",
+                "enable_common_discovery": "false",
+                "additional_dataschema": "false",
+                "external_context_list": "false",
+                "qs_auth_profile": "false",
+                "consume_namespace": "false",
+                "quickstart": "false",
+                "multistep_approval": "false",
+                "purpose": "false",
+                "contexts": "false",
+                "ordertracking": "false",
+                "externalapproval": "false",
+                "inventory": "false",
+                "external_context": "false"
 
-        g_form.setMandatory('inventory', false);
-        g_form.setDisplay('inventory', false);
+            };
+            for (var key in fieldJsonForDspV3) {
+                g_form.setDisplay(key, fieldJsonForDspV3[key]);
+            }
+        }
 
-        g_form.setMandatory('external_context', false);
-        g_form.setDisplay('external_context', false);
-    } else {
-        g_form.setDisplay('accesstags', false);
-        g_form.setMandatory('accesstags', false);
-        g_form.setMandatory('account_user', false);
-        g_form.setMandatory('password', false);
+        function setMandatoryV2() {
+            var fieldJsonForMndV2 = {
+                "accesstags": "false",
+                "account_user": "false",
+                "password": "false",
+                "purpose": "true",
+                "ordertracking": "true",
+                "contexts": "true",
+                "externalapproval": "true",
+                "inventory": "true",
+                "external_context": "true"
+            };
+            for (var key in fieldJsonForMndV2) {				
+                g_form.setMandatory(key, fieldJsonForMndV2[key]);
+            }
+        }
 
-        g_form.setDisplay('enable_common_discovery', true);
-        //g_form.setDisplay('provisioning_using_servicenow', true);
-        g_form.setDisplay('additional_dataschema', true);
-        g_form.setDisplay('external_context_list', true);
-        g_form.setDisplay('qs_auth_profile', true);
-        g_form.setDisplay('consume_namespace', true);
-        g_form.setDisplay('quickstart', true);
-        g_form.setDisplay('multistep_approval', true);
+        function setDisplayV2() {
+            var fieldJsonForDspV2 = {
+                "accesstags": "false",
+                "enable_common_discovery": "true",
+                "additional_dataschema": "true",
+                "external_context_list": "true",
+                "qs_auth_profile": "true",
+                "consume_namespace": "true",
+                "quickstart": "true",
+                "multistep_approval": "true",
+                "purpose": "true",
+                "contexts": "true",
+                "ordertracking": "true",
+                "externalapproval": "true",
+                "inventory": "true",
+                "external_context": "true"
+            };
+            for (var key in fieldJsonForDspV2) {
+                g_form.setDisplay(key, fieldJsonForDspV2[key]);
+            }
+        }
 
-        g_form.setMandatory('purpose', true);
-        g_form.setDisplay('purpose', true);
-
-        g_form.setMandatory('contexts', true);
-        g_form.setDisplay('contexts', true);
-
-        g_form.setMandatory('ordertracking', true);
-        g_form.setDisplay('ordertracking', true);
-
-        g_form.setMandatory('externalapproval', true);
-        g_form.setDisplay('externalapproval', true);
-
-        g_form.setMandatory('inventory', true);
-        g_form.setDisplay('inventory', true);
-
-        g_form.setMandatory('external_context', true);
-        g_form.setDisplay('external_context', true);
 
 
     }
-
-     }
-     }
 }]]></script>
         <sys_class_name>catalog_script_client</sys_class_name>
         <sys_created_by>shalini.s11@kyndryl.com</sys_created_by>
@@ -114,15 +132,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>c8986e7a8730c610af901f473cbb3541</sys_id>
-        <sys_mod_count>36</sys_mod_count>
+        <sys_mod_count>44</sys_mod_count>
         <sys_name>Populate Integrated Creds</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>catalog_script_client_c8986e7a8730c610af901f473cbb3541</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-05-09 13:00:10</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 10:34:06</sys_updated_on>
         <table/>
         <type>onLoad</type>
         <ui_type>10</ui_type>

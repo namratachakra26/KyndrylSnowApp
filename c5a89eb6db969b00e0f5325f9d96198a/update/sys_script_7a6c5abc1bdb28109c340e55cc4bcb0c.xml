@@ -13,7 +13,7 @@
         <client_callable>false</client_callable>
         <collection>change_task</collection>
         <condition>current.change_request.parent.variables.var_offering_provider == "snow"</condition>
-        <description/>
+        <description>This Business Rule is used to trigger outbound call upon change task completion when provider type is snow</description>
         <execute_function>false</execute_function>
         <filter_condition table="change_task">on_hold=false^stateCHANGESFROM2^stateCHANGESTO3^EQ<item endquery="false" field="on_hold" goto="false" newquery="false" operator="=" or="false" value="false"/>
             <item display_value="In Progress" endquery="false" field="state" goto="false" newquery="false" operator="CHANGESFROM" or="false" value="2"/>
@@ -22,7 +22,7 @@
         </filter_condition>
         <is_rest>false</is_rest>
         <message/>
-        <name>Emp_Snow_Provisioning_Close_ChangeTask</name>
+        <name>Emp Snow Provisioning Close ChangeTask</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -40,9 +40,13 @@
  **/
 
 (function executeRule(current, previous /*null when async*/ ) {
-    if (current.assignment_group.name.equals(gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group')) && current.assigned_to.name.equals(gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to'))) {
-        // send provisioning status call to EM marketplace
-        var outboundCall = new ProvisioningCallToEMmarketplace().provisionStatus(current);
+    try {
+        if (current.assignment_group.name.equals(gs.getProperty('x_ibmg3_hcms.emp_cloud.assignment_group')) && current.assigned_to.name.equals(gs.getProperty('x_ibmg3_hcms.emp_cloud.assigned_to'))) {
+            // send provisioning status call to EM marketplace
+            new ProvisioningCallToEmMarketplace().provisionStatus(current);
+        }
+    } catch (e) {
+        new EmpLogLevel().logMsg("error", " Emp Snow Provisioning Close ChangeTask " + e);
     }
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
@@ -51,15 +55,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>7a6c5abc1bdb28109c340e55cc4bcb0c</sys_id>
-        <sys_mod_count>15</sys_mod_count>
-        <sys_name>Emp_Snow_Provisioning_Close_ChangeTask</sys_name>
+        <sys_mod_count>21</sys_mod_count>
+        <sys_name>Emp Snow Provisioning Close ChangeTask</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_7a6c5abc1bdb28109c340e55cc4bcb0c</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 15:46:19</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 09:29:56</sys_updated_on>
         <template/>
         <when>async_always</when>
     </sys_script>

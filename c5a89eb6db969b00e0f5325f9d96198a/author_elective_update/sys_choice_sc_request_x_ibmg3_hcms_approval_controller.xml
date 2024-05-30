@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_choice action="INSERT_OR_UPDATE" field="x_ibmg3_hcms_approval_controller" table="sc_request" version="3">
+        <sys_choice_set action="INSERT_OR_UPDATE">
+            <element>x_ibmg3_hcms_approval_controller</element>
+            <name>sc_request</name>
+            <sys_class_name>sys_choice_set</sys_class_name>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-09-02 09:05:28</sys_created_on>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>x_ibmg3_hcms_approval_controller</sys_name>
+            <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+            <sys_update_name>sys_choice_sc_request_x_ibmg3_hcms_approval_controller</sys_update_name>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-09-02 09:05:28</sys_updated_on>
+        </sys_choice_set>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>x_ibmg3_hcms_approval_controller</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>ICB</label>
+            <language>en</language>
+            <name>sc_request</name>
+            <sequence>100</sequence>
+            <synonyms/>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-09-02 09:05:28</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-09-02 09:05:28</sys_updated_on>
+            <value>icb</value>
+        </sys_choice>
+        <sys_choice action="INSERT_OR_UPDATE">
+            <dependent_value/>
+            <element>x_ibmg3_hcms_approval_controller</element>
+            <hint/>
+            <inactive>false</inactive>
+            <label>SNOW</label>
+            <language>en</language>
+            <name>sc_request</name>
+            <sequence>200</sequence>
+            <synonyms/>
+            <sys_created_by>vinverm7@in.ibm.com</sys_created_by>
+            <sys_created_on>2018-09-02 09:06:33</sys_created_on>
+            <sys_domain>global</sys_domain>
+            <sys_domain_path>/</sys_domain_path>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_updated_by>vinverm7@in.ibm.com</sys_updated_by>
+            <sys_updated_on>2018-09-02 09:06:33</sys_updated_on>
+            <value>snow</value>
+        </sys_choice>
+    </sys_choice>
+</record_update>

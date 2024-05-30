@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_ibmg3_hcms.EmpRestApiUtils</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>/** &#13;
+* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. &#13;
+* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP &#13;
+* Schedule Contract with Kyndryl Corp. &#13;
+* @author Asha Bagade &#13;
+* @Script Include is invoked from Scripted Rest Api built for EMP Integration&#13;
+**/</description>
+        <name>EmpRestApiUtils</name>
+        <script><![CDATA[var EmpRestApiUtils = Class.create();
+EmpRestApiUtils.prototype = {
+    initialize: function() {},
+
+    //Function to validate the base level elements
+    validateBaseElements: function(reqBody, isQsCatalog, response) {
+        var validationErr = "false";
+        var statusMsg = 'JSON payload error';
+        //property to hold discovery status(enabled/disabled)
+        var isDiscoveryEnabled = gs.getProperty('x_ibmg3_hcms.mvp3.discovery.enabled');
+        var ritmCount = reqBody.requestedItems;
+        if (ritmCount.length > 0) {
+            if (isQsCatalog)
+                new EmpLogLevel().logMsg("info", "QS catalog items validated " + " for order " + reqBody.orderNumber);
+            else { //validate for generic catalogs
+                for (var i = 0; i < ritmCount.length; i++) {
+                    var empCatFound = "false";
+                    // variable to hold the name of catalog item queried thru sys_id
+                    var catalogName = '';
+                    //catalog_item_name
+                    var payloadCatName = reqBody.requestedItems[i].catalog_item_name;
+                    //catalog item sys id
+                    var catalogSysId = reqBody.requestedItems[i].catalogItemId;
+                    if (catalogSysId) {
+                        var catItem = new GlideRecord('sc_cat_item');
+                        if (catItem.get(catalogSysId)) {
+                            catalogName = catItem.name.toString();
+                        } else {
+                            return this.raiseResponseError("catalogItemId value is incorrect", statusMsg, response);
+                        }
+                    }
+                    //check if EMP catalog item				
+                    if ((!catalogSysId && payloadCatName) || (catalogSysId && catalogName)) {
+                        if (catalogName)
+                            payloadCatName = catalogName;
+                        //check if valid EMP catalog item
+                        var mcmCat_items = gs.getProperty('x_ibmg3_hcms.emp_catalog_items').split(';');
+                        for (var j = 0; j < mcmCat_items.length; j++) {
+                            if (mcmCat_items[j].indexOf(payloadCatName) > -1 && mcmCat_items[j].length == payloadCatName.length) {
+                                empCatFound = "true";
+                                break;
+                            }
+                        }
+                        if (empCatFound == "false") { // if catalog is not EMP catalog rasie error
+                            return this.raiseResponseError("catalog_item_name/catalogItemId attribute doesn't hold valid catalog or cart cannot contain combination of public and private catalogs", statusMsg, response);
+                        }
+                    } else {
+                        this.raiseResponseError("catalog_item_name/catalogItemId attribute missing or incorrect", statusMsg, response);
+                    }
+                    //Change Approval Required
+                    if (!(reqBody.requestedItems[i].changeApprovalRequired)) {
+                        return this.raiseResponseError("changeApprovalRequired missing", statusMsg, response);
+                    }
+                }
+            }
+        } else {
+            return this.raiseResponseError("catalog_item_sys_id attribute missing", statusMsg, response);
+        }
+        //validate requested_for
+        if (!reqBody.requested_for) {
+            return this.raiseResponseError("requested_for attribute missing", statusMsg, response);
+        }
+        //validate orderNumber
+        if (!reqBody.orderNumber) {
+            return this.raiseResponseError("orderNumber attribute missing", statusMsg, response);
+        }
+        //validate requestType
+        if (!reqBody.requestType) {
+            return this.raiseResponseError("requestType attribute missing", statusMsg, response);
+        }
+        if (reqBody.requestType == "New") {
+            var payloadQuantity = reqBody.requestedItems.quantity;
+            var intQuantity = parseInt(payloadQuantity, 10);
+            if (intQuantity < 1) {
+                return this.raiseResponseError("quantity attribute less than one", statusMsg, response);
+            }
+        }
+        if (reqBody.requestType == "operation" && !isQsCatalog && isDiscoveryEnabled == "true") {
+            //resource name validation
+            var resrc = new EmpOperationsValidations().validateResourceName(reqBody);
+            if (!resrc || resrc == "") {
+                return this.raiseResponseError("ResourceName not available in cmdb", statusMsg, response);
+            }
+        }
+        return validationErr;
+    },
+
+    //Function to validate QS catalog item
+    qsCatalogCheck: function(payloadBody) {
+        var ritmCount = payloadBody.requestedItems;
+        if (ritmCount.length > 0) {
+            var qsItem = '';
+            for (var i = 0; i < ritmCount.length; i++) {
+                //catalog_item_name
+                var catalogItemCode = payloadBody.requestedItems[i].catalog_item_name;
+                var catalog_sysId = payloadBody.requestedItems[i].catalogItemId;
+                if (catalogItemCode || catalog_sysId) {
+                    var tablefield = 'u_applies_to.name';
+                    var payloadParameter = catalogItemCode;
+                    if (catalog_sysId) { //use catalog item sysId if sent in payload else check for item code
+                        tablefield = 'u_catalog_item';
+                        payloadParameter = catalog_sysId;
+                    } //check if catalog item is available in mapping table
+                    var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
+                    if (mappingTable.get(tablefield, payloadParameter)) {
+                        new EmpLogLevel().logMsg("info", "Valid QS Catalog item : " + payloadParameter + " for Ordernumber : " + payloadBody.orderNumber);
+                        qsItem = true;
+                    } else {
+                        new EmpLogLevel().logMsg("info", "Generic Catalog item : " + payloadParameter + " for Ordernumber : " + payloadBody.orderNumber);
+                        return false;
+                    }
+                } else
+                    return false;
+            }
+            return qsItem;
+        }
+    },
+
+    //Function to validate the base level elements of ci update api
+    validateCiElements: function(payload, response) {
+        var validationError = "false";
+        var statusMsg = 'JSON payload error';
+        if (!payload.u_correlation_id) {
+            validationError = "true";
+            this.raiseResponseError("u_correlation_id attribute missing", statusMsg, response);
+        }
+        //u_provider_name
+        if (!payload.u_provider_name) {
+            validationError = "true";
+            this.raiseResponseError("u_provider_name attribute missing", statusMsg, response);
+        }
+        //Determine if the tracking field is present based on the provider
+        var uTrackingInfoArray = payload.u_tracking_info;
+        var stackIdPresent = "false";
+        var deploymentIDPresent = "false";
+        var requestIDPresent = "false";
+        var resourceGroupIDPresent = "false";
+
+        //loop through the tracking info array
+        for (var p = 0; p < uTrackingInfoArray.length; p++) {
+            switch (uTrackingInfoArray[p].name) {
+                case 'stack_id':
+                    //set the stack id flag as true
+                    stackIdPresent = 'true';
+                    break;
+                case 'deployment_id':
+                    //set the deployment id flag as true
+                    deploymentIDPresent = 'true';
+                    break;
+                case 'request_id':
+                    //set the request id flag as true
+                    requestIDPresent = 'true';
+                    break;
+                case 'resource_group_id':
+                    //set the resource group id flag as true
+                    resourceGroupIDPresent = 'true';
+                    break;
+            }
+        }
+        //Perform the provider validations
+        switch (payload.u_provider_name.toLowerCase()) {
+            case 'amazon':
+            case 'aws':
+                if (stackIdPresent == "false") {
+                    //Raise error if stack_id is not present
+                    validationError = "true";
+                    this.raiseResponseError("stack_id attribute not present for Amazon Provider", statusMsg, response);
+                }
+                break;
+            case 'google':
+            case 'gcp':
+            case 'vmware':
+            case 'ibm':
+            case 'ibmcloud':
+                if (requestIDPresent == "false") {
+                    //Raise error if request_id is not present
+                    validationError = "true";
+                    var errMsg = "request_id attribute not present for " + payload.u_provider_name + " Provider";
+                    this.raiseResponseError(errMsg, statusMsg, response);
+                }
+                break;
+            case 'azure':
+                if (deploymentIDPresent == "false") {
+                    //Raise error if deployment_id is not present
+                    validationError = "true";
+                    this.raiseResponseError("deployment_id attribute not present for Azure Provider", statusMsg, response);
+                }
+                if (resourceGroupIDPresent == "false") {
+                    //Raise error if resource_group_id is not present
+                    validationError = "true";
+                    this.raiseResponseError("resource_group_id attribute not present for Azure Provider", statusMsg, response);
+                }
+                break;
+        }
+
+        //u_tracking_info
+        if (!payload.u_tracking_info) {
+            validationError = "true";
+            this.raiseResponseError("u_tracking_info attribute missing", statusMsg, response);
+        }
+        if (payload.u_tracking_info) {
+            if (uTrackingInfoArray.length == 0) {
+                validationError = "true";
+                this.raiseResponseError("u_tracking_info array has no array members", statusMsg, response);
+            } else if (uTrackingInfoArray.length > 0) {
+                for (var i = 0; i < uTrackingInfoArray.length; i++) {
+                    //Define variables for the attributes for each array item
+                    var name = uTrackingInfoArray[i].name;
+                    var value = uTrackingInfoArray[i].value;
+                    var iPlus1 = i + 1;
+                    var msg;
+                    //name
+                    if (!name) {
+                        validationError = "true";
+                        msg = "u_tracking_info array name(" + iPlus1 + ") attribute missing";
+                        this.raiseResponseError(msg, statusMsg, response);
+                    }
+                    //value
+                    if (!value) {
+                        validationError = "true";
+                        msg = "u_tracking_info array value(" + iPlus1 + ") attribute missing";
+                        this.raiseResponseError(msg, statusMsg, response);
+                    }
+                }
+            }
+        }
+
+        if (payload.u_attributes) {
+            var uAttributesArray = payload.u_attributes;
+            //hcmsLog.LogMsg("info", "uAttributesArray.length:" + uAttributesArray.length);
+            if (uAttributesArray.length == 0) {
+                validationError = "true";
+                this.raiseResponseError("u_attributes array has no array members", statusMsg, response);
+            } else if (uAttributesArray.length > 0) {
+                for (var q = 0; q < uAttributesArray.length; q++) {
+                    //Define variables for the attributes for each array item
+                    var nameAttributes = uAttributesArray[q].name;
+                    var valueAttributes = uAttributesArray[q].value;
+                    var qPlus1 = q + 1;
+                    var errMessage;
+                    //name
+                    if (!nameAttributes) {
+                        validationError = "true";
+                        errMessage = "attributes array name(" + qPlus1 + ") attribute missing";
+                        this.raiseResponseError(msg, statusMsg, response);
+                    }
+                    //value
+                    if (!valueAttributes) {
+                        validationError = "true";
+                        errMessage = "attributes array value(" + qPlus1 + ") attribute missing";
+                        this.raiseResponseError(msg, statusMsg, response);
+                    }
+                }
+            }
+        }
+        return validationError;
+    },
+
+    //Function to validate the base level elements of task update api
+    validateBaseTaskElements: function(taskPayload, response) {
+        var tskValidationErr = "false";
+        var statusError = 'JSON payload error';
+        if (!taskPayload.u_number) {
+            tskValidationErr = "true";
+            this.raiseResponseError("change_task number attribute missing", statusError, response);
+        }
+        //change task state
+        if (!taskPayload.u_state && !taskPayload.hasOwnProperty('onHold')) {
+            tskValidationErr = "true";
+            this.raiseResponseError("change_task state attribute missing", statusError, response);
+        }
+        //change task work notes
+        if (!taskPayload.u_work_notes) {
+            tskValidationErr = "true";
+            this.raiseResponseError("change_task worknotes attribute missing", statusError, response);
+        }
+        //change task close notes
+        if (!taskPayload.u_notes) {
+            tskValidationErr = "true";
+            this.raiseResponseError("change_task closenotes attribute missing", statusError, response);
+        }
+        return tskValidationErr;
+    },
+
+    //Function to build response error messages
+    raiseResponseError: function(infoMessage, statusMsg, response) {
+        var theError = new sn_ws_err.ServiceError();
+        theError.setStatus(403);
+        theError.setMessage(statusMsg);
+        theError.setDetail(infoMessage);
+        response.setError(theError);
+    },
+    type: 'EmpRestApiUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>asha.bagade@kyndryl.com</sys_created_by>
+        <sys_created_on>2024-05-27 11:06:57</sys_created_on>
+        <sys_id>a4c1a9ef1b164a90a9be2fc02a4bcb33</sys_id>
+        <sys_mod_count>20</sys_mod_count>
+        <sys_name>EmpRestApiUtils</sys_name>
+        <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
+        <sys_update_name>sys_script_include_a4c1a9ef1b164a90a9be2fc02a4bcb33</sys_update_name>
+        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-29 05:20:56</sys_updated_on>
+    </sys_script_include>
+</record_update>

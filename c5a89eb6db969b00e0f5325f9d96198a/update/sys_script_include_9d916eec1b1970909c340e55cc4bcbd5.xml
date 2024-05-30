@@ -2,57 +2,49 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.Emp_ServiceNow_Configuration</api_name>
+        <api_name>x_ibmg3_hcms.EmpServiceNowConfiguration</api_name>
         <caller_access/>
         <client_callable>true</client_callable>
         <description/>
-        <name>Emp_ServiceNow_Configuration</name>
-        <script><![CDATA[var Emp_ServiceNow_Configuration = Class.create();
-Emp_ServiceNow_Configuration.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+        <name>EmpServiceNowConfiguration</name>
+        <script><![CDATA[var EmpServiceNowConfiguration = Class.create();
+EmpServiceNowConfiguration.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 
 
-    mcmp_Version_Update: function() {
-
-        var version_val = this.getParameter('version_name');
-        var sys_rest, val;
-        switch (version_val) {
-
+    empVersionUpdate: function() {
+        var versionVal = this.getParameter('version_name');
+        var sysRest, val;
+        switch (versionVal) {
             case "v3":
-              
-                sys_rest = new GlideRecord('sys_rest_message_fn');
-                sys_rest.addEncodedQuery('rest_message=38a4e189db0160502019d90d6896194b^function_nameLIKEv3');
-                sys_rest.query();
-                while (sys_rest.next()) {
-                    val = sys_rest.rest_endpoint.toString().replace("v2", "v3");
-                    sys_rest.rest_endpoint = val;
-                    sys_rest.update();	
+                sysRest = new GlideRecord('sys_rest_message_fn');
+                sysRest.addEncodedQuery('rest_message=38a4e189db0160502019d90d6896194b^function_nameLIKEv3');
+                sysRest.query();
+                while (sysRest.next()) {
+                    val = sysRest.rest_endpoint.toString().replace("v2", "v3");
+                    sysRest.rest_endpoint = val;
+                    sysRest.update();	
                 }
                 break;
-				
 
             case "v2":
-                sys_rest = new GlideRecord('sys_rest_message_fn');
-                sys_rest.addEncodedQuery('rest_message=38a4e189db0160502019d90d6896194b^http_method=post');
-                sys_rest.query();
-                while (sys_rest.next()) {
-                    val = sys_rest.rest_endpoint.toString().replace("v3", "v2");
-                    sys_rest.rest_endpoint = val;
-                    sys_rest.update();
+                sysRest = new GlideRecord('sys_rest_message_fn');
+                sysRest.addEncodedQuery('rest_message=38a4e189db0160502019d90d6896194b^http_method=post');
+                sysRest.query();
+                while (sysRest.next()) {
+                    val = sysRest.rest_endpoint.toString().replace("v3", "v2");
+                    sysRest.rest_endpoint = val;
+                    sysRest.update();
                     
                 }
-
-
         }
-		
-		return "Version Updated Successfully To "+version_val;
+		return "Version Updated Successfully To "+versionVal;
 
     },
 	
 	
 	updateAdapterVersion : function(){
-		
 		var rec = new GlideRecord('sys_properties');
-        rec.addQuery('name', 'x_ibmg3_hcms.AdapterVersionConfiguration');
+        rec.addQuery('name', 'x_ibmg3_hcms.adapter.version.configuration');
         rec.query();
         if(rec.next()){
         rec.value = 'v2';
@@ -61,19 +53,19 @@ Emp_ServiceNow_Configuration.prototype = Object.extendsObject(global.AbstractAja
 	},
 	
 
-    type: 'Emp_ServiceNow_Configuration'
+    type: 'EmpServiceNowConfiguration'
 });]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2021-07-09 03:54:11</sys_created_on>
         <sys_id>9d916eec1b1970909c340e55cc4bcbd5</sys_id>
-        <sys_mod_count>12</sys_mod_count>
-        <sys_name>Emp_ServiceNow_Configuration</sys_name>
+        <sys_mod_count>18</sys_mod_count>
+        <sys_name>EmpServiceNowConfiguration</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_9d916eec1b1970909c340e55cc4bcbd5</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-28 05:34:49</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 06:35:58</sys_updated_on>
     </sys_script_include>
 </record_update>

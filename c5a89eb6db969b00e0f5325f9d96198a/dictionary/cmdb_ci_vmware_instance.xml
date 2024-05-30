@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element audit="true" db_object_id="bcdff8e71b610210a9be2fc02a4bcbf7" extends="cmdb_ci_vm_instance" label="VMware Virtual Machine Instance" max_length="40" name="cmdb_ci_vmware_instance" type="collection">
+        <element attributes="edge_encryption_enabled=true" label="Resource Mapping" max_length="40" name="x_ibmg3_hcms_resource_mapping" type="boolean"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking field" max_length="80" name="x_ibmg3_hcms_tracking_field" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking Id" max_length="80" name="x_ibmg3_hcms_tracking_id" type="string"/>
+        <element attributes="edge_encryption_enabled=true" label="Tracking resource group id" max_length="80" name="x_ibmg3_hcms_tracking_resource_group_id" type="string"/>
+    </element>
+</database>

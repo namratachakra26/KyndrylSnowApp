@@ -18,52 +18,46 @@ FetchV3AuthToken.prototype = {
     initialize: function() {},
     getToken: function(restMessageName, url, apiKey, userName) {
         try {
-            gs.info("asha inside v3 gettoken userName " + userName + "url " + url);
-            var rm = new sn_ws.RESTMessageV2(restMessageName, 'fetchV3AuthToken');
-            rm.setRequestHeader("Content-Type", "application/json");
-            rm.setRequestHeader("Accept", "Application/json");
-            rm.setStringParameterNoEscape('url', url);
-            rm.setHttpTimeout(50000);
-            //set request body
-            var reqbody = {};
-            reqbody.apikey = apiKey;
-            reqbody.subject = userName.toString();
-            var endpt = rm.getEndpoint();
-            var str = JSON.stringify(reqbody);
-            rm.setRequestBody(str);
-
-            var response = rm.execute();
+            var restMsg = new sn_ws.RESTMessageV2(restMessageName, 'fetchV3AuthToken');
+            restMsg.setRequestHeader("Content-Type", "application/json");
+            restMsg.setRequestHeader("Accept", "Application/json");
+            restMsg.setStringParameterNoEscape('url', url);
+            restMsg.setHttpTimeout(50000);
+            var reqBody = {};
+            reqBody.apikey = apiKey;
+            reqBody.subject = userName.toString();
+            restMsg.setRequestBody(JSON.stringify(reqBody));
+            var response = restMsg.execute();
             var httpStatus = response.getStatusCode();
 
             //get token from response 
             if (httpStatus == '200') {
                 var responseBody = response.getBody();
-                var res = JSON.parse(responseBody);
-                if(res){
-				new HCMSLogLevel().LogMsg("info", "Response for get Token " + responseBody + " \nhttpStatus: " + httpStatus);
-                return res.token;
-				}
-            }else{
-				new HCMSLogLevel().LogMsg("info", "Fetching Bearer token unsuccessful");
-			}
+                var result = JSON.parse(responseBody);
+                if (result) {
+                    new EmpLogLevel().logMsg("info", "Response for get Token " + responseBody + " \nhttpStatus: " + httpStatus);
+                    return result.token;
+                }
+            } else {
+                new EmpLogLevel().logMsg("info", "Fetching Bearer token unsuccessful");
+            }
         } catch (err) {
-            new HCMSLogLevel().LogMsg("info", "Fetching Bearer token error " + err);
+            new EmpLogLevel().logMsg("error", "Fetching Bearer token error " + err);
         }
     },
-
     type: 'FetchV3AuthToken'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>asha.bagade@kyndryl.com</sys_created_by>
         <sys_created_on>2024-02-28 14:07:54</sys_created_on>
         <sys_id>cf15010f47a88a508184998c346d436d</sys_id>
-        <sys_mod_count>15</sys_mod_count>
+        <sys_mod_count>25</sys_mod_count>
         <sys_name>FetchV3AuthToken</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_cf15010f47a88a508184998c346d436d</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-13 15:26:56</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:40:11</sys_updated_on>
     </sys_script_include>
 </record_update>

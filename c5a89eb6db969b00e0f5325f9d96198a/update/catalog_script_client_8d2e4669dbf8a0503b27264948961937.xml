@@ -17,13 +17,12 @@
         <messages/>
         <name>FulfillmentJsonValidation</name>
         <order/>
+        <published_ref/>
         <script><![CDATA[function onChange(control, oldValue, newValue, isLoading) {
     if (isLoading || newValue == '') {
         return;
     }
-
     var jsonData = g_form.getValue('fullfilment_policies');
-
     try {
         if (Array.isArray(JSON.parse(jsonData)))
             return true;
@@ -33,7 +32,7 @@
             return false;
         }
     } catch (error) {
-        g_form.addErrorMessage("Fullfilment policies are not valid json");
+        g_form.addErrorMessage("Error caught in FulfillmentJsonValidation");
         g_form.clearValue('fullfilment_policies');
         return false;
     }
@@ -44,7 +43,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>8d2e4669dbf8a0503b27264948961937</sys_id>
-        <sys_mod_count>41</sys_mod_count>
+        <sys_mod_count>42</sys_mod_count>
         <sys_name>FulfillmentJsonValidation</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
@@ -52,10 +51,11 @@
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>catalog_script_client_8d2e4669dbf8a0503b27264948961937</sys_update_name>
         <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-08 07:56:54</sys_updated_on>
+        <sys_updated_on>2024-05-28 11:55:02</sys_updated_on>
         <table/>
         <type>onChange</type>
         <ui_type>0</ui_type>
+        <va_supported>true</va_supported>
         <variable_set/>
         <view/>
     </catalog_script_client>

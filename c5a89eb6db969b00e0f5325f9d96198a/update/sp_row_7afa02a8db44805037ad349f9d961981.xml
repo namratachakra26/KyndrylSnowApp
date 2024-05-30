@@ -2,6 +2,7 @@
     <sp_row action="INSERT_OR_UPDATE">
         <class_name/>
         <order>1</order>
+        <semantic_tag/>
         <sp_column/>
         <sp_container display_value="hcms_broker_inventory - Container 1">3afa02a8db44805037ad349f9d96197f</sp_container>
         <sys_class_name>sp_row</sys_class_name>

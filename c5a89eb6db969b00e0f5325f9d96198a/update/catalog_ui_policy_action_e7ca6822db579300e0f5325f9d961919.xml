@@ -5,6 +5,8 @@
         <cleared>false</cleared>
         <disabled>ignore</disabled>
         <field/>
+        <field_message/>
+        <field_message_type/>
         <mandatory>ignore</mandatory>
         <order/>
         <sys_class_name>catalog_ui_policy_action</sys_class_name>
@@ -20,8 +22,9 @@
         <sys_updated_by>rannep12@in.ibm.com</sys_updated_by>
         <sys_updated_on>2018-07-17 09:21:06</sys_updated_on>
         <table/>
-        <u_item_option_new_sys_id>9bfc4aaedbc71380e0f5325f9d961990</u_item_option_new_sys_id>
         <ui_policy display_value="Hide Variables on Requested Item">f659e8eedb179300e0f5325f9d961950</ui_policy>
+        <value/>
+        <value_action/>
         <variable>var_request_type</variable>
         <variable_set/>
         <visible>false</visible>

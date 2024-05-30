@@ -2,7 +2,7 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>public</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.BrokerRequestExtract</api_name>
+        <api_name>x_ibmg3_hcms.EmpRequestExtract</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description>/** &#13;
@@ -12,22 +12,22 @@
 * @author Asha Bagade &#13;
 * @Script Include is invoked from workflow HCMS Provision Workflow - extracts the BOM, BOS, config values, addon service from the payload&#13;
 **/</description>
-        <name>BrokerRequestExtract</name>
-        <script><![CDATA[var BrokerRequestExtract = Class.create();
+        <name>EmpRequestExtract</name>
+        <script><![CDATA[var EmpRequestExtract = Class.create();
 
-BrokerRequestExtract.prototype = {
+EmpRequestExtract.prototype = {
     initialize: function() {},
 
-    billofSummary: function(current) {
+    billOfSummary: function(current) {
         try {
-            var str = current.x_ibmg3_hcms_broker_approval_request_json;
-            var requestBody_json = JSON.parse(str);
-            var specialInstructionsContent = requestBody_json;
+            var strBrokenJson = current.x_ibmg3_hcms_broker_approval_request_json;
+            var requestBodyJson = JSON.parse(strBrokenJson);
+            var specialInstructionsContent = requestBodyJson;
             var orderNumber = specialInstructionsContent.orderNumber;
             var htmlArray = [];
 
             //Create a variable to contain approval summary in html format.
-            var hourly, usageCharge, recurringCharge, totalCharge, USD, usgaequantity, reccuringquantity, quantity, totalUsgaeCharge, totalRecuringCharge, oneTimeCharge;
+            var hourly, usageCharge, recurringCharge, totalCharge, usd, usageQuantity, reccuringQuantity, quantity, totalUsageCharge, totalRecuringCharge, oneTimeCharge;
             var description = '';
             //loop thru all the ritms
             for (var i = 0; i < specialInstructionsContent.requestedItems.length; i++) {
@@ -39,7 +39,7 @@ BrokerRequestExtract.prototype = {
                 html.push("<tr style='background-color:#0099ff;color:white;text-align:center'><th colspan='8' style='text-align:left;padding:5px;'>Kyndryl Marketplace Order Number: " + orderNumber + "</th></tr>");
                 html.push("<tr style='background-color:#0099ff;color:white;text-align:center'><th style='text-align:left;padding:5px;'>Service Name</th><th style='text-align:left;padding:5px;'>Item</th><th style='padding:5px;'>Quantity</th><th style='padding:5px;'>Currency</th><th style='padding:5px;'>One Time Charge</th><th style='padding:5px;'>Usage Charge</th><th style='padding:5px;'>Recurring Charge</th><th style='padding:5px;'>Total Monthly</th></tr>");
 
-                USD = specialInstructionsContent.currency;
+                usd = specialInstructionsContent.currency;
                 var service = specialInstructionsContent.requestedItems[i].serviceName;
                 if ((specialInstructionsContent.requestedItems[i].billOfMaterials) != null) {
                     for (var j = 0; j < specialInstructionsContent.requestedItems[i].billOfMaterials.length; j++) {
@@ -47,20 +47,20 @@ BrokerRequestExtract.prototype = {
                         description = specialInstructionsContent.requestedItems[i].billOfMaterials[j].description;
                         //has property usageCharge and no recurringCharge & oneTimeCharge
                         if (bomArray.hasOwnProperty("usageCharge") && ((!bomArray.hasOwnProperty("recurringCharge")) && (!bomArray.hasOwnProperty("oneTimeCharge")))) {
-                            usgaequantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.quantity;
-                            totalUsgaeCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.totalValue;
+                            usageQuantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.quantity;
+                            totalUsageCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.totalValue;
                             usageCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.unitValue;
-                            quantity = usgaequantity;
-                            totalCharge = totalUsgaeCharge;
+                            quantity = usageQuantity;
+                            totalCharge = totalUsageCharge;
                         } else {
                             usageCharge = 0;
                         }
                         //has propetry recurringCharge and no usageCharge & oneTimeCharge
                         if (bomArray.hasOwnProperty("recurringCharge") && ((!bomArray.hasOwnProperty("usageCharge")) && (!bomArray.hasOwnProperty("oneTimeCharge")))) {
-                            reccuringquantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.quantity;
+                            reccuringQuantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.quantity;
                             totalRecuringCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.totalValue;
                             recurringCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.unitValue;
-                            quantity = reccuringquantity;
+                            quantity = reccuringQuantity;
                             totalCharge = totalRecuringCharge;
                         } else {
                             recurringCharge = 0;
@@ -76,23 +76,23 @@ BrokerRequestExtract.prototype = {
                         //has oneTimeCharge and usageCharge
                         if (bomArray.hasOwnProperty("oneTimeCharge") && bomArray.hasOwnProperty("usageCharge")) {
                             oneTimeCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].oneTimeCharge.value;
-                            usgaequantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.quantity;
-                            totalUsgaeCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.totalValue;
+                            usageQuantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.quantity;
+                            totalUsageCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.totalValue;
                             usageCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].usageCharge.unitValue;
-                            quantity = usgaequantity;
-                            totalCharge = totalUsgaeCharge + oneTimeCharge;
+                            quantity = usageQuantity;
+                            totalCharge = totalUsageCharge + oneTimeCharge;
                         }
                         //has oneTimeCharge and recurringCharge
                         if (bomArray.hasOwnProperty("oneTimeCharge") && bomArray.hasOwnProperty("recurringCharge")) {
                             oneTimeCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].oneTimeCharge.value;
-                            reccuringquantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.quantity;
+                            reccuringQuantity = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.quantity;
                             totalRecuringCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.totalValue;
                             recurringCharge = specialInstructionsContent.requestedItems[i].billOfMaterials[j].recurringCharge.unitValue;
-                            quantity = reccuringquantity;
+                            quantity = reccuringQuantity;
                             totalCharge = totalRecuringCharge + oneTimeCharge;
                         }
 
-                        html.push("<tr style='border:1px solid black;text-align:center;'><td style=text-align:left;padding:5px;'>" + service + "</td><td style=text-align:left;padding:5px;'>" + description + "</td><td style='padding:5px;'>" + quantity + "</td><td style='padding:5px;'>" + USD + "</td><td style='padding:5px;'>" + oneTimeCharge + "</td><td style='padding:5px;'>" + usageCharge + "</td><td style='padding:5px;'>" + recurringCharge + "</td><td style='padding:5px;'>" + totalCharge + "</td></tr>");
+                        html.push("<tr style='border:1px solid black;text-align:center;'><td style=text-align:left;padding:5px;'>" + service + "</td><td style=text-align:left;padding:5px;'>" + description + "</td><td style='padding:5px;'>" + quantity + "</td><td style='padding:5px;'>" + usd + "</td><td style='padding:5px;'>" + oneTimeCharge + "</td><td style='padding:5px;'>" + usageCharge + "</td><td style='padding:5px;'>" + recurringCharge + "</td><td style='padding:5px;'>" + totalCharge + "</td></tr>");
 
                     }
 
@@ -102,7 +102,7 @@ BrokerRequestExtract.prototype = {
                     usageCharge = 0;
                     recurringCharge = 0;
                     totalCharge = 0;
-                    html.push("<tr style='border:1px solid black;text-align:center;'><td style=text-align:left;padding:5px;'>" + service + "</td><td style=text-align:left;padding:5px;'> " + "</td><td style='padding:5px;'>" + quantity + "</td><td style='padding:5px;'>" + USD + "</td><td style='padding:5px;'>" + oneTimeCharge + "</td><td style='padding:5px;'>" + usageCharge + "</td><td style='padding:5px;'>" + recurringCharge + "</td><td style='padding:5px;'>" + totalCharge + "</td></tr>");
+                    html.push("<tr style='border:1px solid black;text-align:center;'><td style=text-align:left;padding:5px;'>" + service + "</td><td style=text-align:left;padding:5px;'> " + "</td><td style='padding:5px;'>" + quantity + "</td><td style='padding:5px;'>" + usd + "</td><td style='padding:5px;'>" + oneTimeCharge + "</td><td style='padding:5px;'>" + usageCharge + "</td><td style='padding:5px;'>" + recurringCharge + "</td><td style='padding:5px;'>" + totalCharge + "</td></tr>");
                 }
                 // If the payload contains add-on services then create line of items in BOM table
                 if ((specialInstructionsContent.requestedItems[i].addOnServices) != null) {
@@ -113,20 +113,20 @@ BrokerRequestExtract.prototype = {
                             var addDescription = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].description;
                             //has property usageCharge and no recurringCharge & oneTimeCharge
                             if (addBomArray.hasOwnProperty("usageCharge") && ((!addBomArray.hasOwnProperty("recurringCharge")) && (!addBomArray.hasOwnProperty("oneTimeCharge")))) {
-                                usgaequantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.quantity;
-                                totalUsgaeCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.totalValue;
+                                usageQuantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.quantity;
+                                totalUsageCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.totalValue;
                                 usageCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.unitValue;
-                                quantity = usgaequantity;
-                                totalCharge = totalUsgaeCharge;
+                                quantity = usageQuantity;
+                                totalCharge = totalUsageCharge;
                             } else {
                                 usageCharge = 0;
                             }
                             //has propetry recurringCharge and no usageCharge & oneTimeCharge
                             if (addBomArray.hasOwnProperty("recurringCharge") && ((!addBomArray.hasOwnProperty("usageCharge")) && (!addBomArray.hasOwnProperty("oneTimeCharge")))) {
-                                reccuringquantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.quantity;
+                                reccuringQuantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.quantity;
                                 totalRecuringCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.totalValue;
                                 recurringCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.unitValue;
-                                quantity = reccuringquantity;
+                                quantity = reccuringQuantity;
                                 totalCharge = totalRecuringCharge;
                             } else {
                                 recurringCharge = 0;
@@ -142,23 +142,23 @@ BrokerRequestExtract.prototype = {
                             //has oneTimeCharge and usageCharge
                             if (addBomArray.hasOwnProperty("oneTimeCharge") && addBomArray.hasOwnProperty("usageCharge")) {
                                 oneTimeCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].oneTimeCharge.value;
-                                usgaequantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.quantity;
-                                totalUsgaeCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.totalValue;
+                                usageQuantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.quantity;
+                                totalUsageCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.totalValue;
                                 usageCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].usageCharge.unitValue;
-                                quantity = usgaequantity;
-                                totalCharge = totalUsgaeCharge + oneTimeCharge;
+                                quantity = usageQuantity;
+                                totalCharge = totalUsageCharge + oneTimeCharge;
                             }
                             //has oneTimeCharge and recurringCharge
                             if (addBomArray.hasOwnProperty("oneTimeCharge") && addBomArray.hasOwnProperty("recurringCharge")) {
                                 oneTimeCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].oneTimeCharge.value;
-                                reccuringquantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.quantity;
+                                reccuringQuantity = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.quantity;
                                 totalRecuringCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.totalValue;
                                 recurringCharge = specialInstructionsContent.requestedItems[i].addOnServices[m].billOfMaterials[k].recurringCharge.unitValue;
-                                quantity = reccuringquantity;
+                                quantity = reccuringQuantity;
                                 totalCharge = totalRecuringCharge + oneTimeCharge;
                             }
                             // pushing add-on line of items in the BOM table
-                            html.push("<tr style='border:1px solid black;text-align:center;'><td style=text-align:left;padding:5px;'>" + addService + "</td><td style=text-align:left;padding:5px;'>" + addDescription + "</td><td style='padding:5px;'>" + quantity + "</td><td style='padding:5px;'>" + USD + "</td><td style='padding:5px;'>" + oneTimeCharge + "</td><td style='padding:5px;'>" + usageCharge + "</td><td style='padding:5px;'>" + recurringCharge + "</td><td style='padding:5px;'>" + totalCharge + "</td></tr>");
+                            html.push("<tr style='border:1px solid black;text-align:center;'><td style=text-align:left;padding:5px;'>" + addService + "</td><td style=text-align:left;padding:5px;'>" + addDescription + "</td><td style='padding:5px;'>" + quantity + "</td><td style='padding:5px;'>" + usd + "</td><td style='padding:5px;'>" + oneTimeCharge + "</td><td style='padding:5px;'>" + usageCharge + "</td><td style='padding:5px;'>" + recurringCharge + "</td><td style='padding:5px;'>" + totalCharge + "</td></tr>");
 
 
                         }
@@ -184,10 +184,10 @@ BrokerRequestExtract.prototype = {
                     if ((specialInstructionsContent.requestedItems[s].addOnServices) != null) {
                         for (var v = 0; v < specialInstructionsContent.requestedItems[s].addOnServices.length; v++) {
                             var addSname = specialInstructionsContent.requestedItems[s].addOnServices[v].serviceName.toString();
-                            var bill_sum = bomValues.x_ibmg3_hcms_broker_approval_item_summary;
+                            var billSum = bomValues.x_ibmg3_hcms_broker_approval_item_summary;
                             for (var count = 0; count < htmlArray.length; count++) {
                                 htmlArray[count].toString();
-                                if (htmlArray[count].match(snamePayload) && htmlArray[count].match(addSname) && bill_sum == '' && sname.indexOf(snamePayload) != -1) {
+                                if (htmlArray[count].match(snamePayload) && htmlArray[count].match(addSname) && billSum == '' && sname.indexOf(snamePayload) != -1) {
                                     bomValues.x_ibmg3_hcms_broker_approval_item_summary = htmlArray[count];
                                     bomValues.update();
                                     break;
@@ -216,9 +216,9 @@ BrokerRequestExtract.prototype = {
 
     populateConfigValues: function(current) {
         try {
-            var str = current.x_ibmg3_hcms_broker_approval_request_json;
-            var requestBody_json = JSON.parse(str);
-            var specialInstructionsContent = requestBody_json;
+            var strApprovalJson = current.x_ibmg3_hcms_broker_approval_request_json;
+            var requestBodyJson = JSON.parse(strApprovalJson);
+            var specialInstructionsContent = requestBodyJson;
             var htmlArray = [];
             for (var i = 0; i < specialInstructionsContent.requestedItems.length; i++) {
                 var service = specialInstructionsContent.requestedItems[i].serviceName;
@@ -259,10 +259,10 @@ BrokerRequestExtract.prototype = {
             bomValues.query();
             while (bomValues.next()) {
                 sname = bomValues.variables.var_service_name.toString();
-                var config_values = bomValues.x_ibmg3_hcms_broker_approval_item_json;
+                var configValues = bomValues.x_ibmg3_hcms_broker_approval_item_json;
                 for (count = 0; count <= htmlArray.length; count++) {
                     htmlArray[count].toString();
-                    if (htmlArray[count].match(sname) && (config_values == '')) {
+                    if (htmlArray[count].match(sname) && (configValues == '')) {
                         bomValues.x_ibmg3_hcms_broker_approval_item_json = htmlArray[count];
                         bomValues.update();
                         break;
@@ -276,33 +276,27 @@ BrokerRequestExtract.prototype = {
 
     populateAddOnServices: function(current) {
         try {
-            var str = current.x_ibmg3_hcms_broker_approval_request_json;
-            var requestBody_json = JSON.parse(str);
-            var specialInstructionsContent = requestBody_json;
+            var strApprovalJson = current.x_ibmg3_hcms_broker_approval_request_json;
+            var requestBodyJson = JSON.parse(strApprovalJson);
+            var specialInstructionsContent = requestBodyJson;
             var htmlArray = [];
             for (var i = 0; i < specialInstructionsContent.requestedItems.length; i++) {
                 var html = [];
-                var reqserviceName = specialInstructionsContent.requestedItems[i].serviceName;
+                var reqServiceName = specialInstructionsContent.requestedItems[i].serviceName;
                 //If the payload contains add-on services 
                 if ((specialInstructionsContent.requestedItems[i].addOnServices) != null) {
                     for (var j = 0; j < specialInstructionsContent.requestedItems[i].addOnServices.length; j++) {
                         //Initiate the html field and creating table for each add-on sevices
                         html.push("<html><head/><body>");
                         html.push("<table style='border:1px solid black;border-spacing: 5px;'>");
-
-                        gs.info("addonserviceslength:" + specialInstructionsContent.requestedItems[i].addOnServices.length);
                         var service = specialInstructionsContent.requestedItems[i].addOnServices[j].serviceName;
-                        gs.info("servicenameforaddon:" + service);
                         var itemPropertiesArray = specialInstructionsContent.requestedItems[i].addOnServices[j].itemProperties;
-                        html.push("<caption style='font-size:25px solid black;font-weight: bold;color:green'> " + service + "-" + reqserviceName + "</caption>");
+                        html.push("<caption style='font-size:25px solid black;font-weight: bold;color:green'> " + service + "-" + reqServiceName + "</caption>");
                         html.push("<tr style='background-color:#0099ff;color:white;'><th style='padding:5px;text-align:left;width:150px'>Configurations</th><th style='padding:5px;text-align:center;width:100px'>Values</th><th style='padding:5px;text-align:center;width:100px'>Display Name</th></tr>");
                         for (var l = 0; l < itemPropertiesArray.length; l++) {
                             var itemPropertiesJson = itemPropertiesArray[l];
                             var propertiesArray = itemPropertiesJson.properties;
                             for (var k = 0; k < propertiesArray.length; k++) {
-                                // pushing the values in the table
-                                //html.push("<tr><td style='padding:5px;text-transform:capitalize;'>" + propertiesArray[k].name + "</td><td>" + propertiesArray[k].value + "</td></tr>");
-
                                 html.push("<tr><td style='padding:5px;text-transform:capitalize;'>" + propertiesArray[k].name + "</td><td>" + propertiesArray[k].value + "</td><td>" + propertiesArray[k].displayName + "</td></tr>");
                             }
 
@@ -314,8 +308,7 @@ BrokerRequestExtract.prototype = {
 
                 }
 
-                htmlArray.push(html.join("")); // joining all the tables for each add-on services
-                gs.info("add-on array:" + htmlArray);
+                htmlArray.push(html.join("")); // joining all the tables for each add-on services               
 
             }
 
@@ -332,10 +325,10 @@ BrokerRequestExtract.prototype = {
                         var snamePayload = specialInstructionsContent.requestedItems[s].serviceName.toString();
                         for (var v = 0; v < specialInstructionsContent.requestedItems[s].addOnServices.length; v++) {
                             var addSname = specialInstructionsContent.requestedItems[s].addOnServices[v].serviceName.toString();
-                            var addon_values = bomValues.x_ibmg3_hcms_addonservice_values;
+                            var addonValues = bomValues.x_ibmg3_hcms_addonservice_values;
                             for (var count = 0; count < htmlArray.length; count++) {
                                 htmlArray[count].toString();
-                                if (htmlArray[count].match(addSname) && addon_values == '' && sname.indexOf(snamePayload) != -1) { // if the array matches service name then it gets stored in the summary field
+                                if (htmlArray[count].match(addSname) && addonValues == '' && sname.indexOf(snamePayload) != -1) { // if the array matches service name then it gets stored in the summary field
                                     bomValues.x_ibmg3_hcms_addonservice_values = htmlArray[count];
                                     bomValues.update();
                                     break;
@@ -355,19 +348,19 @@ BrokerRequestExtract.prototype = {
 
     },
 
-    type: 'BrokerRequestExtract'
+    type: 'EmpRequestExtract'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>vram@us.ibm.com</sys_created_by>
         <sys_created_on>2018-06-10 19:52:53</sys_created_on>
         <sys_id>6888dcb2dbe21f0037ad349f9d961953</sys_id>
-        <sys_mod_count>413</sys_mod_count>
-        <sys_name>BrokerRequestExtract</sys_name>
+        <sys_mod_count>418</sys_mod_count>
+        <sys_name>EmpRequestExtract</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_6888dcb2dbe21f0037ad349f9d961953</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-12-05 11:28:55</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 05:19:17</sys_updated_on>
     </sys_script_include>
 </record_update>

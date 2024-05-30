@@ -17,127 +17,112 @@
         <messages/>
         <name>Handle Required Fields for V3</name>
         <order/>
+        <published_ref/>
         <script><![CDATA[function onChange(control, oldValue, newValue, isLoading) {
     if (isLoading || newValue == '') {
         return;
     }
 
     if (newValue == 'v3' && !isLoading) {
-
         clearValues();
-
-        g_form.setDisplay('accesstags', true);
-        g_form.setMandatory('accesstags', true);
-        g_form.setMandatory('account_user', true);
-        g_form.setMandatory('password', true);
         if (g_form.getValue('mcmp_endpoint') != '') {
             g_form.setReadOnly('account_name', true);
-            
         }
-
-        g_form.setDisplay('enable_common_discovery', false);
-        g_form.setDisplay('provisioning_using_servicenow', false);
-        g_form.setDisplay('additional_dataschema', false);
-        g_form.setDisplay('external_context_list', false);
-        g_form.setDisplay('qs_auth_profile', false);
-        g_form.setDisplay('consume_namespace', false);
-        g_form.setDisplay('quickstart', false);
-        g_form.setDisplay('multistep_approval', false);
-
-        g_form.setMandatory('purpose', false);
-        g_form.setDisplay('purpose', false);
-
-        g_form.setMandatory('contexts', false);
-        g_form.setDisplay('contexts', false);
-
-        g_form.setMandatory('ordertracking', false);
-        g_form.setDisplay('ordertracking', false);
-
-        g_form.setMandatory('externalapproval', false);
-        g_form.setDisplay('externalapproval', false);
-
-        g_form.setMandatory('inventory', false);
-        g_form.setDisplay('inventory', false);
-
-        g_form.setMandatory('external_context', false);
-        g_form.setDisplay('external_context', false);
-
+        setMandatoryV3();
+        setDisplayV3();
     }
     if (newValue == 'v2') {
 
         clearValues();
-		g_form.setReadOnly('account_name', false);
-        g_form.setMandatory('accesstags', false);
-        g_form.setDisplay('accesstags', false);
-
-        g_form.setDisplay('enable_common_discovery', true);
-        g_form.setDisplay('provisioning_using_servicenow', true);
-        g_form.setDisplay('additional_dataschema', true);
-        g_form.setDisplay('external_context_list', true);
-        g_form.setDisplay('qs_auth_profile', true);
-        g_form.setDisplay('consume_namespace', true);
-        g_form.setDisplay('quickstart', true);
-        g_form.setDisplay('multistep_approval', true);
-
-        g_form.setMandatory('purpose', true);
-        g_form.setDisplay('purpose', true);
-
-        g_form.setMandatory('contexts', true);
-        g_form.setDisplay('contexts', true);
-
-        g_form.setMandatory('ordertracking', true);
-        g_form.setDisplay('ordertracking', true);
-
-        g_form.setMandatory('externalapproval', true);
-        g_form.setDisplay('externalapproval', true);
-
-        g_form.setMandatory('inventory', true);
-        g_form.setDisplay('inventory', true);
-
-        g_form.setMandatory('external_context', true);
-        g_form.setDisplay('external_context', true);
+        g_form.setReadOnly('account_name', false);
+        setMandatoryV2();
+        setDisplayV2();
 
     }
 }
 
 function clearValues() {
-    var fieldnameList = ['mcmp_endpoint',
-        'mcmp_api_credential',
-        'get_config_values',
-        'icb_instance_name',
-        'ci_integration_policy',
-        'multistep_approval',
-        'approval_workflow',
-        'qs_auth_profile',
-        'provisioningservicenow',
-        'approval_policy_support',
-        'additional_dataschema',
-        'external_context_list',
-        'consume_namespace',
-        'accesstags',
-        'sslcerts',
-        'domain_separation',
-        'oauth_security',
-        'client_id',
-        'client_secret',
-        'ordertracking',
-        'externalapproval',
-        'inventory',
-        'external_context',
-        'contexts',
-        'encodeContext',
-        'assignment_groups',
-        'change_approval_required',
-        'change_required',
-        'catalog_mapping_condition',
-        'catalog_mapping_condition_added',
-		'fullfilment_policies',
-		'allow_anonymous_user',
-        'discovery'
-
-    ];
+    var fieldnameList = ['mcmp_endpoint', 'mcmp_api_credential', 'get_config_values', 'icb_instance_name', 'ci_integration_policy','multistep_approval','approval_workflow','qs_auth_profile','provisioningservicenow','approval_policy_support','additional_dataschema','external_context_list','consume_namespace','accesstags','sslcerts','domain_separation','oauth_security','client_id','client_secret','ordertracking','externalapproval','inventory','external_context','contexts','encodeContext','assignment_groups','change_approval_required','change_required','catalog_mapping_condition','catalog_mapping_condition_added','fullfilment_policies','allow_anonymous_user','discovery'];
     for (var i = 0; i < fieldnameList.length; i++) {
         g_form.clearValue(fieldnameList[i]);
+    }
+}
+
+function setMandatoryV3() {
+    var fieldJsonForMndV3 = {
+        "accesstags": "true",
+        "account_user": "true",
+        "password": "true",
+        "purpose": "false",
+        "ordertracking": "false",
+        "contexts": "false",
+        "externalapproval": "false",
+        "inventory": "false",
+        "external_context": "false"
+    };
+    for (var key in fieldJsonForMndV3) {
+        g_form.setMandatory(key, fieldJsonForMndV3[key]);
+    }
+}
+
+function setDisplayV3() {
+    var fieldJsonForDspV3 = {
+        "accesstags": "true",
+        "enable_common_discovery": "false",
+        "additional_dataschema": "false",
+        "external_context_list": "false",
+        "qs_auth_profile": "false",
+        "consume_namespace": "false",
+        "quickstart": "false",
+        "multistep_approval": "false",
+        "purpose": "false",
+        "contexts": "false",
+        "ordertracking": "false",
+        "externalapproval": "false",
+        "inventory": "false",
+        "external_context": "false"
+
+    };
+    for (var key in fieldJsonForDspV3) {
+        g_form.setDisplay(key, fieldJsonForDspV3[key]);
+    }
+}
+
+function setMandatoryV2() {
+    var fieldJsonForMndV2 = {
+        "accesstags": "false",
+        "purpose": "true",
+        "ordertracking": "true",
+        "contexts": "true",
+        "externalapproval": "true",
+        "inventory": "true",
+        "external_context": "true"
+    };
+    for (var key in fieldJsonForMndV2) {
+        alert("making mandatory for v2");
+        g_form.setMandatory(key, fieldJsonForMndV2[key]);
+    }
+}
+
+function setDisplayV2() {
+    var fieldJsonForDspV2 = {
+        "accesstags": "false",
+        "enable_common_discovery": "true",
+        "additional_dataschema": "true",
+        "external_context_list": "true",
+        "qs_auth_profile": "true",
+        "consume_namespace": "true",
+        "quickstart": "true",
+        "multistep_approval": "true",
+        "purpose": "true",
+        "contexts": "true",
+        "ordertracking": "true",
+        "externalapproval": "true",
+        "inventory": "true",
+        "external_context": "true"
+    };
+    for (var key in fieldJsonForDspV2) {
+        g_form.setDisplay(key, fieldJsonForDspV2[key]);
     }
 }]]></script>
         <sys_class_name>catalog_script_client</sys_class_name>
@@ -146,18 +131,19 @@ function clearValues() {
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>e6c7572e8764c250af901f473cbb3543</sys_id>
-        <sys_mod_count>90</sys_mod_count>
+        <sys_mod_count>92</sys_mod_count>
         <sys_name>Handle Required Fields for V3</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>catalog_script_client_e6c7572e8764c250af901f473cbb3543</sys_update_name>
-        <sys_updated_by>shalini.s11@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2024-03-20 16:49:44</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 14:19:07</sys_updated_on>
         <table/>
         <type>onChange</type>
         <ui_type>10</ui_type>
+        <va_supported>true</va_supported>
         <variable_set/>
         <view/>
     </catalog_script_client>

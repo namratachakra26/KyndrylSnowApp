@@ -5,6 +5,8 @@
         <cleared>false</cleared>
         <disabled>ignore</disabled>
         <field/>
+        <field_message/>
+        <field_message_type/>
         <mandatory>true</mandatory>
         <order>100</order>
         <sys_class_name>catalog_ui_policy_action</sys_class_name>
@@ -20,8 +22,9 @@
         <sys_updated_by>debada54@in.ibm.com</sys_updated_by>
         <sys_updated_on>2020-12-16 13:13:29</sys_updated_on>
         <table/>
-        <u_item_option_new_sys_id>b643b8fedbc560103b27264948961935</u_item_option_new_sys_id>
         <ui_policy display_value="IF EMPOuthbased is True">1573b8fedbc560103b27264948961964</ui_policy>
+        <value/>
+        <value_action/>
         <variable>client_secret</variable>
         <variable_set display_value="EMP Configurations">335888ffdb18e0502019d90d68961988</variable_set>
         <visible>true</visible>

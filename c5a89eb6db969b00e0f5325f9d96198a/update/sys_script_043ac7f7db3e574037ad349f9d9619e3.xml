@@ -13,7 +13,7 @@
         <client_callable>false</client_callable>
         <collection>sc_req_item</collection>
         <condition/>
-        <description/>
+        <description>This Business Rule triggers when RITM moves to closure to update the Request state accordingly</description>
         <execute_function>false</execute_function>
         <filter_condition table="sc_req_item">state=3^ORstate=4^cat_item=b64fe0ecdbe21b0037ad349f9d9619e3^ORcat_item=d863b2b7dbd0730037ad349f9d961914^ORcat_item=4de9b051db64370037ad349f9d96195b^ORcat_item=c92d681cdb64b300e0f5325f9d9619cf^EQ<item display_value="Closed Complete" endquery="false" field="state" goto="false" newquery="false" operator="=" or="false" value="3"/>
             <item display_value="Closed Incomplete" endquery="false" field="state" goto="false" newquery="false" operator="=" or="true" value="4"/>
@@ -25,7 +25,7 @@
         </filter_condition>
         <is_rest>false</is_rest>
         <message/>
-        <name>Update Request status </name>
+        <name>Update Request Status</name>
         <order>100</order>
         <priority>100</priority>
         <rest_method/>
@@ -35,39 +35,47 @@
         <rest_variables/>
         <role_conditions/>
         <script><![CDATA[/** 
-* @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
-* @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
-* Schedule Contract with Kyndryl Corp. 
-* @Business Rule triggers when RITM moves to closure to update the Request state accordingly
-**/
+ * @copyright (c) Copyright Kyndryl Corporation 2021, 2021. All Rights Reserved. 
+ * @license Licensed Materials - Property of Kyndryl * Note to U.S. Government Users Restricted Rights: Use, duplication or disclosure restricted by GSA ADP 
+ * Schedule Contract with Kyndryl Corp. 
+ * @Business Rule triggers when RITM moves to closure to update the Request state accordingly
+ **/
 
-(function executeRule(current, previous /*null when async*/) {
-	try { 
-		var req = new GlideRecord('sc_request');
-		req.addQuery('sys_id', current.request);
-		req.query();
-		if (req.next()) {
-			var reqItem = new GlideRecord('sc_req_item');
-			reqItem.addQuery('request', current.request);
-			reqItem.query();
+(function executeRule(current, previous /*null when async*/ ) {
+    try {
+        var req = new GlideRecord('sc_request');
+        req.addQuery('sys_id', current.request);
+        req.query();
+        if (req.next()) {
+			
+            var reqItem = new GlideAggregate('sc_req_item');
+            reqItem.addQuery('request', current.request);
+            reqItem.addAggregate("COUNT");
+            reqItem.query();
+			var totalRITMS = 0;
+            if (reqItem.next()) {//no need of while..only reqItem.next() will work
+                totalRITMS = reqItem.getAggregate("COUNT");
+            }
+
+            var reqState = new GlideAggregate('sc_req_item');
+            reqState.addQuery('request', current.request);
+            reqState.addQuery('state', 'IN', '3,4');
+            reqState.addAggregate('COUNT');
+            reqState.query();
 			var count = 0;
-			var change_flag = '';
-			var totalRITMS = reqItem.getRowCount();
-			while(reqItem.next()) {
-				if(reqItem.state == 3 || reqItem.state == 4) {
-					count++;
-				}
-			}
-			if(count == totalRITMS) {
-				req.request_state = 'closed_complete';				
-				new HCMSLogLevel().LogMsg('info', 'Request ' + req.number + ' closed for order : ' + req.x_ibmg3_hcms_order_number);
-				req.update();
-			}
-		}
-	}
-	catch(e) {
-		new HCMSLogLevel().LogMsg("error"," Error completing Request "+e);
-	}
+            while (reqState.next()) {//no need of while here you can just write reqState.next()
+                count = parseInt(reqState.getAggregate('COUNT'));//no need of parseInt i think
+            }
+
+            if (count == totalRITMS) {
+                req.request_state = 'closed_complete';
+                new EmpLogLevel().logMsg('info', 'Request ' + req.number + ' closed for order : ' + req.x_ibmg3_hcms_order_number);
+                req.update();
+            }
+        }
+    } catch (e) {
+        new EmpLogLevel().logMsg("error", " Error completing Request " + e);
+    }
 })(current, previous);]]></script>
         <sys_class_name>sys_script</sys_class_name>
         <sys_created_by>sridharp@us.ibm.com</sys_created_by>
@@ -75,15 +83,15 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>043ac7f7db3e574037ad349f9d9619e3</sys_id>
-        <sys_mod_count>49</sys_mod_count>
-        <sys_name>Update Request status </sys_name>
+        <sys_mod_count>61</sys_mod_count>
+        <sys_name>Update Request Status</sys_name>
         <sys_overrides/>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_043ac7f7db3e574037ad349f9d9619e3</sys_update_name>
-        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
-        <sys_updated_on>2023-04-20 16:59:05</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 07:17:23</sys_updated_on>
         <template/>
         <when>before</when>
     </sys_script>

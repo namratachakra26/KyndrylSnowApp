@@ -19,7 +19,7 @@
         var body = request.body.data;		
         var str = JSON.stringify(body);
         //Log incoming request payload from Enterprise marketplace
-        new HCMSLogLevel().LogMsg('info', 'Incoming Request creation Payload: ' + str);
+        new EMPLogLevel().logMsg('info', 'Incoming Request creation Payload: ' + str);
 		var requestType, requestedFor, requestNumber, requestor = '';
         //Obtaining broker location Information
         var brokerLocation = body.icb_brokerLocation;
@@ -56,11 +56,11 @@
                     var status = JSON.stringify(qsResponse.statusCode);
                     if (status == "200") {
                         responseBody = qsResponse;
-						new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " +JSON.stringify(responseBody.requestNumber));
+						new EMPLogLevel().logMsg('info', 'Request created for order ' + orderNumber + " is: " +JSON.stringify(responseBody.requestNumber));
                         response.setBody(responseBody);
                     } else {
                         var msg = JSON.stringify(qsResponse.message.message);
-                        new HCMSLogLevel().LogMsg('info', '*QS error for Request creation *' + msg);
+                        new EMPLogLevel().logMsg('info', '*QS error for Request creation *' + msg);
                         raiseResponseError(msg);
                     }
                 }
@@ -70,7 +70,7 @@
                         case 'New':
                             requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
                             //Log response request number from scoped cart API
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            new EMPLogLevel().logMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
                             //Set the response body
                             responseBody.requestNumber = requestNumber;
                             response.setBody(responseBody);
@@ -79,7 +79,7 @@
                         case 'Edit':
                             requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
                             //Log response request number
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            new EMPLogLevel().logMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
                             //Set the response body
                             responseBody.requestNumber = requestNumber;
                             response.setBody(responseBody);
@@ -88,7 +88,7 @@
                         case 'Terminate':
                             requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
                             //Log response request number 
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            new EMPLogLevel().logMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
                             responseBody.requestNumber = requestNumber;
                             response.setBody(responseBody);
                             break;
@@ -96,7 +96,7 @@
                         case 'operation':
                             requestNumber = new generateSingleCart().processRequest(str, brokerLocation, requestedFor);
                             //Log response request number from scoped cart API
-                            new HCMSLogLevel().LogMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
+                            new EMPLogLevel().logMsg('info', 'Request created for order ' + orderNumber + " is: " + requestNumber);
                             responseBody.requestNumber = requestNumber;
                             response.setBody(responseBody);
                             break;
@@ -114,7 +114,7 @@
             raiseResponseErrorNoUserPresent("User not found in ServiceNow hence, no Request created.");
         }
     } catch (err) {
-        new HCMSLogLevel.LogMsg("error", "Kyndryl Marketplace Approval API: " + this.type + "(" + err.message + ")");
+        new EmpLogLevel.logMsg("error", "Kyndryl Marketplace Approval API: " + this.type + "(" + err.message + ")");
     }
 
     //********* VALIDATION FUNCTIONS  ************
@@ -216,8 +216,8 @@
         response.setError(theError);
 
         //Log the error on processing the request
-        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: JSON payload error.");
-        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: " + message);
+        new EMPLogLevel().logMsg("error", "Kyndryl Marketplace Request: ERROR: JSON payload error.");
+        new EMPLogLevel().logMsg("error", "Kyndryl Marketplace Request: ERROR: " + message);
     }
 
     //Function to handle response error messages for no SR creation
@@ -230,9 +230,9 @@
         response.setError(theError);
 
         //Log the error on processing the request
-        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: Service Request creation aborted.");
-        new HCMSLogLevel().LogMsg('error', 'Request auto rejected. No user found in ServiceNow. Order Num: ' + body.orderNumber);
-        new HCMSLogLevel().LogMsg("error", "Kyndryl Marketplace Request: ERROR: " + message);
+        new EMPLogLevel().logMsg("error", "Kyndryl Marketplace Request: ERROR: Service Request creation aborted.");
+        new EMPLogLevel().logMsg('error', 'Request auto rejected. No user found in ServiceNow. Order Num: ' + body.orderNumber);
+        new EMPLogLevel().logMsg("error", "Kyndryl Marketplace Request: ERROR: " + message);
     }
 	
     //Function to validate QS catalog item
@@ -240,10 +240,10 @@
         //check if catalog item is available in mapping table
         var mappingTable = new GlideRecord('u_quickstart_mvp3_mapping_table');
         if (mappingTable.get('u_applies_to.name', catalogItemCode)) {
-            new HCMSLogLevel().LogMsg("info", "Valid QS Catalog item : " + catalogItemCode);
+            new EMPLogLevel().logMsg("info", "Valid QS Catalog item : " + catalogItemCode);
             return true;
         } else {
-            new HCMSLogLevel().LogMsg("info", "Generic Catalog item : " + catalogItemCode);
+            new EMPLogLevel().logMsg("info", "Generic Catalog item : " + catalogItemCode);
             return false;
         }
     }
@@ -262,14 +262,14 @@
         <sys_created_by>rannep12@in.ibm.com</sys_created_by>
         <sys_created_on>2018-07-25 06:55:07</sys_created_on>
         <sys_id>711615c5dbe3d70037ad349f9d961909</sys_id>
-        <sys_mod_count>209</sys_mod_count>
+        <sys_mod_count>211</sys_mod_count>
         <sys_name>request</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy/>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_ws_operation_711615c5dbe3d70037ad349f9d961909</sys_update_name>
-        <sys_updated_by>asbagad1@in.ibm.com</sys_updated_by>
-        <sys_updated_on>2023-04-24 14:57:40</sys_updated_on>
+        <sys_updated_by>sreedhar.mamilla@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 10:31:25</sys_updated_on>
         <web_service_definition display_value="HCMS Broker">3a955909dbe3d70037ad349f9d96199a</web_service_definition>
         <web_service_version display_value="v1">e691e14ddbe3d70037ad349f9d961962</web_service_version>
     </sys_ws_operation>

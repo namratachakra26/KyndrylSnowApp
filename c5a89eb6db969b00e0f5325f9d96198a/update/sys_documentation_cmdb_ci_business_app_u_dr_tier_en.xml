@@ -11,7 +11,6 @@
             <sys_class_name>sys_documentation</sys_class_name>
             <sys_created_by>Asha.Bagade@kyndryl.com</sys_created_by>
             <sys_created_on>2023-03-16 15:54:02</sys_created_on>
-            <sys_id>2240d0321ba92510260a10e58d4bcb5e</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_name>DR tier</sys_name>
             <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>

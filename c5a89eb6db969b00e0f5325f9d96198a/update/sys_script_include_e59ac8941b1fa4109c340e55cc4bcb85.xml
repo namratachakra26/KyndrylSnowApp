@@ -2,7 +2,7 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_ibmg3_hcms.ProvisioningCallToEMmarketplace</api_name>
+        <api_name>x_ibmg3_hcms.ProvisioningCallToEmMarketplace</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description>/** &#13;
@@ -12,95 +12,90 @@
 * @author Asha Bagade &#13;
 * @Script Include is invoked from BRs  - This script include is used to send prov call to EM&#13;
 **/</description>
-        <name>ProvisioningCallToEMmarketplace</name>
-        <script><![CDATA[var ProvisioningCallToEMmarketplace = Class.create();
-ProvisioningCallToEMmarketplace.prototype = {
+        <name>ProvisioningCallToEmMarketplace</name>
+        <script><![CDATA[var ProvisioningCallToEmMarketplace = Class.create();
+ProvisioningCallToEmMarketplace.prototype = {
     initialize: function() {},
 
-    provisionStatus: function(CHGTsk) {
+    provisionStatus: function(chgTsk) {
         try {
-        
             //invoking rest outbound message	
-            var rm;
-            var midserver_details;
-            var out_bound_flag;
             //Define variables to hold response body and status code
             var responseBody, statusCode, endPoint = '';
             var restMethodName = gs.getProperty('x_ibmg3_hcms.provisioning.rest.method');
             //Fetch the source url and credential details from SR create payload
-            var requestPayload = CHGTsk.change_request.parent.variables.var_broker_json;
+            var requestPayload = chgTsk.change_request.parent.variables.var_broker_json;
             var jsonPayload = JSON.parse(requestPayload);
 
             var url = jsonPayload.source;
             var credential = jsonPayload.credential;
-			var req_orderNumber = jsonPayload.orderNumber;
+			var reqOrderNumber = jsonPayload.orderNumber;
 
             //array to hold the serviceOfferingInstanceId
-            var serviceInstanceId = CHGTsk.change_request.parent.variables.var_service_instance_id.toString();
+            var serviceInstanceId = chgTsk.change_request.parent.variables.var_service_instance_id.toString();
            
-
             //variable to hold the status of ritm
             var state;
-            if (CHGTsk.state == 3) {
+            if (chgTsk.state == 3) {
                 state = "Completed";
             }
-            if (CHGTsk.state == 4) {
+            if (chgTsk.state == 4) {
                 state = "Cancelled";
             }
 
-            if (CHGTsk.state == -5) {
+            if (chgTsk.state == -5) {
                 state = "Failed";
             }
 
             //build request body
-            var reqbody = {};
-            reqbody.changeTaskId = CHGTsk.number.toString();
-            reqbody.orderNumber = CHGTsk.change_request.parent.request.x_ibmg3_hcms_order_number.toString();
-            reqbody.serviceInstanceId = serviceInstanceId;
-            reqbody.status = state;
+            var reqBody = {};
+            reqBody.changeTaskId = chgTsk.number.toString();
+            reqBody.orderNumber = chgTsk.change_request.parent.request.x_ibmg3_hcms_order_number.toString();
+            reqBody.serviceInstanceId = serviceInstanceId;
+            reqBody.status = state;
 
-            var JSONString = JSON.stringify(reqbody);
-            new HCMSLogLevel().LogMsg("info", "ChangeTask " + CHGTsk.number + " Closed (Provisioning) Status to EM : " + JSONString);
+            var jsonString = JSON.stringify(reqBody);
+            new EmpLogLevel().logMsg("info", "ChangeTask " + chgTsk.number + " Closed (Provisioning) Status to EM : " + jsonString);
 
             //Invoke the below function to make an outbound call to Kyndryl Marketplace for sending post prov hook reponse
-			var req_domain = new HCMSGetTenatDetails().getRequestDomain(req_orderNumber);
-            var ProvChangeTask = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, reqbody, req_domain);
-            if (ProvChangeTask) {
-                responseBody = ProvChangeTask.responseBody;
-                statusCode = ProvChangeTask.statusCode;
-                endPoint = ProvChangeTask.endPoint;
+			var reqDomain = new EmpGetTenatDetails().getRequestDomain(reqOrderNumber);
+            var provChangeTask = new EmpConfigurationOutboundCall().outBoundRestCallToEmp(restMethodName, credential, url, reqBody, reqDomain);
+            if (provChangeTask) {
+                responseBody = provChangeTask.responseBody;
+                statusCode = provChangeTask.statusCode;
+                endPoint = provChangeTask.endPoint;
             } else {
-                new HCMSLogLevel().LogMsg("info", "* Invalid response from Kyndryl Marketplace for  *" + CHGTsk.change_request.parent.request.x_ibmg3_hcms_order_number);
+                new EmpLogLevel().logMsg("info", "* Invalid response from Kyndryl Marketplace for  *" + chgTsk.change_request.parent.request.x_ibmg3_hcms_order_number);
             }
-            new HCMSLogLevel().LogMsg("info", "Change Task " + CHGTsk.number + " Closed (Provisioning) Status response from EM : " + CHGTsk.change_request.parent.request.x_ibmg3_hcms_order_number + " is :" + responseBody + " \nhttpStatus: " + statusCode + " \nEndpoint : " + endPoint);
+            new EmpLogLevel().logMsg("info", "Change Task " + chgTsk.number + " Closed (Provisioning) Status response from EM : " + chgTsk.change_request.parent.request.x_ibmg3_hcms_order_number + " is :" + responseBody + " \nhttpStatus: " + statusCode + " \nEndpoint : " + endPoint);
 
             //Create record in ecc queue for unsuccessful outbound call
             if (statusCode > 201 || statusCode == 0) {
-                var topic = CHGTsk.change_request.parent.request.x_ibmg3_hcms_order_number.toString() + "-Provisioning";
-                var source = CHGTsk.change_request.parent.request.getDisplayValue().toString();
-                var responsefromHost = "Response received from Enterprise Marketplace : " + responseBody + " \nResponse status code : " + statusCode;
+                var topic = chgTsk.change_request.parent.request.x_ibmg3_hcms_order_number.toString() + "-Provisioning";
+                var source = chgTsk.change_request.parent.request.getDisplayValue().toString();
+                var responseFromHost = "Response received from Enterprise Marketplace : " + responseBody + " \nResponse status code : " + statusCode;
                 //Call retry function
-                var ecc = new RetryOutboundcalltoBroker().eccQueueRetryRecord(topic, source, JSONString, responsefromHost);
+                var ecc = new RetryOutboundCallToEmp().eccQueueRetryRecord(topic, source, jsonString, responseFromHost);
             }
         } catch (e) {
-            new HCMSLogLevel().LogMsg("error", "Sending Post Provisioning Hook Status to Enterprise Marketplace error " + e);
+            new EmpLogLevel().logMsg("error", "Sending Post Provisioning Hook Status to Enterprise Marketplace error " + e);
         }
     },
 
 
-    type: 'ProvisioningCallToEMmarketplace'
+    type: 'ProvisioningCallToEmMarketplace'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>debada54@in.ibm.com</sys_created_by>
         <sys_created_on>2021-03-30 12:30:32</sys_created_on>
         <sys_id>e59ac8941b1fa4109c340e55cc4bcb85</sys_id>
-        <sys_mod_count>9</sys_mod_count>
-        <sys_name>ProvisioningCallToEMmarketplace</sys_name>
+        <sys_mod_count>21</sys_mod_count>
+        <sys_name>ProvisioningCallToEmMarketplace</sys_name>
         <sys_package display_value="Kyndryl Modern Operations Applications Integration" source="x_ibmg3_hcms">c5a89eb6db969b00e0f5325f9d96198a</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Kyndryl Modern Operations Applications Integration">c5a89eb6db969b00e0f5325f9d96198a</sys_scope>
         <sys_update_name>sys_script_include_e59ac8941b1fa4109c340e55cc4bcb85</sys_update_name>
-        <sys_updated_by>asha.bagade@kyndryl.com</sys_updated_by>
-        <sys_updated_on>2023-11-27 16:50:54</sys_updated_on>
+        <sys_updated_by>namrata.chakraborty@kyndryl.com</sys_updated_by>
+        <sys_updated_on>2024-05-28 09:28:55</sys_updated_on>
     </sys_script_include>
 </record_update>
